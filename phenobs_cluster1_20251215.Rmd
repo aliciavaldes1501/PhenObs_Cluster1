@@ -1,0 +1,984 @@
+---
+title: "PhenObs analyses"
+author: "Alicia Valdés"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: inline
+---
+
+# Load libraries
+
+```{r}
+library(readr)
+library(here)
+library(rWCVP)
+library(tidyverse)
+library(purrr)
+library(sf)
+library(glmmTMB)
+library(ggeffects)
+library(rgbif)
+library(readxl)
+```
+
+# Occurrence matrices
+
+## Package rWCVP
+
+This package allows to access data from the World Checklist of Vascular Plants.
+
+Read species list from PhenObs:
+
+```{r}
+species <- read_csv(here("data", "raw", "list_species_PhenObs.csv"))
+species
+```
+
+```{r}
+# taxonomy data
+names <- rWCVPdata::wcvp_names
+
+# distribution data
+distributions <- rWCVPdata::wcvp_distributions
+```
+
+Filter the WCVP:
+
+```{r}
+# Filtering the WCVP to generate lists or summaries of vascular plant species 
+# in particular areas. 
+# Two arguments:
+# taxon: the name of a valid taxon with a taxonomic rank of species or higher 
+# (e.g. the species “Myrcia almasensis”, the genus “Myrcia”, or the family “Myrtaceae”).
+# area: a vector of WGSRPD level 3 codes for the regions you want to focus on.
+# These arguments can be combined in the wcvp_checklist, wcvp_occ_mat, 
+# and wcvp_summary to generate outputs for focal taxa in a desired area. 
+
+matches <- wcvp_match_names(species, name_col = "species", fuzzy = TRUE,
+                            progress_bar = FALSE)
+
+# Generate occurency matrix
+
+# Extract the genus
+genera <- species %>%
+  mutate(genus = word(species, 1)) %>%
+  distinct(genus) %>%
+  pull(genus)
+```
+
+We want to get an occurrence matrix for all countries in Europe that are included in our RL data!
+
+Read the RL data:
+
+Read data:
+
+```{r}
+redlist <- read_tsv(here("data", "raw", "redlist_MOTIVATE_subset.csv"))
+redlist
+redlist %>% distinct(Country) %>% arrange(Country) %>% print(n = 50)
+```
+
+```{r}
+area_codes = c(
+  get_wgsrpd3_codes("Albania"),
+  get_wgsrpd3_codes("Austria"), # Includes Austria and:
+  # L4	AUT-LI	Liechtenstein
+  get_wgsrpd3_codes("Baltic States"), # Includes:
+  # L4	BLT-ES	Estonia
+  # L4	BLT-LA	Latvia
+  # L4	BLT-LI	Lithuania
+  get_wgsrpd3_codes("Belarus"),
+  get_wgsrpd3_codes("Belgium"), # Includes Belgium and:
+  # L4	BGM-LU	Luxembourg
+  get_wgsrpd3_codes("Bulgaria"),
+  get_wgsrpd3_codes("Cyprus"),
+  get_wgsrpd3_codes("Czechoslovakia"), # Includes:
+  # L4	CZE-CZ	Czech Republic
+  # L4	CZE-SL	Slovakia
+  get_wgsrpd3_codes("Denmark"),
+  get_wgsrpd3_codes("Finland"),
+  get_wgsrpd3_codes("France"),
+  get_wgsrpd3_codes("Germany"),
+  get_wgsrpd3_codes("Greece"),
+  get_wgsrpd3_codes("Hungary"),
+  get_wgsrpd3_codes("Ireland"),
+  get_wgsrpd3_codes("Italy"), # Includes Italy and:
+  # L4	SIC-MA	Malta
+  #   > get_wgsrpd3_codes("Sicilia")
+  # ℹ Matches to input geography found at Area (Level 3)
+  # [1] "SIC"
+  # > get_wgsrpd3_codes("Italy")
+  # ℹ Matches to input geography found at Area (Level 3) and Country (Gallagher)
+  # [1] "ITA" "SAR" "SIC"
+  get_wgsrpd3_codes("Netherlands"),
+  get_wgsrpd3_codes("Norway"),
+  get_wgsrpd3_codes("Poland"),
+  get_wgsrpd3_codes("Portugal"),
+  get_wgsrpd3_codes("Romania"),
+  get_wgsrpd3_codes("Russia"),
+  get_wgsrpd3_codes("Spain"), # Includes Spain and:
+  # L4	SPA-AN  Andorra
+  get_wgsrpd3_codes("Sweden"),
+  get_wgsrpd3_codes("Switzerland"),
+  get_wgsrpd3_codes("Turkey"),
+  get_wgsrpd3_codes("Ukraine"), # Includes Ukraine and:
+  # L4	UKR-MO	Moldova
+  get_wgsrpd3_codes("Great Britain"), # Includes United Kingdom
+  get_wgsrpd3_codes("Yugoslavia") # Includes:
+  # L4	YUG-BH	Bosnia- Herzegovina
+  # L4	YUG-CR	Croatia
+  # L4	YUG-KO	Kosovo
+  # L4	YUG-MN	Montenegro
+  # L4	YUG-SE  Serbia
+  # L4	YUG-SL	Slovenia
+  )
+```
+
+```{r}
+# Define safe wrapper for wcvp_occ_mat
+# Apply wcvp_occ_mat to each genus
+safe_occ_mat <- possibly(
+  function(genus) {
+    wcvp_occ_mat(
+      taxon = genus,
+      taxon_rank = "genus",
+      area_codes = area_codes
+    ) %>%
+      mutate(input_genus = genus)
+  },
+  otherwise = NULL
+)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Apply to all genera
+occurrence_matrix_genera <- map_df(genera, safe_occ_mat)
+occurrence_matrix_genera
+```
+
+```{r}
+# Filter for species that are on the PhenObs list
+occurrence_matrix_species <- occurrence_matrix_genera %>%
+  filter(taxon_name %in% species$species)
+nrow(occurrence_matrix_species) # 161 species of 177 in PhenObs list
+```
+
+Species from PhenObs list that were not matched:
+
+```{r}
+species %>% filter(!species %in% occurrence_matrix_species$taxon_name)
+```
+
+Species not appearing in any of the area_codes from PhenObs:
+
+```{r}
+wcvp_distribution(taxon ="Arnica longifolia", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Arnica longifolia")
+wcvp_distribution(taxon ="Bergenia purpurascens", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Bergenia purpurascens")
+wcvp_distribution(taxon ="Camassia cusickii", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Camassia cusickii")
+wcvp_distribution(taxon ="Gunnera manicata", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Gunnera manicata")
+wcvp_distribution(taxon ="Abelmoschus moschatus", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Abelmoschus moschatus")
+wcvp_distribution(taxon ="Paeonia delavayi", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Paeonia delavayi")
+wcvp_distribution(taxon = "Silphium integrifolium", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Silphium integrifolium")
+wcvp_distribution(taxon = "Trillium sessile", taxon_rank = "species") %>%
+  wcvp_distribution_map() + ggtitle("Trillium sessile")
+```
+
+Add synonyms:
+
+```{r}
+species <- species %>%
+  mutate(synonym = case_when(
+    species == "Anemone hepatica" ~ "Hepatica nobilis",
+    species == "Anemone hupehensis" ~ "Eriocapitella hupehensis",
+    species == "Atropa belladonna" ~ "Atropa bella-donna",
+    species == "Centranthus ruber" ~ "Valeriana rubra",
+    species == "Ficaria verna" ~ "Ranunculus ficaria",
+    species == "Hibiscus moschatus" ~ "Abelmoschus moschatus",
+    species == "Primula acaulis" ~ "Primula vulgaris",
+    species == "Securigera varia" ~ "Coronilla varia",
+    species == "Stachys officinalis" ~ "Betonica officinalis",
+    TRUE ~ NA_character_
+  ))
+```
+
+Redo generation of occurrence matrix:
+
+```{r}
+genera <- species %>%
+  mutate(genus = ifelse(
+    !is.na(synonym), word(synonym, 1),
+    word(species, 1)
+    )
+    ) %>%
+  distinct(genus) %>%
+  pull(genus)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Apply to all genera
+occurrence_matrix_genera <- map_df(genera, safe_occ_mat)
+occurrence_matrix_genera
+```
+
+```{r}
+# Filter for species that are on the PhenObs list
+species <- species %>%
+  mutate(species_corrected = ifelse(
+    !is.na(synonym), synonym,
+    species
+  ))
+occurrence_matrix_species <- occurrence_matrix_genera %>%
+  filter(taxon_name %in% species$species_corrected)
+nrow(occurrence_matrix_species) # 169 species of 177 in PhenObs list
+```
+
+Species from PhenObs list that were not matched
+
+```{r}
+# According to WCVP, these species are not appearing in any European country
+species_absent <- species %>% 
+  filter(!species_corrected %in% occurrence_matrix_species$taxon_name)
+species_absent
+species_present <-species %>%
+  filter(species_corrected %in% occurrence_matrix_species$taxon_name)
+species_present
+```
+
+Occurrence matrix for countries:
+
+```{r}
+occurrence_matrix_species_countries <- occurrence_matrix_species %>%
+  select(-input_genus) %>%
+  pivot_longer(cols = 3:59, names_to = "LEVEL3_COD") %>% 
+  left_join(wgsrpd_mapping %>% select(LEVEL3_COD, COUNTRY)) %>%
+  group_by(taxon_name, COUNTRY) %>%
+  summarise(occurrence = max(value), .groups = "drop")
+```
+
+## TO DO: GIFT R package
+
+Allows to access data from the Global Inventory of Floras and Traits
+
+## TO DO: rgbif package
+
+Allows retrieving data from GBIF.
+
+# MOTIVATE Red List data
+
+Do not only use the RL of the countries where we have our botanical gardens, instead use the RL from all available countries in Europe!
+
+Filter the RL to only keep species from PhenObs that are appearing in any European country:
+
+```{r}
+redlist_phenobs <- bind_rows(
+  species_present %>%
+    left_join(redlist, 
+              by = c("species" = "parsed_species_name")), 
+  species_present %>%
+    left_join(redlist, 
+              by = c("species_corrected" = "parsed_species_name"))
+  ) %>%
+  distinct() %>%
+  # Keep columns that I think I will use
+  select(species, species_corrected, Redlist_cat, Threat, Country, Publ_year, 
+         redlist_source, Continent)
+redlist_phenobs
+```
+
+## REVISE!
+
+Species with no info in Red List data:
+
+```{r}
+redlist_phenobs %>% filter(is.na(Threat)) %>% distinct(species_corrected)
+# We suppose these are not threatened in any country, but should double check
+```
+
+Remove those species from the RL:
+
+```{r}
+redlist_phenobs <- redlist_phenobs %>% filter(!is.na(Threat))
+```
+
+Make the country names in RL match with the country names in occurrence_matrix_species_countries:
+
+```{r}
+redlist_phenobs <- redlist_phenobs %>%
+  mutate(Country_WGSRPD = case_when(
+    Country == "Liechtenstein" ~ "Austria",
+    Country %in% c("Estonia", "Latvia", "Lithuania")~ "Baltic States",
+    Country == "Luxembourg" ~ "Belgium",
+    Country %in% c("Czech Republic", "Slovakia") ~ "Czechoslovakia",
+    Country == "Malta" ~ "Italy",
+    Country == "Andorra" ~ "Spain",
+    Country == "Moldova" ~ "Ukraine",
+    Country == "United Kingdom" ~ "Great Britain",
+    Country %in% c("Bosnia and Herzegovina", "Croatia", "Kosovo", "Montenegro",
+                   "Serbia", "Slovenia") ~ "Yugoslavia",
+    TRUE ~ Country))
+```
+
+```{r}
+occurrence_matrix_species_countries %>% distinct(COUNTRY) %>% 
+  arrange(COUNTRY) %>% print(n = 50)
+redlist_phenobs %>% distinct(Country_WGSRPD) %>% arrange(Country_WGSRPD) %>% 
+  print(n = 50)
+# Turkey is in occurrence matrix, but not in RL,
+# otherwise countries match
+```
+
+Cases where there is info for more than one year for a species and country:
+
+```{r}
+redlist_phenobs_dupl_diff <- redlist_phenobs %>%
+  group_by(species_corrected, Country_WGSRPD) %>%
+  filter(n() > 1, n_distinct(Threat) > 1) %>%
+  ungroup()
+redlist_phenobs_dupl_diff
+```
+
+Keep threat info for the latest publication year. In Russia, there is no info about publ year.
+
+Keep Russia separated:
+
+```{r}
+redlist_phenobs_Russia <- redlist_phenobs %>%
+  filter(Country_WGSRPD == "Russia")
+```
+
+Remove Russia:
+
+```{r}
+redlist_phenobs_noRussia <- redlist_phenobs %>%
+  filter(Country_WGSRPD != "Russia")
+```
+
+For other countries apart from Russia: If there are several rows for same publ year, pick the most severe red list category.
+
+```{r}
+severity_order <- c("CR", "EN", "VU", "NT", "LC")
+
+redlist_phenobs_noRussia_latest <- redlist_phenobs_noRussia %>%
+  group_by(species_corrected, Country_WGSRPD) %>%
+  filter(if (all(is.na(Publ_year))) TRUE else 
+    Publ_year == max(Publ_year, na.rm = TRUE)) %>%
+  slice(which.min(match(Redlist_cat, severity_order))) %>%
+  ungroup()
+
+redlist_phenobs_noRussia_latest
+```
+
+Check that there is only one entry for each species and country:
+
+```{r}
+redlist_phenobs_noRussia_latest %>% 
+  group_by(species_corrected, Country_WGSRPD) %>%
+  count() %>% filter(n > 1)
+```
+
+For Russia:
+
+```{r}
+severity_threatened <- c("CR", "EN", "VU")
+severity_not_threatened <- c("NT", "LC")
+
+redlist_phenobs_Russia <- redlist_phenobs_Russia %>%
+  group_by(species_corrected) %>%
+  # Apply custom logic to pick ONE row but keep all columns
+  slice({
+    threatened_count <- sum(Threat == "threatened")
+    not_threatened_count <- sum(Threat == "not_threatened")
+    
+    # If there are more threatened rows than not threatened
+    if (threatened_count > not_threatened_count) {
+      # pick the first threatened row
+      which.max(Threat == "threatened") 
+      # Else if there are more not threatened rows
+    } else if (not_threatened_count > threatened_count) {
+      # pick the first not threatened row
+      which.max(Threat == "not_threatened")
+    } else {
+      # If there is a tie between threatened and not threatened rows,
+      # break by severity groups.
+      # Count severity categories
+      threatened_severity_count <- sum(Redlist_cat %in% severity_threatened)
+      not_threatened_severity_count <- sum(Redlist_cat %in% severity_not_threatened)
+      # If threatened severity count ≥ not threatened severity count
+      if (threatened_severity_count >= not_threatened_severity_count) {
+        # Picks the first row with CR/EN/VU
+        which.max(Redlist_cat %in% severity_threatened)
+        # Else
+      } else {
+        # Picks the first row with NT/LC
+        which.max(Redlist_cat %in% severity_not_threatened)
+      }
+    }
+  }) %>%
+  ungroup()
+```
+
+For Russia, check that there is only one entry for each species:
+
+```{r}
+redlist_phenobs_Russia %>% group_by(species_corrected) %>%
+  count() %>% filter(n > 1)
+```
+
+Join noRussia and Russia to get final RL for PhenObs:
+
+```{r}
+redlist_phenobs_final <- bind_rows(redlist_phenobs_noRussia_latest,
+                                   redlist_phenobs_Russia)
+# Note that species that are not threatened in any country 
+# are absent from redlist_phenobs_final
+```
+
+# Join occurrence data and Red List data 
+
+```{r}
+occurrence_matrix_species_countries %>% distinct(COUNTRY)
+redlist_phenobs_final %>% distinct(Country_WGSRPD)
+```
+
+Remove Turkey from occurrence_matrix_species_countries:
+
+```{r}
+occurrence_matrix_species_countries <- occurrence_matrix_species_countries %>%
+  filter(COUNTRY != "Turkey")
+```
+
+```{r}
+redlist_phenobs_final_occ <- 
+  # Here, all 169 present species are included
+  occurrence_matrix_species_countries %>%
+  # Here, only the species included in red lists in ANY country are included
+  left_join(redlist_phenobs_final, by = c("taxon_name" = "species_corrected",
+                                          "COUNTRY" = "Country_WGSRPD")) %>%
+  # Remove unneded columns
+  select(-species, -Redlist_cat, -Country, -Publ_year, -redlist_source, 
+         - Continent) %>%
+  # Rename
+  rename(species = taxon_name, country = COUNTRY, threat = Threat) %>%
+  # Order columns
+  select(species, country, occurrence, threat) %>%
+  # Set those where Threat is NA or not_evaluated_dd (only 2 spp in Russia)
+  # as not_threatened
+  mutate(threat = case_when(
+    threat == "not_evaluated_dd" ~ "not_threatened",
+    is.na(threat) ~ "not_threatened",
+    TRUE ~ threat
+  ))
+```
+
+# Calculate % endangerment
+
+```{r}
+perc_endangerment <- redlist_phenobs_final_occ %>%
+  filter(occurrence > 0) %>%  # only countries where species is present
+  group_by(species) %>%
+  summarise(
+    total_countries = n(),
+    threatened_countries = sum(threat == "threatened"),
+    perc_endangerment = (threatened_countries / total_countries) * 100,
+    .groups = "drop"
+  ) %>%
+  arrange(species) %>%
+  # Have it also as a proportion
+  mutate(prop_endangerment = perc_endangerment / 100)
+perc_endangerment
+```
+
+# Sensitivity data
+
+Slopes from Robert.
+
+```{r}
+sensitivity_data <- read_csv(here("data", "raw", "Overview_Slopes_all.csv")) %>%
+  select(-...1) %>%
+  # Modify some species names to match those in RL data
+  mutate(Species = case_when(
+    Species == "Anemone hepatica" ~ "Hepatica nobilis",
+    Species == "Anemone hupehensis" ~ "Eriocapitella hupehensis",
+    Species == "Atropa belladonna" ~ "Atropa bella-donna",
+    Species == "Centranthus ruber" ~ "Valeriana rubra",
+    Species == "Ficaria verna" ~ "Ranunculus ficaria",
+    Species == "Hibiscus moschatus" ~ "Abelmoschus moschatus",
+    Species == "Primula acaulis" ~ "Primula vulgaris",
+    Species == "Securigera varia" ~ "Coronilla varia",
+    Species == "Stachys officinalis" ~ "Betonica officinalis",
+    TRUE ~ Species
+  )) %>%
+  # Add variable for "sens" vs "not-sens"
+  mutate(sens_01 = factor(ifelse(ci_lower > 0 | ci_upper < 0, 1, 0))) %>%
+  # Calculate absolute value of mean slope
+  mutate(mean_slope_abs = abs(mean_slope))
+sensitivity_data
+```
+
+# Prepare dataset for models
+
+```{r}
+sens_per_endanger <- perc_endangerment %>% 
+  left_join(
+    sensitivity_data %>% 
+      select(Species, mean_slope, sens_01, mean_slope_abs, ci_lower, ci_upper,
+             slope_var) %>% 
+      rename(species = Species)
+    )
+sens_per_endanger %>% filter(is.na(perc_endangerment))
+sens_per_endanger %>% filter(is.na(mean_slope))
+```
+
+# Distributions
+
+```{r}
+ggplot(sens_per_endanger, aes(x = perc_endangerment)) +
+  geom_histogram(color = "black", fill = "lightblue") +
+  theme_bw() +
+  xlab("% endangerment") + ylab("N species")
+
+ggplot(sens_per_endanger, aes(x = mean_slope)) +
+  geom_histogram(color = "black", fill = "lightblue") +
+  theme_bw() +
+  xlab("Mean slope") + ylab("N species")
+
+ggplot(sens_per_endanger, aes(x = mean_slope_abs)) +
+  geom_histogram(color = "black", fill = "lightblue") +
+  theme_bw() +
+  xlab("Mean slope (absolute value)") + ylab("N species")
+
+ggplot(sens_per_endanger, aes(x = sens_01)) +
+  geom_histogram(color = "black", fill = "lightblue", stat = "count") +
+  theme_bw() +
+  xlab("Mean slope") + ylab("N species")
+```
+
+# Models all Europe
+
+## Filtering slope_var < 100
+
+### Sensitive or not
+
+```{r}
+# perc_endangerment is in percentage, so use counts:
+# successes = threatened_countries
+# failures = total_countries - threatened_countries
+model_threat_sens_01 <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    sens_01, family = binomial, data = sens_per_endanger %>%
+    filter(slope_var < 100))
+summary(model_threat_sens_01)
+```
+
+### Mean slope (absolute value)
+
+```{r}
+model_threat_mean_slope <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs, family = binomial, data = sens_per_endanger %>%
+    filter(slope_var < 100))
+summary(model_threat_mean_slope)
+```
+
+### ALMOST SIG: Mean slope (absolute value, only for negative slopes)
+
+```{r}
+model_threat_mean_slope_neg <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs, family = binomial, 
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100))
+summary(model_threat_mean_slope_neg)
+```
+
+#### Plot predictions
+
+```{r}
+model_threat_mean_slope_neg_prediction <- ggpredict(model_threat_mean_slope_neg,
+                                                    terms = "mean_slope_abs [all]")
+
+ggplot() +
+  geom_line(data = model_threat_mean_slope_neg_prediction, 
+            aes(x = x, y = predicted),
+            color = "blue", linewidth = 1) +
+  geom_ribbon(data = model_threat_mean_slope_neg_prediction, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+              fill = "blue", alpha = 0.1) +
+  geom_point(data = sens_per_endanger %>% filter(mean_slope < 0),
+             aes(x = mean_slope_abs, y = threatened_countries / total_countries),
+             color = "black", alpha = 0.6) +
+  labs(x = "Mean slope (absolute value)", 
+       y = "Predicted probability of endangerment") +
+  theme_minimal()
+```
+
+### SIG: Mean slope (absolute value, only for negative slopes, remove outliers)
+
+```{r}
+model_threat_mean_slope_neg_noout1 <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs, family = binomial, 
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100 &
+                                        mean_slope_abs < 13))
+summary(model_threat_mean_slope_neg_noout1)
+model_threat_mean_slope_neg_noout2 <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs, family = binomial, 
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100) %>% 
+    filter(species != "Leucojum aestivum"))
+summary(model_threat_mean_slope_neg_noout2)
+```
+
+#### Plot predictions
+
+```{r}
+model_threat_mean_slope_neg_noout1_prediction <-
+  ggpredict(model_threat_mean_slope_neg_noout1, terms = "mean_slope_abs [all]")
+model_threat_mean_slope_neg_noout2_prediction <-
+  ggpredict(model_threat_mean_slope_neg_noout2, terms = "mean_slope_abs [all]")
+
+ggplot() +
+  geom_line(data = model_threat_mean_slope_neg_noout1_prediction, 
+            aes(x = x, y = predicted),
+            color = "blue", linewidth = 1) +
+  geom_ribbon(data = model_threat_mean_slope_neg_noout1_prediction, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+              fill = "blue", alpha = 0.1) +
+  geom_line(data = model_threat_mean_slope_neg_noout2_prediction, 
+            aes(x = x, y = predicted),
+            color = "red", linewidth = 1) +
+  geom_ribbon(data = model_threat_mean_slope_neg_noout2_prediction, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+              fill = "red", alpha = 0.1) +
+  geom_point(data = sens_per_endanger %>% filter(mean_slope < 0),
+             aes(x = mean_slope_abs, y = threatened_countries / total_countries),
+             color = "black", alpha = 0.6) +
+  labs(x = "Mean slope (absolute value)", 
+       y = "Predicted probability of endangerment") +
+  theme_minimal()
+```
+
+### Mean slope (absolute value, only for negative slopes, log sensitivity)
+
+```{r}
+sens_per_endanger <- sens_per_endanger %>%
+  mutate(mean_slope_abs_log = log(mean_slope_abs))
+model_threat_mean_slope_neg_log <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs_log, family = binomial, 
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100))
+summary(model_threat_mean_slope_neg_log)
+```
+
+#### Plot predictions
+
+```{r}
+model_threat_mean_slope_neg_log_prediction <-
+  ggpredict(model_threat_mean_slope_neg_log, terms = "mean_slope_abs_log [all]")
+
+ggplot() +
+  geom_line(data = model_threat_mean_slope_neg_log_prediction, 
+            aes(x = x, y = predicted),
+            color = "blue", linewidth = 1) +
+  geom_ribbon(data = model_threat_mean_slope_neg_log_prediction, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+              fill = "blue", alpha = 0.1) +
+  geom_point(data = sens_per_endanger %>% filter(mean_slope < 0),
+             aes(x = mean_slope_abs_log, 
+                 y = threatened_countries / total_countries),
+             color = "black", alpha = 0.6) +
+  labs(x = "Mean slope (absolute value), log", 
+       y = "Predicted probability of endangerment") +
+  theme_minimal()
+```
+
+### Mean slope (absolute value, only for negative slopes, zi)
+
+```{r}
+model_threat_mean_slope_neg_zi <- glmmTMB(
+  prop_endangerment ~ mean_slope_abs, family = "beta_family", ziformula=~.,
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100))
+summary(model_threat_mean_slope_neg_zi)
+```
+
+### Mean slope (absolute value, only for negative slopes, zi, remove outliers)
+
+```{r}
+model_threat_mean_slope_neg_zi_noout1 <- glmmTMB(
+  prop_endangerment ~ mean_slope_abs, family = "beta_family", ziformula=~.,
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100
+                                      & mean_slope_abs < 13))
+summary(model_threat_mean_slope_neg_zi_noout1)
+model_threat_mean_slope_neg_zi_noout2 <- glmmTMB(
+  prop_endangerment ~ mean_slope_abs, family = "beta_family", ziformula=~.,
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 100) %>% 
+    filter(species != "Leucojum aestivum"))
+summary(model_threat_mean_slope_neg_zi_noout2)
+```
+
+## Filtering slope_var < 50
+
+### Sensitive or not
+
+```{r}
+# perc_endangerment is in percentage, so use counts:
+# successes = threatened_countries
+# failures = total_countries - threatened_countries
+model_threat_sens_01_50 <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    sens_01, family = binomial, data = sens_per_endanger %>%
+    filter(slope_var < 50))
+summary(model_threat_sens_01_50)
+```
+
+### Mean slope (absolute value)
+
+```{r}
+model_threat_mean_slope_50 <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs, family = binomial, data = sens_per_endanger %>%
+    filter(slope_var < 50))
+summary(model_threat_mean_slope_50)
+```
+
+### ALMOST SIG: Mean slope (absolute value, only for negative slopes)
+
+```{r}
+model_threat_mean_slope_neg_50 <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    mean_slope_abs, family = binomial, 
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 50))
+summary(model_threat_mean_slope_neg_50)
+```
+
+#### Plot predictions
+
+```{r}
+model_threat_mean_slope_neg_50_prediction <-
+  ggpredict(model_threat_mean_slope_neg_50, terms = "mean_slope_abs [all]")
+
+ggplot() +
+  geom_line(data = model_threat_mean_slope_neg_50_prediction, 
+            aes(x = x, y = predicted),
+            color = "blue", linewidth = 1) +
+  geom_ribbon(data = model_threat_mean_slope_neg_50_prediction, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+              fill = "blue", alpha = 0.1) +
+  geom_point(data = sens_per_endanger %>% 
+               filter(mean_slope < 0 & slope_var < 50),
+             aes(x = mean_slope_abs, y = threatened_countries / total_countries),
+             color = "black", alpha = 0.6) +
+  labs(x = "Mean slope (absolute value)", 
+       y = "Predicted probability of endangerment") +
+  theme_minimal()
+```
+
+### Mean slope (absolute value, only for negative slopes, zi)
+
+```{r}
+model_threat_mean_slope_neg_50_zi <- glmmTMB(
+  prop_endangerment ~ mean_slope_abs, family = "beta_family", ziformula=~.,
+  data = sens_per_endanger %>% filter(mean_slope < 0 & slope_var < 50))
+summary(model_threat_mean_slope_neg_50_zi)
+```
+
+# RL for Germany
+
+```{r}
+redlist_Germany <- redlist_phenobs %>% filter(Country == "Germany") %>%
+  # Keep threat info for the latest publication year for each sp
+  group_by(species_corrected) %>%
+  filter(if (all(is.na(Publ_year))) TRUE else 
+    Publ_year == max(Publ_year, na.rm = TRUE)) %>%
+  # Only one case of two records of the same spp (Genista tinctoria)
+  # for the same year, but everything in the row was duplicated
+  slice(which.min(match(Redlist_cat, severity_order))) %>%
+  ungroup()
+```
+
+Does not make sense to look at RL categories, cause there are 25 EN + 1 VU = 26 threatened, and 80 LC = 80 not threatened.
+
+# Join occurrence data and RL for Germany
+
+```{r}
+redlist_Germany_occ <- 
+  # Here, all 169 present species are included
+  occurrence_matrix_species_countries %>% filter(COUNTRY == "Germany") %>%
+  # Here, only the species included in RL in Germany are included
+  left_join(redlist_Germany, by = c("taxon_name" = "species_corrected",
+                                          "COUNTRY" = "Country_WGSRPD")) %>%
+  # Remove unneded columns
+  select(-species, -Redlist_cat, -Country, -Publ_year, -redlist_source, 
+         - Continent) %>%
+  # Rename
+  rename(species = taxon_name, country = COUNTRY, threat = Threat) %>%
+  # Order columns
+  select(species, country, occurrence, threat) %>%
+  # Set those where Threat is NA or not_evaluated_dd (only 2 spp in Russia)
+  # as not_threatened
+  mutate(threat = case_when(
+    threat == "not_evaluated_dd" ~ "not_threatened",
+    is.na(threat) ~ "not_threatened",
+    TRUE ~ threat
+  ))
+```
+
+```{r}
+RL_threat_Germany <- redlist_Germany_occ %>%
+  filter(occurrence > 0) %>% 
+  select(species, threat)
+```
+
+# Prepare dataset for models
+
+```{r}
+sens_threat_Germany <- RL_threat_Germany %>% 
+  mutate(threat = ifelse(threat == "threatened", 1, 0)) %>%
+  left_join(
+    sensitivity_data %>% 
+      select(Species, mean_slope, sens_01, mean_slope_abs, ci_lower, ci_upper,
+             slope_var) %>% 
+      rename(species = Species)
+    )
+sens_threat_Germany %>% filter(is.na(threat))
+sens_threat_Germany %>% filter(is.na(mean_slope))
+```
+
+# Models for Germany
+
+## With all sensitivity data
+
+### Sensitive or not
+
+```{r}
+# perc_endangerment is in percentage, so use counts:
+# successes = threatened_countries
+# failures = total_countries - threatened_countries
+model_threat_sens_01_G <- glmmTMB(threat ~ sens_01, family = binomial, 
+                                  data = sens_threat_Germany)
+summary(model_threat_sens_01_G)
+```
+
+### Mean slope (absolute value)
+
+```{r}
+model_threat_mean_slope_G <- glmmTMB(threat ~ mean_slope_abs, family = binomial,
+                                   data = sens_threat_Germany)
+summary(model_threat_mean_slope_G)
+```
+
+### Mean slope (absolute value, only for negative slopes)
+
+```{r}
+model_threat_mean_slope_neg_G <- glmmTMB(threat ~ mean_slope_abs, 
+                                         family = binomial, 
+                                         data = sens_threat_Germany %>%
+                                           filter(mean_slope < 0))
+summary(model_threat_mean_slope_neg_G)
+```
+
+#### Plot predictions
+
+```{r}
+model_threat_mean_slope_neg_G_prediction <- ggpredict(model_threat_mean_slope_neg_G,
+                                                    terms = "mean_slope_abs [all]")
+
+ggplot() +
+  geom_line(data = model_threat_mean_slope_neg_G_prediction, 
+            aes(x = x, y = predicted),
+            color = "blue", linewidth = 1) +
+  geom_ribbon(data = model_threat_mean_slope_neg_G_prediction, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+              fill = "blue", alpha = 0.1) +
+  geom_point(data = sens_threat_Germany %>% filter(mean_slope < 0),
+             aes(x = mean_slope_abs, y = threat),
+             color = "black", alpha = 0.6) +
+  labs(x = "Mean slope (absolute value)", 
+       y = "Predicted probability of endangerment") +
+  theme_minimal()
+```
+
+
+## Filtering slope_var < 50
+
+### Sensitive or not
+
+```{r}
+model_threat_sens_01_G_50 <- glmmTMB(threat ~ sens_01, family = binomial, 
+                                  data = sens_threat_Germany %>%
+                                    filter(slope_var < 50))
+summary(model_threat_sens_01_G_50)
+```
+
+### Mean slope (absolute value)
+
+```{r}
+model_threat_mean_slope_G_50 <- glmmTMB(threat ~ mean_slope_abs, family = binomial,
+                                   data = sens_threat_Germany %>%
+                                     filter(slope_var < 50))
+summary(model_threat_mean_slope_G_50)
+```
+
+### Mean slope (absolute value, only for negative slopes)
+
+```{r}
+model_threat_mean_slope_neg_G_50 <- glmmTMB(threat ~ mean_slope_abs, 
+                                         family = binomial, 
+                                         data = sens_threat_Germany %>%
+                                           filter(mean_slope < 0 &
+                                                    slope_var < 50))
+summary(model_threat_mean_slope_neg_G_50)
+```
+
+# Matching Phenobs - RL
+
+Try to macth the full PhenObs spp list with the RL to see how many species are there in each category for each country.
+
+Christoph: For matching of spp, standardize both sp_list and RL to the names currently used in GBIF before matching. In script for phylogenetic tree, but so far I cannot find it.
+
+```{r}
+# Red the full PhenObs species list from 2022 data
+sp_list <- read_excel("data/raw/full_list_sp_phenobs_2022.xlsx") %>%
+  rename(species = Species) 
+
+# Match species names to GBIF backbone
+sp_list_matched <- lapply(sp_list$species, function(x) name_backbone(name = x))
+```
+
+```{r}
+redlist_phenobs_all <- sp_list %>%
+  left_join(redlist, by = c("species" = "parsed_species_name")) %>%
+#   distinct() %>%
+# Keep columns that I think I will use
+  select(species, 
+         # species_corrected, 
+         Redlist_cat, Threat, Country, Publ_year,
+         redlist_source, Continent)
+redlist_phenobs_all
+```
+
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+
