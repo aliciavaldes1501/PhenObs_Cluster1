@@ -28,6 +28,7 @@ library(purrr)
 library(sf)
 library(glmmTMB)
 library(ggeffects)
+library(taxize)
 library(rgbif)
 library(readxl)
 library(gridExtra)
@@ -270,7 +271,9 @@ Occurrence matrix for countries:
 occurrence_matrix_species_countries <- occurrence_matrix_species %>%
   select(-input_genus) %>%
   pivot_longer(cols = 3:59, names_to = "LEVEL3_COD") %>% 
-  left_join(wgsrpd_mapping %>% select(LEVEL3_COD, COUNTRY)) %>%
+  left_join(wgsrpd_mapping %>% select(LEVEL3_COD, COUNTRY) %>%
+              # Remove one duplicate row
+              distinct()) %>%
   group_by(taxon_name, COUNTRY) %>%
   summarise(occurrence = max(value), .groups = "drop")
 ```
@@ -283,15 +286,15 @@ Allows to access data from the Global Inventory of Floras and Traits
 
 Allows retrieving data from GBIF.
 
-# MOTIVATE Red List data
+# Matching Phenobs - MOTIVATE Red List data
 
 Do not only use the RL of the countries where we have our botanical gardens, instead use the RL from all available countries in Europe!
-
-## Matching Phenobs - RL
 
 Try to match the full PhenObs spp list with the RL to see how many species are there in each category for each country.
 
 Christoph: For matching of spp, standardize both sp_list and RL to the names currently used in GBIF before matching. In script for phylogenetic tree, but so far I cannot find it.
+
+## Resolve full PhenObs spp list
 
 Read the full PhenObs species list from 2022 data:
 
@@ -300,231 +303,169 @@ sp_list <- read_excel("data/raw/full_list_sp_phenobs_2022.xlsx") %>%
   rename(species = Species) 
 ```
 
-Define functions:
+Resolve species to GBIF accepted names:
 
 ```{r}
-clean_name <- function(x) {
-  x %>% str_squish() %>% str_trim()
-}
+length(sp_list$species) # 416
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- sp_list$species[1:50]
+spp2 <- sp_list$species[51:100]
+spp3 <- sp_list$species[101:150]
+spp4 <- sp_list$species[151:200]
+spp5 <- sp_list$species[201:250]
+spp6 <- sp_list$species[251:300]
+spp7 <- sp_list$species[301:350]
+spp8 <- sp_list$species[351:400]
+spp9 <- sp_list$species[401:416]
 
-# Helper: extrae un campo con comprobación de existencia y aplica un "cast" opcional
-get_field <- function(res, field, default = NA_character_, cast = identity) {
-  if (!is.null(res) && field %in% colnames(res) && length(res[[field]]) > 0) {
-    # cogemos el primer valor (name_backbone devuelve una fila "mejor")
-    return(cast(res[[field]][1]))
-  } else {
-    return(cast(default))
-  }
-}
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+resolved_5 <- gna_verifier(spp5, data_sources = 11)
+resolved_6 <- gna_verifier(spp6, data_sources = 11)
+resolved_7 <- gna_verifier(spp7, data_sources = 11)
+resolved_8 <- gna_verifier(spp8, data_sources = 11)
+resolved_9 <- gna_verifier(spp9, data_sources = 11)
 
-resolve_gbif <- function(name) {
-  nm_raw <- name
-  nm <- clean_name(name %||% "")
-  
-  # Especie vacía/NA -> fila con esquema completo
-  if (is.na(nm_raw) || nm == "") {
-    return(tibble(
-      query_name = ifelse(is.na(nm_raw), NA_character_, nm),
-      matched_name = NA_character_,
-      matched_rank = NA_character_,
-      match_type = NA_character_,
-      match_status = NA_character_,
-      usageKey = NA_integer_,
-      acceptedUsageKey = NA_integer_,
-      acceptedScientificName = NA_character_,
-      kingdom = NA_character_,
-      phylum = NA_character_,
-      class = NA_character_,
-      order = NA_character_,
-      family = NA_character_,
-      genus = NA_character_
-    ))
-  }
 
-  # Intento con rank species, luego sin rank
-  res1 <- tryCatch(rgbif::name_backbone(name = nm, rank = "species"), error = function(e) NULL)
-  res <- if (!is.null(res1) && nrow(res1) > 0) res1 else {
-    tryCatch(rgbif::name_backbone(name = nm), error = function(e) NULL)
-  }
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4, 
+                      resolved_5, resolved_6, resolved_7, resolved_8,
+                      resolved_9)
 
-  # Si no hay filas, devolvemos NA con esquema completo
-  if (is.null(res) || nrow(res) == 0) {
-    return(tibble(
-      query_name = nm,
-      matched_name = NA_character_,
-      matched_rank = NA_character_,
-      match_type = NA_character_,
-      match_status = NA_character_,
-      usageKey = NA_integer_,
-      acceptedUsageKey = NA_integer_,
-      acceptedScientificName = NA_character_,
-      kingdom = NA_character_,
-      phylum = NA_character_,
-      class = NA_character_,
-      order = NA_character_,
-      family = NA_character_,
-      genus = NA_character_
-    ))
-  }
+# Add to sp_list
+sp_list_resolved <- sp_list %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+```
 
-  # Extraemos con comprobación de nombres y forzamos tipos
-  sci <- get_field(res, "scientificName", default = NA_character_, cast = as.character)
-  acc_sci <- get_field(res, "acceptedScientificName", default = sci, cast = as.character)
-  tibble(
-    query_name = nm,
-    matched_name = sci,
-    matched_rank = get_field(res, "rank", default = NA_character_, cast = as.character),
-    match_type = get_field(res, "matchType", default = NA_character_, cast = as.character),
-    match_status = get_field(res, "status", default = NA_character_, cast = as.character),
-    usageKey = get_field(res, "usageKey", default = NA_integer_, cast = function(x) as.integer(x)),
-    acceptedUsageKey = get_field(res, "acceptedUsageKey", default = NA_integer_, cast = function(x) as.integer(x)),
-    acceptedScientificName = acc_sci,
-    kingdom = get_field(res, "kingdom", default = NA_character_, cast = as.character),
-    phylum  = get_field(res, "phylum",  default = NA_character_, cast = as.character),
-    class   = get_field(res, "class",   default = NA_character_, cast = as.character),
-    order   = get_field(res, "order",   default = NA_character_, cast = as.character),
-    family  = get_field(res, "family",  default = NA_character_, cast = as.character),
-    genus   = get_field(res, "genus",   default = NA_character_, cast = as.character)
+## Resolve RL
+
+Resolve species (`sPlot concept unified`) to GBIF accepted names:
+
+```{r}
+length(unique(redlist$`sPlot concept unified`)) # 21096
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunk_size <- 50
+chunks <- split(unique(redlist$`sPlot concept unified`), 
+                ceiling(seq_along(unique(redlist$`sPlot concept unified`)) / 
+                          chunk_size))
+
+# Helper to resolve one chunk using GBIF Backbone (data_sources = 11)
+resolve_chunk_tbl <- function(x) {
+  gna_verifier(
+    names = x,
+    data_sources = 11,       # GBIF Backbone Taxonomy
+    all_matches = FALSE,     # best match only
+    output_type = "table"
   )
 }
 
-# Vectorizado; usa bind_rows (une nombres) y opcionalmente throttle
-resolve_vec <- function(v, sleep = 0) {
-  v %>%
-    map(function(x) {
-      out <- resolve_gbif(x)
-      if (sleep > 0) Sys.sleep(sleep)
-      out
-       }) %>%
-    bind_rows()
-}
-
-resolve_vec_parallel <- function(v, workers = 6, throttle = 0.02) {
-  plan(multisession, workers = workers)
-  on.exit(plan(sequential), add = TRUE)
-
-  future_map(
-    v,
-    function(x) {
-      out <- resolve_gbif(x)
-      if (throttle > 0) Sys.sleep(throttle)
-      out
-    },
-    .progress = TRUE,
-       .options = furrr::furrr_options(seed = TRUE)  # <- clave
-  ) %>% dplyr::bind_rows()
-}
-```
-
-Resolve sp_list$species to GBIF accepted names:
-
-```{r}
-sp_list_matched <- resolve_vec(sp_list$species) %>%
-  mutate(source = "sp_list") %>%
-  # Keep original species for reference
-  bind_cols(sp_list %>% rename(original_species = species))
-# Inspect resolution quality
-sp_list_matched %>%
-   count(match_type, match_status, matched_rank)
-```
-
-Resolve redlist$`sPlot concept unified` to GBIF accepted names
-
-```{r}
-plan(multisession, workers = 10) # adjust workers to your CPU
-
-unique_names <- redlist %>%
-  filter(lifeform_description != "tree") %>% # Remove trees
-  distinct(`sPlot concept unified`) %>%
-  filter(str_detect(`sPlot concept unified`, "\\s")) # keep names with space (likely species)
-  
-redlist_matched <- resolve_vec_parallel(unique_names$`sPlot concept unified`) %>%
-  mutate(source = "redlist") 
-
-plan(sequential)
+# Try table output first
+resolved_tbl <- tryCatch(
+  {
+    map(chunks, resolve_chunk_tbl) %>% bind_rows()
+  },
+  error = function(e) NULL
+)
 ```
 
 ```{r}
-# Inspect resolution quality
-redlist_matched %>%
-  # Remove duplicate rows
-  distinct() %>%
-  count(match_type, match_status, matched_rank)
-redlist_matched_final <- redlist %>% 
-  # Remove columns that have equal names
-  select(-match_type, -match_status, -family, -genus) %>%
-  # Keep original species for reference
-  rename(original_species = `sPlot concept unified`) %>%
-  left_join(redlist_matched %>% # Remove duplicate rows
-              distinct(), 
-            by = join_by(original_species == query_name))
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    rl_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(rl_name_clean, .keep_all = TRUE)
+
+redlist_with_clean <- redlist %>%
+  mutate(
+    rl_name_raw   = `sPlot concept unified`,
+    rl_name_clean = str_squish(rl_name_raw)
+  )
+
+# Left-join: keep ALL rows from redlist
+redlist_resolved <- redlist_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              select(rl_name_clean, name_res), 
+            by = "rl_name_clean")
 ```
 
-Join on acceptedUsageKey (numeric, unique per accepted taxon):
+## Join RL and full PhenObs spp list
 
 ```{r}
-redlist_phenobs_all <- sp_list_matched %>%
-  select(query_name, matched_name, usageKey, acceptedUsageKey, 
-         acceptedScientificName, source, original_species) %>%
-  # Build canonical GBIF key
-  mutate(gbif_key = coalesce(acceptedUsageKey, usageKey)) %>%
-  select(-usageKey, -acceptedUsageKey, -matched_name, -acceptedScientificName,
-         -source, -original_species) %>%
-  left_join(
-    redlist_matched_final %>%
-      # Build canonical GBIF key
-      mutate(gbif_key = coalesce(acceptedUsageKey, usageKey)) %>%
-      select(-usageKey, -acceptedUsageKey),
-    by = "gbif_key")
-```
-
-```{r}
-# Keep columns that I think I will use
-redlist_phenobs_all <- redlist_phenobs_all %>%
-  # Use acceptedScientificName from GBIF as species name
-  rename(species = acceptedScientificName) %>%
-  select(species, Redlist_cat, Threat, Country, Publ_year,
-         redlist_source, Continent)
+redlist_phenobs_all <- tibble(sp_list_resolved) %>%
+  left_join(redlist_resolved) %>%
+  # Keep columns that I think I will use
+  select(name_res, Redlist_cat, Threat, Country, Publ_year, redlist_source, 
+         Continent)
 redlist_phenobs_all
 ```
 
 
-# OLD
+## Resolve sensitivity PhenObs spp list
 
-Filter the RL to only keep species from PhenObs that are appearing in any European country:
+Resolve species to GBIF accepted names:
 
 ```{r}
-redlist_phenobs <- bind_rows(
-  species_present %>%
-    left_join(redlist, 
-              by = c("species" = "parsed_species_name")), 
-  species_present %>%
-    left_join(redlist, 
-              by = c("species_corrected" = "parsed_species_name"))
-  ) %>%
-  distinct() %>%
+length(species_present$species) # 169
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- species_present$species[1:50]
+spp2 <- species_present$species[51:100]
+spp3 <- species_present$species[101:150]
+spp4 <- species_present$species[151:169]
+
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4)
+
+# Add to sp_list
+species_present_resolved <- species_present %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`) %>%
+  select(species, name_res)
+```
+
+## Join RL and sensitivity PhenObs spp list
+
+```{r}
+redlist_phenobs <- tibble(species_present_resolved) %>%
+  left_join(redlist_resolved) %>%
   # Keep columns that I think I will use
-  select(species, species_corrected, Redlist_cat, Threat, Country, Publ_year, 
-         redlist_source, Continent)
+  select(name_res, Redlist_cat, Threat, Country, Publ_year, redlist_source, 
+         Continent)
 redlist_phenobs
 ```
 
-## REVISE!
-
-Species with no info in Red List data:
-
-```{r}
-redlist_phenobs %>% filter(is.na(Threat)) %>% distinct(species_corrected)
-# We suppose these are not threatened in any country, but should double check
-```
-
-Remove those species from the RL:
-
-```{r}
-redlist_phenobs <- redlist_phenobs %>% filter(!is.na(Threat))
-```
+# Match country names
 
 Make the country names in RL match with the country names in occurrence_matrix_species_countries:
+
+```{r}
+redlist_phenobs_all <- redlist_phenobs_all %>%
+  mutate(Country_WGSRPD = case_when(
+    Country == "Liechtenstein" ~ "Austria",
+    Country %in% c("Estonia", "Latvia", "Lithuania")~ "Baltic States",
+    Country == "Luxembourg" ~ "Belgium",
+    Country %in% c("Czech Republic", "Slovakia") ~ "Czechoslovakia",
+    Country == "Malta" ~ "Italy",
+    Country == "Andorra" ~ "Spain",
+    Country == "Moldova" ~ "Ukraine",
+    Country == "United Kingdom" ~ "Great Britain",
+    Country %in% c("Bosnia and Herzegovina", "Croatia", "Kosovo", "Montenegro",
+                   "Serbia", "Slovenia") ~ "Yugoslavia",
+    TRUE ~ Country))
+```
 
 ```{r}
 redlist_phenobs <- redlist_phenobs %>%
@@ -555,7 +496,7 @@ Cases where there is info for more than one year for a species and country:
 
 ```{r}
 redlist_phenobs_dupl_diff <- redlist_phenobs %>%
-  group_by(species_corrected, Country_WGSRPD) %>%
+  group_by(name_res, Country_WGSRPD) %>%
   filter(n() > 1, n_distinct(Threat) > 1) %>%
   ungroup()
 redlist_phenobs_dupl_diff
@@ -583,7 +524,7 @@ For other countries apart from Russia: If there are several rows for same publ y
 severity_order <- c("CR", "EN", "VU", "NT", "LC")
 
 redlist_phenobs_noRussia_latest <- redlist_phenobs_noRussia %>%
-  group_by(species_corrected, Country_WGSRPD) %>%
+  group_by(name_res, Country_WGSRPD) %>%
   filter(if (all(is.na(Publ_year))) TRUE else 
     Publ_year == max(Publ_year, na.rm = TRUE)) %>%
   slice(which.min(match(Redlist_cat, severity_order))) %>%
@@ -596,7 +537,7 @@ Check that there is only one entry for each species and country:
 
 ```{r}
 redlist_phenobs_noRussia_latest %>% 
-  group_by(species_corrected, Country_WGSRPD) %>%
+  group_by(name_res, Country_WGSRPD) %>%
   count() %>% filter(n > 1)
 ```
 
@@ -607,7 +548,7 @@ severity_threatened <- c("CR", "EN", "VU")
 severity_not_threatened <- c("NT", "LC")
 
 redlist_phenobs_Russia <- redlist_phenobs_Russia %>%
-  group_by(species_corrected) %>%
+  group_by(name_res) %>%
   # Apply custom logic to pick ONE row but keep all columns
   slice({
     threatened_count <- sum(Threat == "threatened")
@@ -644,7 +585,7 @@ redlist_phenobs_Russia <- redlist_phenobs_Russia %>%
 For Russia, check that there is only one entry for each species:
 
 ```{r}
-redlist_phenobs_Russia %>% group_by(species_corrected) %>%
+redlist_phenobs_Russia %>% group_by(name_res) %>%
   count() %>% filter(n > 1)
 ```
 
@@ -671,20 +612,68 @@ occurrence_matrix_species_countries <- occurrence_matrix_species_countries %>%
   filter(COUNTRY != "Turkey")
 ```
 
+## Resolve occurrence matrix
+
+Resolve occurrence_matrix_species_countries$taxon_name to GBIF accepted names:
+
+```{r}
+length(unique(occurrence_matrix_species_countries$taxon_name)) # 169
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunk_size <- 50
+chunks <- split(unique(occurrence_matrix_species_countries$taxon_name), 
+                ceiling(seq_along(unique(occurrence_matrix_species_countries$taxon_name)) / 
+                          chunk_size))
+
+# Try table output first
+resolved_tbl <- tryCatch(
+  {
+    map(chunks, resolve_chunk_tbl) %>% bind_rows()
+  },
+  error = function(e) NULL
+)
+```
+
+```{r}
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    occ_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(occ_name_clean, .keep_all = TRUE)
+
+occurrence_matrix_species_countries_with_clean <- occurrence_matrix_species_countries %>%
+  mutate(
+    occ_name_raw   = taxon_name,
+    occ_name_clean = str_squish(occ_name_raw)
+  )
+
+# Left-join: keep ALL rows from occurrence_matrix_species_countries
+occurrence_matrix_species_countries_resolved <- occurrence_matrix_species_countries_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              select(occ_name_clean, name_res), 
+            by = "occ_name_clean")
+```
+
+## Join ocurrence matrix and RL
+
 ```{r}
 redlist_phenobs_final_occ <- 
   # Here, all 169 present species are included
-  occurrence_matrix_species_countries %>%
+  occurrence_matrix_species_countries_resolved %>% 
+  select(name_res, COUNTRY, occurrence) %>%
   # Here, only the species included in red lists in ANY country are included
-  left_join(redlist_phenobs_final, by = c("taxon_name" = "species_corrected",
-                                          "COUNTRY" = "Country_WGSRPD")) %>%
+  left_join(redlist_phenobs_final, by = c("name_res" = "name_res",
+                                        "COUNTRY" = "Country_WGSRPD")) %>%
   # Remove unneded columns
-  select(-species, -Redlist_cat, -Country, -Publ_year, -redlist_source, 
-         - Continent) %>%
+  select(-Redlist_cat, -Country, -Publ_year, -redlist_source, 
+         -Continent) %>%
   # Rename
-  rename(species = taxon_name, country = COUNTRY, threat = Threat) %>%
+  rename(country = COUNTRY, threat = Threat) %>%
   # Order columns
-  select(species, country, occurrence, threat) %>%
+  select(name_res, country, occurrence, threat) %>%
   # Set those where Threat is NA or not_evaluated_dd (only 2 spp in Russia)
   # as not_threatened
   mutate(threat = case_when(
@@ -699,14 +688,14 @@ redlist_phenobs_final_occ <-
 ```{r}
 perc_endangerment <- redlist_phenobs_final_occ %>%
   filter(occurrence > 0) %>%  # only countries where species is present
-  group_by(species) %>%
+  group_by(name_res) %>%
   summarise(
-    total_countries = n(),
+    total_countries = n_distinct(country),
     threatened_countries = sum(threat == "threatened"),
     perc_endangerment = (threatened_countries / total_countries) * 100,
     .groups = "drop"
   ) %>%
-  arrange(species) %>%
+  arrange(name_res) %>%
   # Have it also as a proportion
   mutate(prop_endangerment = perc_endangerment / 100)
 perc_endangerment
@@ -720,20 +709,40 @@ Slopes from Robert.
 
 ```{r}
 sensitivity_data_fl <- read_csv(here("data", "raw", "slopes_20251128", "Overview_Slopes_Flowering.csv")) %>%
-  select(-...1) %>%
-  # Modify some species names to match those in RL data
-  mutate(Species = case_when(
-    Species == "Anemone hepatica" ~ "Hepatica nobilis",
-    Species == "Anemone hupehensis" ~ "Eriocapitella hupehensis",
-    Species == "Atropa belladonna" ~ "Atropa bella-donna",
-    Species == "Centranthus ruber" ~ "Valeriana rubra",
-    Species == "Ficaria verna" ~ "Ranunculus ficaria",
-    Species == "Hibiscus moschatus" ~ "Abelmoschus moschatus",
-    Species == "Primula acaulis" ~ "Primula vulgaris",
-    Species == "Securigera varia" ~ "Coronilla varia",
-    Species == "Stachys officinalis" ~ "Betonica officinalis",
-    TRUE ~ Species
-  )) %>%
+  select(-...1) 
+```
+
+### Resolve data
+
+Resolve species to GBIF accepted names:
+
+```{r}
+length(sensitivity_data_fl$Species) # 171
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- sensitivity_data_fl$Species[1:50]
+spp2 <- sensitivity_data_fl$Species[51:100]
+spp3 <- sensitivity_data_fl$Species[101:150]
+spp4 <- sensitivity_data_fl$Species[151:171]
+
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4)
+
+# Add to sp_list
+sensitivity_data_fl_resolved <- sensitivity_data_fl %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+```
+
+### Data manip
+
+```{r}
+sensitivity_data_fl_resolved <- sensitivity_data_fl_resolved %>%
   # Rename columns
   rename(mean_slope_fl = mean_slope, ci_lower_fl = ci_lower,
          ci_upper_fl = ci_upper, slope_var_fl = slope_var) %>%
@@ -741,35 +750,55 @@ sensitivity_data_fl <- read_csv(here("data", "raw", "slopes_20251128", "Overview
   mutate(sens_01_fl = factor(ifelse(ci_lower_fl > 0 | ci_upper_fl < 0, 1, 0))) %>%
   # Calculate absolute value of mean slope
   mutate(mean_slope_abs_fl = abs(mean_slope_fl))
-sensitivity_data_fl
+sensitivity_data_fl_resolved
 ```
 
 ## GSL
 
 ```{r}
 sensitivity_data_GSL <- read_csv(here("data", "raw", "slopes_20251128", "Overview_Slopes_GSL.csv")) %>%
-  select(-...1) %>%
-  # Modify some species names to match those in RL data
-  mutate(Species = case_when(
-    Species == "Anemone hepatica" ~ "Hepatica nobilis",
-    Species == "Anemone hupehensis" ~ "Eriocapitella hupehensis",
-    Species == "Atropa belladonna" ~ "Atropa bella-donna",
-    Species == "Centranthus ruber" ~ "Valeriana rubra",
-    Species == "Ficaria verna" ~ "Ranunculus ficaria",
-    Species == "Hibiscus moschatus" ~ "Abelmoschus moschatus",
-    Species == "Primula acaulis" ~ "Primula vulgaris",
-    Species == "Securigera varia" ~ "Coronilla varia",
-    Species == "Stachys officinalis" ~ "Betonica officinalis",
-    TRUE ~ Species
-  )) %>%
+  select(-...1)
+```
+
+### Resolve data
+
+Resolve species to GBIF accepted names:
+
+```{r}
+length(sensitivity_data_GSL$Species) # 154
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- sensitivity_data_GSL$Species[1:50]
+spp2 <- sensitivity_data_GSL$Species[51:100]
+spp3 <- sensitivity_data_GSL$Species[101:150]
+spp4 <- sensitivity_data_GSL$Species[151:154]
+
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4)
+
+# Add to sp_list
+sensitivity_data_GSL_resolved <- sensitivity_data_GSL %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+```
+
+### Data manip
+
+```{r}
+sensitivity_data_GSL_resolved <- sensitivity_data_GSL_resolved %>%
   # Rename columns
   rename(mean_slope_GSL = mean_slope, ci_lower_GSL = ci_lower,
-         ci_upper_GSL = ci_upper, slope_var_GSL = slope_var) %>%
+         ci_upper_GSL = ci_upper, slope_var_GSL= slope_var) %>%
   # Add variable for "sens" vs "not-sens"
   mutate(sens_01_GSL = factor(ifelse(ci_lower_GSL > 0 | ci_upper_GSL < 0, 1, 0))) %>%
   # Calculate absolute value of mean slope
   mutate(mean_slope_abs_GSL = abs(mean_slope_GSL))
-sensitivity_data_GSL
+sensitivity_data_GSL_resolved
 ```
 
 # Prepare dataset for models
@@ -777,16 +806,14 @@ sensitivity_data_GSL
 ```{r}
 sens_per_endanger <- perc_endangerment %>% 
   left_join(
-    sensitivity_data_fl %>% 
-      select(Species, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
-             ci_upper_fl, slope_var_fl) %>% 
-      rename(species = Species)
+    sensitivity_data_fl_resolved %>% 
+      select(name_res, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
+             ci_upper_fl, slope_var_fl) 
     ) %>% 
   left_join(
-    sensitivity_data_GSL%>% 
-      select(Species, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL,
-             ci_lower_GSL, ci_upper_GSL, slope_var_GSL) %>% 
-      rename(species = Species)
+    sensitivity_data_GSL_resolved %>% 
+      select(name_res, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL,
+             ci_lower_GSL, ci_upper_GSL, slope_var_GSL)
     )
 sens_per_endanger %>% filter(is.na(perc_endangerment))
 sens_per_endanger %>% filter(is.na(mean_slope_fl))
@@ -864,7 +891,7 @@ ggplot() +
                 aes(x = sens_01_fl.x, y = sens_01_fl.predicted, 
                     ymin = sens_01_fl.conf.low, ymax = sens_01_fl.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.019") +
+  theme_bw() + ggtitle("p = 0.027") +
   xlab("Sensitivity (0/1) (flowering)") +
   ylab("Predicted probability of endangerment")
 ggplot() +
@@ -874,7 +901,7 @@ ggplot() +
                 aes(x = sens_01_GSL.x, y = sens_01_GSL.predicted, 
                     ymin = sens_01_GSL.conf.low, ymax = sens_01_GSL.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.065") +
+  theme_bw() + ggtitle("p = 0.069") +
   xlab("Sensitivity (0/1) (GSL)") +
   ylab("Predicted probability of endangerment")
 ```
@@ -911,7 +938,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(mean_slope_fl < 0 & slope_var_fl < 100),
              aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.003") +
+  theme_bw() + ggtitle("p = 0.006") +
   xlab("Sensitivity (absolute value) (flowering)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -930,7 +957,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 100 &
                           prop_endangerment > 0),
                aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.003") +
+    theme_bw() + ggtitle("p = 0.012") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of endangerment"),
   ggplot() +
@@ -948,7 +975,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 100) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_abs_fl, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.343") +
+    theme_bw() + ggtitle("p = 0.302") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -986,7 +1013,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(slope_var_GSL < 100),
              aes(x = mean_slope_GSL, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.023") +
+  theme_bw() + ggtitle("p = 0.030") +
   xlab("Sensitivity (GSL)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -1005,7 +1032,7 @@ grid.arrange(
                  filter(slope_var_GSL < 100 &
                           prop_endangerment > 0),
                aes(x = mean_slope_GSL, y = prop_endangerment), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.448") +
+    theme_bw() + ggtitle("p = 0.533") +
     xlab("Sensitivity (GSL)") +
     ylab("Predicted probability of endangerment"),
   ggplot() +
@@ -1023,7 +1050,7 @@ grid.arrange(
                  filter(slope_var_GSL < 100) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_GSL, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.106") +
+    theme_bw() + ggtitle("p = 0.137") +
     xlab("Sensitivity (GSL)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -1059,7 +1086,7 @@ ggplot() +
                 aes(x = sens_01_fl.x, y = sens_01_fl.predicted, 
                     ymin = sens_01_fl.conf.low, ymax = sens_01_fl.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.048") +
+  theme_bw() + ggtitle("p = 0.065") +
   xlab("Sensitivity (0/1) (flowering)") +
   ylab("Predicted probability of endangerment")
 ggplot() +
@@ -1069,7 +1096,7 @@ ggplot() +
                 aes(x = sens_01_GSL.x, y = sens_01_GSL.predicted, 
                     ymin = sens_01_GSL.conf.low, ymax = sens_01_GSL.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.307") +
+  theme_bw() + ggtitle("p = 0.356") +
   xlab("Sensitivity (0/1) (GSL)") +
   ylab("Predicted probability of endangerment")
 ```
@@ -1106,7 +1133,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(mean_slope_fl < 0 & slope_var_fl < 50),
              aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.004") +
+  theme_bw() + ggtitle("p = 0.008") +
   xlab("Sensitivity (absolute value) (flowering)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -1125,7 +1152,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 50 &
                           prop_endangerment > 0),
                aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.003") +
+    theme_bw() + ggtitle("p = 0.012") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of endangerment"),
   ggplot() +
@@ -1143,7 +1170,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 50) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_abs_fl, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.819") +
+    theme_bw() + ggtitle("p = 0.789") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -1181,7 +1208,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(slope_var_GSL < 50),
              aes(x = mean_slope_GSL, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.002") +
+  theme_bw() + ggtitle("p = 0.001") +
   xlab("Sensitivity (GSL)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -1200,7 +1227,7 @@ grid.arrange(
                  filter(slope_var_GSL < 50 &
                           prop_endangerment > 0),
                aes(x = mean_slope_GSL, y = prop_endangerment), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.296") +
+    theme_bw() + ggtitle("p = 0.395") +
     xlab("Sensitivity (GSL)") +
     ylab("Predicted probability of endangerment"),
   ggplot() +
@@ -1218,7 +1245,7 @@ grid.arrange(
                  filter(slope_var_GSL < 50) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_GSL, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.036") +
+    theme_bw() + ggtitle("p = 0.022") +
     xlab("Sensitivity (GSL)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -1227,13 +1254,12 @@ grid.arrange(
 # RL for Germany
 
 ```{r}
-redlist_Germany <- redlist_phenobs %>% filter(Country == "Germany") %>%
+redlist_Germany <- redlist_phenobs_final %>%
+  filter(Country == "Germany") %>%
   # Keep threat info for the latest publication year for each sp
-  group_by(species_corrected) %>%
+  group_by(name_res) %>%
   filter(if (all(is.na(Publ_year))) TRUE else 
     Publ_year == max(Publ_year, na.rm = TRUE)) %>%
-  # Only one case of two records of the same spp (Genista tinctoria)
-  # for the same year, but everything in the row was duplicated
   slice(which.min(match(Redlist_cat, severity_order))) %>%
   ungroup()
 ```
@@ -1245,17 +1271,18 @@ Does not make sense to look at RL categories, cause there are 25 EN + 1 VU = 26 
 ```{r}
 redlist_Germany_occ <- 
   # Here, all 169 present species are included
-  occurrence_matrix_species_countries %>% filter(COUNTRY == "Germany") %>%
+  occurrence_matrix_species_countries_resolved %>% 
+  filter(COUNTRY == "Germany") %>%
   # Here, only the species included in RL in Germany are included
-  left_join(redlist_Germany, by = c("taxon_name" = "species_corrected",
+  left_join(redlist_Germany, by = c("name_res" = "name_res",
                                           "COUNTRY" = "Country_WGSRPD")) %>%
   # Remove unneded columns
-  select(-species, -Redlist_cat, -Country, -Publ_year, -redlist_source, 
+  select(-Redlist_cat, -Country, -Publ_year, -redlist_source, 
          - Continent) %>%
   # Rename
-  rename(species = taxon_name, country = COUNTRY, threat = Threat) %>%
+  rename(country = COUNTRY, threat = Threat) %>%
   # Order columns
-  select(species, country, occurrence, threat) %>%
+  select(name_res, country, occurrence, threat) %>%
   # Set those where Threat is NA or not_evaluated_dd (only 2 spp in Russia)
   # as not_threatened
   mutate(threat = case_when(
@@ -1268,7 +1295,7 @@ redlist_Germany_occ <-
 ```{r}
 RL_threat_Germany <- redlist_Germany_occ %>%
   filter(occurrence > 0) %>% 
-  select(species, threat)
+  select(name_res, threat)
 ```
 
 # Prepare dataset for models
@@ -1277,16 +1304,14 @@ RL_threat_Germany <- redlist_Germany_occ %>%
 sens_threat_Germany <- RL_threat_Germany %>% 
   mutate(threat = ifelse(threat == "threatened", 1, 0)) %>%
   left_join(
-    sensitivity_data_fl %>% 
-      select(Species, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
-             ci_upper_fl, slope_var_fl) %>% 
-      rename(species = Species)
+    sensitivity_data_fl_resolved %>% 
+      select(name_res, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
+             ci_upper_fl, slope_var_fl) 
     ) %>%
   left_join(
-    sensitivity_data_GSL %>% 
-      select(Species, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL, 
-             ci_lower_GSL, ci_upper_GSL, slope_var_GSL) %>% 
-      rename(species = Species)
+    sensitivity_data_GSL_resolved %>% 
+      select(name_res, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL, 
+             ci_lower_GSL, ci_upper_GSL, slope_var_GSL) 
     )
 sens_threat_Germany %>% filter(is.na(threat))
 sens_threat_Germany %>% filter(is.na(mean_slope_fl))
@@ -1367,6 +1392,401 @@ model_threat_mean_slope_GSL_50_G <- glmmTMB(
   threat ~ mean_slope_GSL + I(mean_slope_GSL^2), family = binomial, 
   data = sens_threat_Germany %>% filter(slope_var_GSL < 50))
 summary(model_threat_mean_slope_GSL_50_G)
+```
+
+# Correlation mean slope flowering - GSL
+
+```{r}
+cor(sens_per_endanger$mean_slope_fl, sens_per_endanger$mean_slope_GSL,
+    use = "complete.obs")
+cor(sens_per_endanger$mean_slope_abs_fl, sens_per_endanger$mean_slope_abs_GSL,
+    use = "complete.obs")
+```
+
+```{r}
+ggplot(sens_per_endanger, aes(x = mean_slope_fl, y = mean_slope_GSL)) +
+  geom_point() + geom_smooth()
+ggplot(sens_per_endanger, aes(x = mean_slope_abs_fl, y = mean_slope_abs_GSL)) +
+  geom_point() + geom_smooth()
+```
+
+# Stress tolerance
+
+```{r}
+stress <- read_delim(here("data", "raw", "Stress_Tolerance.csv"), delim = ";") %>%
+  rename(stress_tol = `Stress tolerator score_percentage`)
+stress
+```
+
+## Resolve
+
+Resolve species to GBIF accepted names:
+
+```{r}
+length(stress$Species) # 263
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- stress$Species[1:50]
+spp2 <- stress$Species[51:100]
+spp3 <- stress$Species[101:150]
+spp4 <- stress$Species[151:200]
+spp5 <- stress$Species[201:250]
+spp6 <- stress$Species[251:263]
+
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+resolved_5 <- gna_verifier(spp5, data_sources = 11)
+resolved_6 <- gna_verifier(spp6, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4, 
+                      resolved_5, resolved_6)
+
+# Add to sp_list
+stress_resolved <- stress %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+```
+
+Join with sens_per_endanger:
+
+```{r}
+sens_per_endanger_stress <- sens_per_endanger %>%
+  left_join(stress_resolved) %>%
+  select(-Species)
+```
+
+```{r}
+hist(sens_per_endanger_stress$stress_tol)
+```
+
+## Model stress tolerance
+
+```{r}
+model_threat_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol, family = binomial, data = sens_per_endanger_stress)
+summary(model_threat_stress)
+```
+
+## Models interaction stress tolerance * sensitivity
+
+## Filtering slope_var < 100
+
+### Sensitive or not
+
+```{r}
+model_threat_sens_01_fl_100_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * sens_01_fl, family = binomial, 
+  data = sens_per_endanger_stress %>% filter(slope_var_fl < 100))
+model_threat_sens_01_GSL_100_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * sens_01_GSL, family = binomial, 
+  data = sens_per_endanger_stress %>% filter(slope_var_GSL < 100))
+summary(model_threat_sens_01_fl_100_stress)
+summary(model_threat_sens_01_GSL_100_stress)
+```
+
+### Mean slope flowering (absolute value - negative slopes)
+
+```{r}
+# Model without ZI
+model_threat_mean_slope_neg_fl_100_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * mean_slope_abs_fl, family = binomial, 
+  data = sens_per_endanger_stress %>% filter(mean_slope_fl < 0 & slope_var_fl < 100))
+# Model with ZI
+model_threat_mean_slope_neg_fl_zi_100_stress <- glmmTMB(
+  prop_endangerment ~ stress_tol * mean_slope_abs_fl, family = "beta_family", 
+  ziformula=~.,
+  data = sens_per_endanger_stress %>% filter(mean_slope_fl < 0 & slope_var_fl < 100))
+summary(model_threat_mean_slope_neg_fl_100_stress)
+summary(model_threat_mean_slope_neg_fl_zi_100_stress)
+```
+
+### Mean slope GSL (quadratic model)
+
+```{r}
+# Model without ZI
+model_threat_mean_slope_GSL_100_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * (mean_slope_GSL + I(mean_slope_GSL^2)), family = binomial, 
+  data = sens_per_endanger_stress %>% filter(slope_var_GSL < 100))
+# Model with ZI
+model_threat_mean_slope_GSL_zi_100_stress <- glmmTMB(
+  prop_endangerment ~ stress_tol * (mean_slope_GSL + I(mean_slope_GSL^2)), 
+  family = "beta_family", ziformula=~.,
+  data = sens_per_endanger_stress %>% filter(slope_var_GSL < 100))
+summary(model_threat_mean_slope_GSL_100_stress)
+summary(model_threat_mean_slope_GSL_zi_100_stress)
+```
+
+## Filtering slope_var < 50
+
+### Sensitive or not
+
+```{r}
+model_threat_sens_01_fl_50_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * sens_01_fl, family = binomial, 
+  data = sens_per_endanger_stress %>% filter(slope_var_fl < 50))
+model_threat_sens_01_GSL_50_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * sens_01_GSL, family = binomial, 
+  data = sens_per_endanger_stress %>% filter(slope_var_GSL < 50))
+summary(model_threat_sens_01_fl_50_stress)
+summary(model_threat_sens_01_GSL_50_stress)
+```
+
+### Mean slope flowering (absolute value - negative slopes)
+
+```{r}
+# Model without ZI
+model_threat_mean_slope_neg_fl_50_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * mean_slope_abs_fl, family = binomial, 
+  data = sens_per_endanger_stress %>% filter(mean_slope_fl < 0 & slope_var_fl < 50))
+# Model with ZI
+model_threat_mean_slope_neg_fl_zi_50_stress <- glmmTMB(
+  prop_endangerment ~ stress_tol * mean_slope_abs_fl, family = "beta_family", 
+  ziformula=~.,
+  data = sens_per_endanger_stress %>% filter(mean_slope_fl < 0 & slope_var_fl < 50))
+summary(model_threat_mean_slope_neg_fl_50_stress)
+summary(model_threat_mean_slope_neg_fl_zi_50_stress)
+```
+
+### Mean slope GSL (quadratic model)
+
+```{r}
+# Model without ZI
+model_threat_mean_slope_GSL_50_stress <- glmmTMB(
+  cbind(threatened_countries, total_countries - threatened_countries) ~
+    stress_tol * (mean_slope_GSL + I(mean_slope_GSL^2)), family = binomial, 
+  data = sens_per_endanger_stress %>% filter(slope_var_GSL < 50))
+# Model with ZI
+model_threat_mean_slope_GSL_zi_50_stress <- glmmTMB(
+  prop_endangerment ~ stress_tol * (mean_slope_GSL + I(mean_slope_GSL^2)), 
+  family = "beta_family", ziformula=~.,
+  data = sens_per_endanger_stress %>% filter(slope_var_GSL < 50))
+summary(model_threat_mean_slope_GSL_50_stress)
+summary(model_threat_mean_slope_GSL_zi_50_stress)
+```
+
+# Ellenberg tendency of chnage
+
+```{r}
+ellenberg <- read_excel(here("data", "raw", "IndicatorValues_Ellenberg.xlsx")) 
+model_threat_sens_01_fl_100_stress
+```
+
+## Deal with non-numeric values in indicator values
+
+Columns OEK_L - OEK_S and HAEUF_AE_change
+
+```{r}
+ellenberg <- ellenberg %>%
+  mutate(across(OEK_L:OEK_S, ~ parse_number(.)))
+```
+
+## Duplicate species
+
+```{r}
+ellenberg %>% group_by(Art) %>% summarise(n = n()) %>% filter(n  > 1)
+```
+
+```{r}
+ellenberg %>% filter(Art == "Veronica anagallis-aquatica anagallis")
+```
+
+HAEUF_AE_change is NA, so no problem!
+
+## Resolve
+
+```{r}
+ellenberg <- ellenberg %>%
+  mutate(Art = ifelse(Art == "Primula veris (officinalis)#f)", 
+                      "Primula veris (officinalis)", Art))
+```
+
+
+```{r}
+length(unique(ellenberg$Art)) # 2791
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunks <- split(unique(ellenberg$Art), 
+                ceiling(seq_along(unique(ellenberg$Art)) / 
+                          chunk_size))
+```
+
+```{r}
+resolved_tbl_list <- vector("list", length(chunks))
+for (i in seq_along(chunks)) {
+  cat("Resolving chunk", i, "of", length(chunks), 
+      " (n =", length(chunks[[i]]), ")\n")
+  res <- try(resolve_chunk_tbl(chunks[[i]]), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    cat("Chunk", i, "failed with:\n", attr(res, "condition")$message, "\n")
+    break
+  }
+  resolved_tbl_list[[i]] <- res
+}
+resolved_tbl <- dplyr::bind_rows(resolved_tbl_list)
+```
+
+```{r}
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    ellenberg_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(ellenberg_name_clean, .keep_all = TRUE)
+
+ellenberg_with_clean <- ellenberg %>%
+  mutate(
+    ellenberg_name_raw   = Art,
+    ellenberg_name_clean = str_squish(ellenberg_name_raw)
+  )
+
+# Left-join: keep ALL rows from ellenberg
+ellenberg_resolved <- ellenberg_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              select(ellenberg_name_clean, name_res), 
+            by = "ellenberg_name_clean") %>% select(-Art, -ellenberg_name_raw,
+                                                    -ellenberg_name_clean)
+```
+
+Join with sens_per_endanger:
+
+```{r}
+sens_per_endanger_stress_ell <- sens_per_endanger_stress %>%
+  left_join(ellenberg_resolved %>% 
+              select(name_res, OEK_L:OEK_S, HAEUF_AE_change) %>%
+              rename(change = HAEUF_AE_change))
+```
+
+## Relationships between indicator values
+
+```{r}
+model_ivs <- lm(change ~ OEK_L + OEK_T + OEK_K + OEK_F + OEK_R + OEK_N + OEK_S, 
+             data = sens_per_endanger_stress_ell)
+summary(model_ivs)
+```
+
+## Models tendency of change
+
+### Filtering slope_var < 100
+
+#### Sensitive or not
+
+```{r}
+model_ell_sens_01_fl_100 <- glmmTMB(change ~ sens_01_fl, 
+                                    family = "poisson",
+                                    data = sens_per_endanger_stress_ell %>%
+                                      filter(slope_var_fl < 100))
+model_ell_sens_01_GSL_100 <- glmmTMB(change ~ sens_01_GSL,  
+                                    family = "poisson",
+                                    data = sens_per_endanger_stress_ell %>%
+                                      filter(slope_var_GSL < 100))
+summary(model_ell_sens_01_fl_100)
+summary(model_ell_sens_01_GSL_100)
+```
+
+#### Mean slope flowering (absolute value - negative slopes)
+
+```{r}
+# Model without ZI
+model_ell__mean_slope_neg_fl_100 <- glmmTMB(change ~ mean_slope_abs_fl, 
+                                    family = "poisson",
+  data = sens_per_endanger_stress_ell %>% 
+    filter(mean_slope_fl < 0 & slope_var_fl < 100))
+# Model with ZI
+model_ell__mean_slope_neg_fl_zi_100 <- glmmTMB(change ~ mean_slope_abs_fl,  
+                                    family = "poisson",
+                                               ziformula=~.,
+  data = sens_per_endanger_stress_ell %>% 
+    filter(mean_slope_fl < 0 & slope_var_fl < 100))
+summary(model_ell__mean_slope_neg_fl_100)
+summary(model_ell__mean_slope_neg_fl_zi_100)
+```
+
+#### Mean slope GSL (quadratic model)
+
+```{r}
+# Model without ZI
+model_ell_mean_slope_GSL_100 <- glmmTMB(change ~ mean_slope_GSL + 
+                                          I(mean_slope_GSL^2), 
+                                    family = "poisson",
+                                        data = sens_per_endanger_stress_ell %>% 
+                                          filter(slope_var_GSL < 100))
+# Model with ZI
+model_ell_mean_slope_GSL_zi_100 <- glmmTMB(change ~ mean_slope_GSL + 
+                                             I(mean_slope_GSL^2),  
+                                    family = "poisson",
+                                    ziformula=~.,
+                                           data = sens_per_endanger_stress_ell %>% 
+                                             filter(slope_var_GSL < 100))
+summary(model_ell_mean_slope_GSL_100)
+summary(model_ell_mean_slope_GSL_zi_100)
+```
+
+### Filtering slope_var < 50
+
+#### Sensitive or not
+
+```{r}
+model_ell_sens_01_fl_50 <- glmmTMB(change ~ sens_01_fl,  
+                                    family = "poisson",
+                                    data = sens_per_endanger_stress_ell %>%
+                                      filter(slope_var_fl < 50))
+model_ell_sens_01_GSL_50 <- glmmTMB(change ~ sens_01_GSL,  
+                                    family = "poisson",
+                                    data = sens_per_endanger_stress_ell %>%
+                                      filter(slope_var_GSL < 50))
+summary(model_ell_sens_01_fl_50)
+summary(model_ell_sens_01_GSL_50)
+```
+
+#### Mean slope flowering (absolute value - negative slopes)
+
+```{r}
+# Model without ZI
+model_ell__mean_slope_neg_fl_50 <- glmmTMB(change ~ mean_slope_abs_fl, 
+                                    family = "poisson",
+  data = sens_per_endanger_stress_ell %>% 
+    filter(mean_slope_fl < 0 & slope_var_fl < 50))
+# Model with ZI
+model_ell__mean_slope_neg_fl_zi_50 <- glmmTMB(change ~ mean_slope_abs_fl,  
+                                    family = "poisson",
+                                               ziformula=~.,
+  data = sens_per_endanger_stress_ell %>% 
+    filter(mean_slope_fl < 0 & slope_var_fl < 50))
+summary(model_ell__mean_slope_neg_fl_50)
+summary(model_ell__mean_slope_neg_fl_zi_50)
+```
+
+#### Mean slope GSL (quadratic model)
+
+```{r}
+# Model without ZI
+model_ell_mean_slope_GSL_50 <- glmmTMB(change ~ mean_slope_GSL + 
+                                          I(mean_slope_GSL^2), 
+                                    family = "poisson",
+                                        data = sens_per_endanger_stress_ell %>% 
+                                          filter(slope_var_GSL < 50))
+# Model with ZI
+model_ell_mean_slope_GSL_zi_50 <- glmmTMB(change ~ mean_slope_GSL + 
+                                             I(mean_slope_GSL^2), 
+                                    family = "poisson",
+                                    ziformula=~.,
+                                           data = sens_per_endanger_stress_ell %>% 
+                                             filter(slope_var_GSL < 50))
+summary(model_ell_mean_slope_GSL_50)
+summary(model_ell_mean_slope_GSL_zi_50)
 ```
 
 # Session info

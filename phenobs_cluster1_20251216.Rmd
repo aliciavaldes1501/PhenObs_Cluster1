@@ -270,7 +270,9 @@ Occurrence matrix for countries:
 occurrence_matrix_species_countries <- occurrence_matrix_species %>%
   select(-input_genus) %>%
   pivot_longer(cols = 3:59, names_to = "LEVEL3_COD") %>% 
-  left_join(wgsrpd_mapping %>% select(LEVEL3_COD, COUNTRY)) %>%
+  left_join(wgsrpd_mapping %>% select(LEVEL3_COD, COUNTRY) %>%
+              # Remove one duplicate row
+              distinct()) %>%
   group_by(taxon_name, COUNTRY) %>%
   summarise(occurrence = max(value), .groups = "drop")
 ```
@@ -293,6 +295,8 @@ Try to match the full PhenObs spp list with the RL to see how many species are t
 
 Christoph: For matching of spp, standardize both sp_list and RL to the names currently used in GBIF before matching. In script for phylogenetic tree, but so far I cannot find it.
 
+## Full PhenObs species list
+
 Read the full PhenObs species list from 2022 data:
 
 ```{r}
@@ -300,7 +304,7 @@ sp_list <- read_excel("data/raw/full_list_sp_phenobs_2022.xlsx") %>%
   rename(species = Species) 
 ```
 
-Define functions:
+### Define functions
 
 ```{r}
 clean_name <- function(x) {
@@ -416,6 +420,8 @@ resolve_vec_parallel <- function(v, workers = 6, throttle = 0.02) {
 }
 ```
 
+### Resolve
+
 Resolve sp_list$species to GBIF accepted names:
 
 ```{r}
@@ -460,7 +466,7 @@ redlist_matched_final <- redlist %>%
             by = join_by(original_species == query_name))
 ```
 
-Join on acceptedUsageKey (numeric, unique per accepted taxon):
+Join:
 
 ```{r}
 redlist_phenobs_all <- sp_list_matched %>%
@@ -479,52 +485,90 @@ redlist_phenobs_all <- sp_list_matched %>%
 ```
 
 ```{r}
-# Keep columns that I think I will use
 redlist_phenobs_all <- redlist_phenobs_all %>%
-  # Use acceptedScientificName from GBIF as species name
-  rename(species = acceptedScientificName) %>%
+  # Use acceptedScientificName from GBIF as species name 
+  mutate(species = acceptedScientificName) %>%
+  # Clean whitespace and keep only "Genus species"
+  mutate(species = str_squish(species),
+         species = case_when(
+           is.na(species) ~ NA_character_,
+           species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+           .default = word(species, 1, 2) # first two words
+           )) %>%
+  # Keep columns that I think I will use
   select(species, Redlist_cat, Threat, Country, Publ_year,
          redlist_source, Continent)
 redlist_phenobs_all
 ```
 
 
-# OLD
+## Sensitivity PhenObs species list
 
-Filter the RL to only keep species from PhenObs that are appearing in any European country:
+Resolve species_present$species_corrected to GBIF accepted names:
 
 ```{r}
-redlist_phenobs <- bind_rows(
-  species_present %>%
-    left_join(redlist, 
-              by = c("species" = "parsed_species_name")), 
-  species_present %>%
-    left_join(redlist, 
-              by = c("species_corrected" = "parsed_species_name"))
-  ) %>%
-  distinct() %>%
+species_present_matched <- resolve_vec(species_present$species_corrected) %>%
+  # Keep original species for reference
+  bind_cols(species_present %>% rename(original_species = species_corrected))
+# Inspect resolution quality
+species_present_matched %>%
+   count(match_type, match_status, matched_rank)
+```
+
+Join:
+
+```{r}
+redlist_phenobs <- species_present_matched %>%
+  select(query_name, matched_name, usageKey, acceptedUsageKey, 
+         acceptedScientificName, original_species) %>%
+  # Build canonical GBIF key
+  mutate(gbif_key = coalesce(acceptedUsageKey, usageKey)) %>%
+  select(-usageKey, -acceptedUsageKey, -matched_name, -acceptedScientificName,
+         -original_species) %>%
+  left_join(
+    redlist_matched_final %>%
+      # Build canonical GBIF key
+      mutate(gbif_key = coalesce(acceptedUsageKey, usageKey)) %>%
+      select(-usageKey, -acceptedUsageKey),
+    by = "gbif_key")
+```
+
+```{r}
+redlist_phenobs <- redlist_phenobs %>%
+  # Use acceptedScientificName from GBIF as species name
+  mutate(species = acceptedScientificName) %>%
+  # Clean whitespace and keep only "Genus species"
+  mutate(species = str_squish(species),
+         species = case_when(
+           is.na(species) ~ NA_character_,
+           species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+           .default = word(species, 1, 2) # first two words
+           )) %>%
   # Keep columns that I think I will use
-  select(species, species_corrected, Redlist_cat, Threat, Country, Publ_year, 
+  select(species, Redlist_cat, Threat, Country, Publ_year,
          redlist_source, Continent)
 redlist_phenobs
 ```
 
-## REVISE!
-
-Species with no info in Red List data:
-
-```{r}
-redlist_phenobs %>% filter(is.na(Threat)) %>% distinct(species_corrected)
-# We suppose these are not threatened in any country, but should double check
-```
-
-Remove those species from the RL:
-
-```{r}
-redlist_phenobs <- redlist_phenobs %>% filter(!is.na(Threat))
-```
+# Match country names
 
 Make the country names in RL match with the country names in occurrence_matrix_species_countries:
+
+```{r}
+redlist_phenobs_all <- redlist_phenobs_all %>%
+  mutate(Country_WGSRPD = case_when(
+    Country == "Liechtenstein" ~ "Austria",
+    Country %in% c("Estonia", "Latvia", "Lithuania")~ "Baltic States",
+    Country == "Luxembourg" ~ "Belgium",
+    Country %in% c("Czech Republic", "Slovakia") ~ "Czechoslovakia",
+    Country == "Malta" ~ "Italy",
+    Country == "Andorra" ~ "Spain",
+    Country == "Moldova" ~ "Ukraine",
+    Country == "United Kingdom" ~ "Great Britain",
+    Country %in% c("Bosnia and Herzegovina", "Croatia", "Kosovo", "Montenegro",
+                   "Serbia", "Slovenia") ~ "Yugoslavia",
+    TRUE ~ Country))
+```
 
 ```{r}
 redlist_phenobs <- redlist_phenobs %>%
@@ -555,7 +599,7 @@ Cases where there is info for more than one year for a species and country:
 
 ```{r}
 redlist_phenobs_dupl_diff <- redlist_phenobs %>%
-  group_by(species_corrected, Country_WGSRPD) %>%
+  group_by(species, Country_WGSRPD) %>%
   filter(n() > 1, n_distinct(Threat) > 1) %>%
   ungroup()
 redlist_phenobs_dupl_diff
@@ -583,7 +627,7 @@ For other countries apart from Russia: If there are several rows for same publ y
 severity_order <- c("CR", "EN", "VU", "NT", "LC")
 
 redlist_phenobs_noRussia_latest <- redlist_phenobs_noRussia %>%
-  group_by(species_corrected, Country_WGSRPD) %>%
+  group_by(species, Country_WGSRPD) %>%
   filter(if (all(is.na(Publ_year))) TRUE else 
     Publ_year == max(Publ_year, na.rm = TRUE)) %>%
   slice(which.min(match(Redlist_cat, severity_order))) %>%
@@ -596,7 +640,7 @@ Check that there is only one entry for each species and country:
 
 ```{r}
 redlist_phenobs_noRussia_latest %>% 
-  group_by(species_corrected, Country_WGSRPD) %>%
+  group_by(species, Country_WGSRPD) %>%
   count() %>% filter(n > 1)
 ```
 
@@ -607,7 +651,7 @@ severity_threatened <- c("CR", "EN", "VU")
 severity_not_threatened <- c("NT", "LC")
 
 redlist_phenobs_Russia <- redlist_phenobs_Russia %>%
-  group_by(species_corrected) %>%
+  group_by(species) %>%
   # Apply custom logic to pick ONE row but keep all columns
   slice({
     threatened_count <- sum(Threat == "threatened")
@@ -644,7 +688,7 @@ redlist_phenobs_Russia <- redlist_phenobs_Russia %>%
 For Russia, check that there is only one entry for each species:
 
 ```{r}
-redlist_phenobs_Russia %>% group_by(species_corrected) %>%
+redlist_phenobs_Russia %>% group_by(species) %>%
   count() %>% filter(n > 1)
 ```
 
@@ -671,18 +715,46 @@ occurrence_matrix_species_countries <- occurrence_matrix_species_countries %>%
   filter(COUNTRY != "Turkey")
 ```
 
+Resolve occurrence_matrix_species_countries$taxon_name to GBIF accepted names:
+
+```{r}
+occurrence_matrix_species_countries_matched <- resolve_vec(
+  occurrence_matrix_species_countries$taxon_name) %>%
+  mutate(source = "sp_list") %>%
+  # Keep original species for reference
+  bind_cols(occurrence_matrix_species_countries %>%
+              rename(original_species = taxon_name))
+# Inspect resolution quality
+occurrence_matrix_species_countries_matched %>%
+   count(match_type, match_status, matched_rank)
+```
+
+```{r}
+occurrence_matrix_species_countries_matched <- 
+  occurrence_matrix_species_countries_matched %>%
+  # Use acceptedScientificName from GBIF as species name
+  mutate(species = acceptedScientificName) %>%
+  # Clean whitespace and keep only "Genus species"
+  mutate(species = str_squish(species),
+         species = case_when(
+           is.na(species) ~ NA_character_,
+           species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+           .default = word(species, 1, 2) # first two words
+           ))
+```
+
 ```{r}
 redlist_phenobs_final_occ <- 
   # Here, all 169 present species are included
-  occurrence_matrix_species_countries %>%
+  occurrence_matrix_species_countries_matched %>%
   # Here, only the species included in red lists in ANY country are included
-  left_join(redlist_phenobs_final, by = c("taxon_name" = "species_corrected",
+  left_join(redlist_phenobs_final, by = c("species" = "species",
                                           "COUNTRY" = "Country_WGSRPD")) %>%
   # Remove unneded columns
-  select(-species, -Redlist_cat, -Country, -Publ_year, -redlist_source, 
+  select(-Redlist_cat, -Country, -Publ_year, -redlist_source, 
          - Continent) %>%
   # Rename
-  rename(species = taxon_name, country = COUNTRY, threat = Threat) %>%
+  rename(country = COUNTRY, threat = Threat) %>%
   # Order columns
   select(species, country, occurrence, threat) %>%
   # Set those where Threat is NA or not_evaluated_dd (only 2 spp in Russia)
@@ -720,56 +792,87 @@ Slopes from Robert.
 
 ```{r}
 sensitivity_data_fl <- read_csv(here("data", "raw", "slopes_20251128", "Overview_Slopes_Flowering.csv")) %>%
-  select(-...1) %>%
-  # Modify some species names to match those in RL data
-  mutate(Species = case_when(
-    Species == "Anemone hepatica" ~ "Hepatica nobilis",
-    Species == "Anemone hupehensis" ~ "Eriocapitella hupehensis",
-    Species == "Atropa belladonna" ~ "Atropa bella-donna",
-    Species == "Centranthus ruber" ~ "Valeriana rubra",
-    Species == "Ficaria verna" ~ "Ranunculus ficaria",
-    Species == "Hibiscus moschatus" ~ "Abelmoschus moschatus",
-    Species == "Primula acaulis" ~ "Primula vulgaris",
-    Species == "Securigera varia" ~ "Coronilla varia",
-    Species == "Stachys officinalis" ~ "Betonica officinalis",
-    TRUE ~ Species
-  )) %>%
+  select(-...1) 
+```
+
+Resolve sensitivity_data_fl$Species to GBIF accepted names:
+
+```{r}
+sensitivity_data_fl_matched <- resolve_vec(sensitivity_data_fl$Species) %>%
+  # Keep original species for reference
+  bind_cols(sensitivity_data_fl %>% rename(original_species = Species))
+# Inspect resolution quality
+sensitivity_data_fl_matched %>%
+   count(match_type, match_status, matched_rank)
+```
+
+
+```{r}
+sensitivity_data_fl_matched <- sensitivity_data_fl_matched %>%
   # Rename columns
   rename(mean_slope_fl = mean_slope, ci_lower_fl = ci_lower,
          ci_upper_fl = ci_upper, slope_var_fl = slope_var) %>%
   # Add variable for "sens" vs "not-sens"
   mutate(sens_01_fl = factor(ifelse(ci_lower_fl > 0 | ci_upper_fl < 0, 1, 0))) %>%
   # Calculate absolute value of mean slope
-  mutate(mean_slope_abs_fl = abs(mean_slope_fl))
-sensitivity_data_fl
+  mutate(mean_slope_abs_fl = abs(mean_slope_fl)) %>%
+  # Use acceptedScientificName from GBIF as species name
+  mutate(species = acceptedScientificName) %>%
+  # Clean whitespace and keep only "Genus species"
+  mutate(species = str_squish(species),
+         species = case_when(
+           is.na(species) ~ NA_character_,
+           species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+           .default = word(species, 1, 2) # first two words
+           )) %>%
+  # Remove unneeded columns
+  select(-query_name, -matched_name, - matched_rank, - match_type, 
+         -match_status,, -usageKey, -acceptedUsageKey, -kingdom, -phylum,
+         -class, -order, -family, -genus, -original_species)
+sensitivity_data_fl_matched
 ```
 
 ## GSL
 
 ```{r}
 sensitivity_data_GSL <- read_csv(here("data", "raw", "slopes_20251128", "Overview_Slopes_GSL.csv")) %>%
-  select(-...1) %>%
-  # Modify some species names to match those in RL data
-  mutate(Species = case_when(
-    Species == "Anemone hepatica" ~ "Hepatica nobilis",
-    Species == "Anemone hupehensis" ~ "Eriocapitella hupehensis",
-    Species == "Atropa belladonna" ~ "Atropa bella-donna",
-    Species == "Centranthus ruber" ~ "Valeriana rubra",
-    Species == "Ficaria verna" ~ "Ranunculus ficaria",
-    Species == "Hibiscus moschatus" ~ "Abelmoschus moschatus",
-    Species == "Primula acaulis" ~ "Primula vulgaris",
-    Species == "Securigera varia" ~ "Coronilla varia",
-    Species == "Stachys officinalis" ~ "Betonica officinalis",
-    TRUE ~ Species
-  )) %>%
+  select(-...1)
+```
+
+Resolve sensitivity_data_fl$Species to GBIF accepted names:
+
+```{r}
+sensitivity_data_GSL_matched <- resolve_vec(sensitivity_data_GSL$Species) %>%
+  # Keep original species for reference
+  bind_cols(sensitivity_data_GSL %>% rename(original_species = Species))
+# Inspect resolution quality
+sensitivity_data_GSL_matched %>%
+   count(match_type, match_status, matched_rank)
+```
+
+```{r}
+sensitivity_data_GSL_matched <- sensitivity_data_GSL_matched %>%
   # Rename columns
   rename(mean_slope_GSL = mean_slope, ci_lower_GSL = ci_lower,
          ci_upper_GSL = ci_upper, slope_var_GSL = slope_var) %>%
   # Add variable for "sens" vs "not-sens"
   mutate(sens_01_GSL = factor(ifelse(ci_lower_GSL > 0 | ci_upper_GSL < 0, 1, 0))) %>%
   # Calculate absolute value of mean slope
-  mutate(mean_slope_abs_GSL = abs(mean_slope_GSL))
-sensitivity_data_GSL
+  mutate(mean_slope_abs_GSL = abs(mean_slope_GSL)) %>%
+  # Use acceptedScientificName from GBIF as species name
+  mutate(species = acceptedScientificName) %>%
+  # Clean whitespace and keep only "Genus species"
+  mutate(species = str_squish(species),
+         species = case_when(
+           is.na(species) ~ NA_character_,
+           species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+           .default = word(species, 1, 2) # first two words
+           )) %>%
+  # Remove unneeded columns
+  select(-query_name, -matched_name, - matched_rank, - match_type, 
+         -match_status,, -usageKey, -acceptedUsageKey, -kingdom, -phylum,
+         -class, -order, -family, -genus, -original_species)
+sensitivity_data_GSL_matched
 ```
 
 # Prepare dataset for models
@@ -777,16 +880,14 @@ sensitivity_data_GSL
 ```{r}
 sens_per_endanger <- perc_endangerment %>% 
   left_join(
-    sensitivity_data_fl %>% 
-      select(Species, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
-             ci_upper_fl, slope_var_fl) %>% 
-      rename(species = Species)
+    sensitivity_data_fl_matched %>% 
+      select(species, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
+             ci_upper_fl, slope_var_fl) 
     ) %>% 
   left_join(
-    sensitivity_data_GSL%>% 
-      select(Species, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL,
-             ci_lower_GSL, ci_upper_GSL, slope_var_GSL) %>% 
-      rename(species = Species)
+    sensitivity_data_GSL_matched %>% 
+      select(species, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL,
+             ci_lower_GSL, ci_upper_GSL, slope_var_GSL)
     )
 sens_per_endanger %>% filter(is.na(perc_endangerment))
 sens_per_endanger %>% filter(is.na(mean_slope_fl))
@@ -864,7 +965,7 @@ ggplot() +
                 aes(x = sens_01_fl.x, y = sens_01_fl.predicted, 
                     ymin = sens_01_fl.conf.low, ymax = sens_01_fl.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.019") +
+  theme_bw() + ggtitle("p = 0.043") +
   xlab("Sensitivity (0/1) (flowering)") +
   ylab("Predicted probability of endangerment")
 ggplot() +
@@ -874,7 +975,7 @@ ggplot() +
                 aes(x = sens_01_GSL.x, y = sens_01_GSL.predicted, 
                     ymin = sens_01_GSL.conf.low, ymax = sens_01_GSL.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.065") +
+  theme_bw() + ggtitle("p = 0.075") +
   xlab("Sensitivity (0/1) (GSL)") +
   ylab("Predicted probability of endangerment")
 ```
@@ -911,7 +1012,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(mean_slope_fl < 0 & slope_var_fl < 100),
              aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.003") +
+  theme_bw() + ggtitle("p = 0.017") +
   xlab("Sensitivity (absolute value) (flowering)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -930,7 +1031,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 100 &
                           prop_endangerment > 0),
                aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.003") +
+    theme_bw() + ggtitle("p = 0.005") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of endangerment"),
   ggplot() +
@@ -948,7 +1049,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 100) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_abs_fl, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.343") +
+    theme_bw() + ggtitle("p = 0.632") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -986,7 +1087,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(slope_var_GSL < 100),
              aes(x = mean_slope_GSL, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.023") +
+  theme_bw() + ggtitle("p = 0.033") +
   xlab("Sensitivity (GSL)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -1023,7 +1124,7 @@ grid.arrange(
                  filter(slope_var_GSL < 100) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_GSL, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.106") +
+    theme_bw() + ggtitle("p = 0.148") +
     xlab("Sensitivity (GSL)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -1059,7 +1160,7 @@ ggplot() +
                 aes(x = sens_01_fl.x, y = sens_01_fl.predicted, 
                     ymin = sens_01_fl.conf.low, ymax = sens_01_fl.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.048") +
+  theme_bw() + ggtitle("p = 0.098") +
   xlab("Sensitivity (0/1) (flowering)") +
   ylab("Predicted probability of endangerment")
 ggplot() +
@@ -1069,7 +1170,7 @@ ggplot() +
                 aes(x = sens_01_GSL.x, y = sens_01_GSL.predicted, 
                     ymin = sens_01_GSL.conf.low, ymax = sens_01_GSL.conf.high),
                 width = 0.25) +
-  theme_bw() + ggtitle("p = 0.307") +
+  theme_bw() + ggtitle("p = 0.384") +
   xlab("Sensitivity (0/1) (GSL)") +
   ylab("Predicted probability of endangerment")
 ```
@@ -1106,7 +1207,7 @@ ggplot() +
   geom_point(data = sens_per_endanger %>%
                filter(mean_slope_fl < 0 & slope_var_fl < 50),
              aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-  theme_bw() + ggtitle("p = 0.004") +
+  theme_bw() + ggtitle("p = 0.022") +
   xlab("Sensitivity (absolute value) (flowering)") +
   ylab("Predicted probability of endangerment")
 # Model with ZI
@@ -1125,7 +1226,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 50 &
                           prop_endangerment > 0),
                aes(x = mean_slope_abs_fl, y = prop_endangerment), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.003") +
+    theme_bw() + ggtitle("p = 0.005") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of endangerment"),
   ggplot() +
@@ -1143,7 +1244,7 @@ grid.arrange(
                  filter(mean_slope_fl < 0 & slope_var_fl < 50) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_abs_fl, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.819") +
+    theme_bw() + ggtitle("p = 0.682") +
     xlab("Sensitivity (absolute value) (flowering)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -1218,7 +1319,7 @@ grid.arrange(
                  filter(slope_var_GSL < 50) %>%
                  mutate(endangerment_01 = ifelse(prop_endangerment == 0, 0, 1)),
                aes(x = mean_slope_GSL, y = endangerment_01), alpha = 0.6) +
-    theme_bw() + ggtitle("p = 0.036") +
+    theme_bw() + ggtitle("p = 0.030") +
     xlab("Sensitivity (GSL)") +
     ylab("Predicted probability of being endangered"),
   ncol = 2)
@@ -1229,7 +1330,7 @@ grid.arrange(
 ```{r}
 redlist_Germany <- redlist_phenobs %>% filter(Country == "Germany") %>%
   # Keep threat info for the latest publication year for each sp
-  group_by(species_corrected) %>%
+  group_by(species) %>%
   filter(if (all(is.na(Publ_year))) TRUE else 
     Publ_year == max(Publ_year, na.rm = TRUE)) %>%
   # Only one case of two records of the same spp (Genista tinctoria)
@@ -1245,15 +1346,15 @@ Does not make sense to look at RL categories, cause there are 25 EN + 1 VU = 26 
 ```{r}
 redlist_Germany_occ <- 
   # Here, all 169 present species are included
-  occurrence_matrix_species_countries %>% filter(COUNTRY == "Germany") %>%
+  occurrence_matrix_species_countries_matched %>% filter(COUNTRY == "Germany") %>%
   # Here, only the species included in RL in Germany are included
-  left_join(redlist_Germany, by = c("taxon_name" = "species_corrected",
+  left_join(redlist_Germany, by = c("species" = "species",
                                           "COUNTRY" = "Country_WGSRPD")) %>%
   # Remove unneded columns
-  select(-species, -Redlist_cat, -Country, -Publ_year, -redlist_source, 
+  select(-Redlist_cat, -Country, -Publ_year, -redlist_source, 
          - Continent) %>%
   # Rename
-  rename(species = taxon_name, country = COUNTRY, threat = Threat) %>%
+  rename(country = COUNTRY, threat = Threat) %>%
   # Order columns
   select(species, country, occurrence, threat) %>%
   # Set those where Threat is NA or not_evaluated_dd (only 2 spp in Russia)
@@ -1277,16 +1378,14 @@ RL_threat_Germany <- redlist_Germany_occ %>%
 sens_threat_Germany <- RL_threat_Germany %>% 
   mutate(threat = ifelse(threat == "threatened", 1, 0)) %>%
   left_join(
-    sensitivity_data_fl %>% 
-      select(Species, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
-             ci_upper_fl, slope_var_fl) %>% 
-      rename(species = Species)
+    sensitivity_data_fl_matched %>% 
+      select(species, mean_slope_fl, sens_01_fl, mean_slope_abs_fl, ci_lower_fl,
+             ci_upper_fl, slope_var_fl) 
     ) %>%
   left_join(
-    sensitivity_data_GSL %>% 
-      select(Species, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL, 
-             ci_lower_GSL, ci_upper_GSL, slope_var_GSL) %>% 
-      rename(species = Species)
+    sensitivity_data_GSL_matched %>% 
+      select(species, mean_slope_GSL, sens_01_GSL, mean_slope_abs_GSL, 
+             ci_lower_GSL, ci_upper_GSL, slope_var_GSL) 
     )
 sens_threat_Germany %>% filter(is.na(threat))
 sens_threat_Germany %>% filter(is.na(mean_slope_fl))
@@ -1368,6 +1467,90 @@ model_threat_mean_slope_GSL_50_G <- glmmTMB(
   data = sens_threat_Germany %>% filter(slope_var_GSL < 50))
 summary(model_threat_mean_slope_GSL_50_G)
 ```
+
+# Correlation mean slope flowering - GSL
+
+```{r}
+cor(sens_per_endanger$mean_slope_fl, sens_per_endanger$mean_slope_GSL,
+    use = "complete.obs")
+cor(sens_per_endanger$mean_slope_abs_fl, sens_per_endanger$mean_slope_abs_GSL,
+    use = "complete.obs")
+```
+
+```{r}
+ggplot(sens_per_endanger, aes(x = mean_slope_fl, y = mean_slope_GSL)) +
+  geom_point() + geom_smooth()
+ggplot(sens_per_endanger, aes(x = mean_slope_abs_fl, y = mean_slope_abs_GSL)) +
+  geom_point() + geom_smooth()
+```
+
+# Stress tolerance
+
+```{r}
+stress <- read_delim(here("data", "raw", "Stress_Tolerance.csv"), delim = ";") %>%
+  rename(stress_tol = `Stress tolerator score_percentage`)
+stress
+```
+
+Resolve stress$species to GBIF accepted names:
+
+```{r}
+stress_matched <- resolve_vec(stress$Species) %>%
+  # Keep original species for reference
+  bind_cols(stress %>% rename(original_species = Species))
+# Inspect resolution quality
+stress_matched %>%
+   count(match_type, match_status, matched_rank)
+```
+
+Join with sens_per_endanger:
+
+```{r}
+sens_per_endanger_stress <- sens_per_endanger %>%
+  left_join(stress_matched %>%
+              # Use acceptedScientificName from GBIF as species name 
+              mutate(species = acceptedScientificName) %>%
+              # Clean whitespace and keep only "Genus species"
+              mutate(species = str_squish(species),
+                     species = case_when(
+                       is.na(species) ~ NA_character_,
+                       species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+                       .default = word(species, 1, 2) # first two words
+                       )) %>%
+              select(species, stress_tol))
+  
+  stress_matched %>%
+  select(query_name, matched_name, usageKey, acceptedUsageKey, 
+         acceptedScientificName, source, original_species) %>%
+  # Build canonical GBIF key
+  mutate(gbif_key = coalesce(acceptedUsageKey, usageKey)) %>%
+  select(-usageKey, -acceptedUsageKey, -matched_name, -acceptedScientificName,
+         -source, -original_species) %>%
+  left_join(
+    redlist_matched_final %>%
+      # Build canonical GBIF key
+      mutate(gbif_key = coalesce(acceptedUsageKey, usageKey)) %>%
+      select(-usageKey, -acceptedUsageKey),
+    by = "gbif_key")
+```
+
+```{r}
+redlist_phenobs_all <- redlist_phenobs_all %>%
+  # Use acceptedScientificName from GBIF as species name 
+  mutate(species = acceptedScientificName) %>%
+  # Clean whitespace and keep only "Genus species"
+  mutate(species = str_squish(species),
+         species = case_when(
+           is.na(species) ~ NA_character_,
+           species == "Iris × germanica L." ~ "Iris × germanica", # Special case
+           .default = word(species, 1, 2) # first two words
+           )) %>%
+  # Keep columns that I think I will use
+  select(species, Redlist_cat, Threat, Country, Publ_year,
+         redlist_source, Continent)
+redlist_phenobs_all
+```
+
 
 # Session info
 
