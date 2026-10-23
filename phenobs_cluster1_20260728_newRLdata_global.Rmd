@@ -1,0 +1,1212 @@
+---
+title: "PhenObs Cluster 1 analyses"
+author: "Alicia Valdés"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: inline
+---
+
+# Load libraries needed
+
+```{r}
+library(readr)
+library(here)
+library(tidyverse)
+library(purrr)
+library(sf)
+library(glmmTMB)
+library(ggeffects)
+library(taxize)
+library(rgbif)
+library(readxl)
+library(gridExtra)
+library(furrr)
+library(countrycode)
+library(progress)
+library(ggrepel)
+library(corrplot)
+library(vegan)
+library(broom)
+library(broom.mixed)
+library(rnaturalearth)
+library(units)
+```
+
+# Read data
+
+## Red List
+
+Load Red List data (MOTIVATE subset).
+
+```{r}
+redlist <- read_csv(here("data", "raw", "Staude_et_al_2025", "redlist_checked.csv"))
+redlist
+```
+
+## Sensitivity
+
+Read sensitivity data (slopes from Robert).
+
+```{r}
+slopes_FlOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlOn.csv")) %>%
+  select(-...1) %>% mutate(stage = "FlOn")
+slopes_SensOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_SenOn.csv")) %>%
+  select(-...1) %>% mutate(stage = "SensOn")
+slopes_LeafUnf <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_LeafUnf.csv")) %>%
+  select(-...1) %>% mutate(stage = "LeafUnf")
+slopes_GSL <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_GSL.csv")) %>%
+  select(-...1) %>% mutate(stage = "GSL")
+slopes_FrOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FrOn.csv")) %>%
+  select(-...1) %>% mutate(stage = "FrOn")
+slopes_FlDur <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlDur.csv")) %>%
+  select(-...1) %>% mutate(stage = "FlDur")
+slopes_FlPeak <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlPeak.csv")) %>%
+  select(-...1) %>% mutate(stage = "FlPeak")
+```
+
+```{r}
+slopes_FlOn
+slopes_SensOn
+slopes_LeafUnf
+slopes_GSL
+slopes_FrOn
+slopes_FlDur
+slopes_FlPeak
+```
+
+### Join and get unique species
+
+```{r}
+slopes_all <- bind_rows(slopes_FlOn, slopes_SensOn, slopes_LeafUnf, slopes_GSL,
+                        slopes_FrOn, slopes_FlDur, slopes_FlPeak)
+```
+
+```{r}
+slopes_all_species <- slopes_all %>% distinct(Species)
+```
+
+## Stress tolerance
+
+Read stress tolerance scores.
+
+```{r}
+stress <- read_delim(here("data", "raw", "Stress_Tolerance.csv"), delim = ";") %>%
+  rename(stress_tol = `Stress tolerator score_percentage`)
+stress
+```
+
+## Ellenberg tendency of change
+
+Read Ellenberg tendency of change data.
+
+```{r}
+ellenberg <- read_excel(here("data", "raw", "IndicatorValues_Ellenberg.xlsx")) 
+ellenberg
+```
+
+# Resolve species names
+
+Resolve species in all datasets to GBIF accepted names using the package taxize:
+
+## Species in sensitivity data
+
+```{r}
+length(slopes_all_species$Species) # 187
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- slopes_all_species$Species[1:50]
+spp2 <- slopes_all_species$Species[51:100]
+spp3 <- slopes_all_species$Species[101:150]
+spp4 <- slopes_all_species$Species[151:187]
+
+# Getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4)
+
+# Add to sp_list
+slopes_all_species_resolved <- slopes_all_species %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+slopes_all_resolved <- slopes_all %>%
+  left_join(slopes_all_species_resolved)
+```
+
+## Species in  Red List data
+
+Resolve species (accepted_taxon_name) to GBIF accepted names:
+
+```{r}
+length(unique(redlist$accepted_taxon_name)) # 36710
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunk_size <- 50
+chunks <- split(unique(redlist$accepted_taxon_name), 
+                ceiling(seq_along(unique(redlist$accepted_taxon_name)) / 
+                          chunk_size))
+
+# Helper to resolve one chunk using GBIF Backbone (data_sources = 11)
+resolve_chunk_tbl <- function(x) {
+  gna_verifier(
+    names = x,
+    data_sources = 11,       # GBIF Backbone Taxonomy
+    all_matches = FALSE,     # best match only
+    output_type = "table"
+  )
+}
+
+# Process chunks with progress messages
+resolved_tbl <- tryCatch(
+  {
+    imap_dfr(
+      chunks,
+      function(chunk, i) {
+
+        message(
+          sprintf(
+            "Processing chunk %s of %s (%.1f%%)",
+            i,
+            length(chunks),
+            100 * as.numeric(i) / length(chunks)
+          )
+        )
+
+        resolve_chunk_tbl(chunk)
+      }
+    )
+  },
+  error = function(e) {
+    message("Error: ", e$message)
+    NULL
+  }
+)
+```
+
+```{r}
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    rl_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(rl_name_clean, .keep_all = TRUE)
+
+redlist_with_clean <- redlist %>%
+  mutate(
+    rl_name_raw   = accepted_taxon_name,
+    rl_name_clean = str_squish(rl_name_raw)
+  )
+
+# Left-join: keep ALL rows from redlist
+redlist_resolved <- redlist_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              select(rl_name_clean, name_res), 
+            by = "rl_name_clean")
+```
+
+## Species in stress tolerance scores
+
+```{r}
+length(stress$Species) # 263
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- stress$Species[1:50]
+spp2 <- stress$Species[51:100]
+spp3 <- stress$Species[101:150]
+spp4 <- stress$Species[151:200]
+spp5 <- stress$Species[201:250]
+spp6 <- stress$Species[251:263]
+
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+resolved_5 <- gna_verifier(spp5, data_sources = 11)
+resolved_6 <- gna_verifier(spp6, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4, 
+                      resolved_5, resolved_6)
+
+# Add to sp_list
+stress_resolved <- stress %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+```
+
+## Species in Ellenberg tendency of change data
+
+```{r}
+ellenberg <- ellenberg %>%
+  mutate(Art = ifelse(Art == "Primula veris (officinalis)#f)", 
+                      "Primula veris (officinalis)", Art))
+```
+
+```{r}
+length(unique(ellenberg$Art)) # 2791
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunks <- split(unique(ellenberg$Art), 
+                ceiling(seq_along(unique(ellenberg$Art)) / 
+                          chunk_size))
+```
+
+```{r}
+resolved_tbl_list <- vector("list", length(chunks))
+for (i in seq_along(chunks)) {
+  cat("Resolving chunk", i, "of", length(chunks), 
+      " (n =", length(chunks[[i]]), ")\n")
+  res <- try(resolve_chunk_tbl(chunks[[i]]), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    cat("Chunk", i, "failed with:\n", attr(res, "condition")$message, "\n")
+    break
+  }
+  resolved_tbl_list[[i]] <- res
+}
+resolved_tbl <- dplyr::bind_rows(resolved_tbl_list)
+```
+
+```{r}
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    ellenberg_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(ellenberg_name_clean, .keep_all = TRUE)
+
+ellenberg_with_clean <- ellenberg %>%
+  mutate(
+    ellenberg_name_raw   = Art,
+    ellenberg_name_clean = str_squish(ellenberg_name_raw)
+  )
+
+# Left-join: keep ALL rows from ellenberg
+ellenberg_resolved <- ellenberg_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              select(ellenberg_name_clean, name_res), 
+            by = "ellenberg_name_clean") %>% select(-Art, -ellenberg_name_raw,
+                                                    -ellenberg_name_clean)
+```
+
+# Create occurrence matrix
+
+Occurrence matrices are created using the package rgbif. 
+
+## Get countries form RL
+
+Get vector of ISO3 codes.
+
+```{r}
+ISO3_Codes <- redlist %>%
+  distinct(ISO3_Code) %>%
+  pull(ISO3_Code)
+```
+
+## Build occurrence matrix
+
+Build the species × country occurrence matrix with rgbif.
+
+Settings:
+
+```{r}
+options(timeout = 180)                      # allow slower responses
+options(future.rng.onMisuse = "ignore")     # silence RNG warning when seed is set
+
+workers <- 4
+future::plan(multisession, workers = workers)
+```
+
+Helper functions:
+
+```{r}
+`%||%` <- function(a, b) if (!is.null(a)) a else b
+
+retry <- function(expr_fun, tries = 3L, base_wait = 0.7) {
+
+  for (i in seq_len(tries)) {
+
+    out <- try(expr_fun(), silent = TRUE)
+
+    if (!inherits(out, "try-error")) {
+      return(out)
+    }
+
+    Sys.sleep(base_wait * (2^(i - 1)))
+  }
+
+  out
+}
+```
+
+Query GBIF once per species:
+
+```{r}
+get_species_country_counts <- function(sp) {
+
+  require(rgbif)
+  require(dplyr)
+  require(tibble)
+
+  res <- retry(
+    function() {
+
+      rgbif::occ_search(
+        scientificName = sp,
+        limit = 0,
+        facet = "country",
+        facetLimit = 300
+      )
+
+    }
+  )
+
+  if (inherits(res, "try-error") ||
+      is.null(res$facets) ||
+      length(res$facets) == 0) {
+
+    return(
+      tibble(
+        species = sp,
+        iso2 = character(),
+        count = integer(),
+        status = character()
+      )
+    )
+  }
+
+  country_tbl <- res$facets$country
+
+  if (is.null(country_tbl) || nrow(country_tbl) == 0) {
+
+    return(
+      tibble(
+        species = sp,
+        iso2 = character(),
+        count = integer(),
+        status = character()
+      )
+    )
+  }
+
+  tibble(
+    species = sp,
+    iso2 = country_tbl$name,
+    count = country_tbl$count,
+    status = "ok"
+  )
+}
+```
+
+Parallel querying:
+
+```{r}
+pb <- progress_bar$new(
+  format = "GBIF species [:bar] :current/:total (:percent)",
+  total = length(sp_vec),
+  clear = FALSE
+)
+
+results_list <- future_map(
+  sp_vec,
+  function(sp) {
+
+    out <- get_species_country_counts(sp)
+
+    pb$tick()
+
+    out
+
+  },
+  .options = furrr_options(seed = TRUE)
+)
+
+results <- bind_rows(results_list)
+```
+
+Convert ISO2 to ISO3. GBIF returns country codes as ISO2.
+
+```{r}
+results <- results %>%
+  mutate(
+    iso3 = countrycode(
+      iso2,
+      origin = "iso2c",
+      destination = "iso3c"
+    )
+  )
+```
+
+Keep Kosovo, discard unknown countries:
+
+```{r}
+results <- results %>%
+  mutate(
+    iso3 = countrycode(
+      iso2,
+      origin = "iso2c",
+      destination = "iso3c",
+      custom_match = c(
+        XK = "XKX",  # Kosovo
+        ZZ = NA      # Unknown country
+      )
+    )
+  )
+```
+
+Build complete species × country matrix:
+
+```{r}
+occurrence_matrix <- results %>%
+  select(species, iso3, count) %>%
+  group_by(species, iso3) %>%
+  summarise(count = sum(count), .groups = "drop") %>%
+  complete(
+    species = sp_vec,
+    iso3 = ISO3_Codes,
+    fill = list(count = 0)
+  ) %>%
+  pivot_wider(
+    names_from = iso3,
+    values_from = count,
+    values_fill = 0
+  )
+```
+
+Presence/ABsence matrix:
+
+```{r}
+occ_matrix_pa <- results %>%
+  mutate(presence = 1L) %>%
+  select(species, iso3, presence) %>%
+  distinct() %>%
+  complete(
+    species = sp_vec,
+    iso3 = ISO3_Codes,
+    fill = list(presence = 0L)
+  ) %>%
+  pivot_wider(
+    names_from = iso3,
+    values_from = presence,
+    values_fill = 0L
+  )
+```
+
+# Matching Phenobs - MOTIVATE Red List data
+
+Use the RL from all available countries!
+
+Try to match the full PhenObs spp list with the RL to see how many species are there in each category for each country.
+
+## Join RL and spp list in sensitivity data from PhenObs
+
+```{r}
+redlist_phenobs <- tibble(slopes_all_species_resolved %>% select(name_res)) %>%
+  left_join(redlist_resolved) %>%
+  # Keep columns that I think I will use
+  select(name_res, Redlist_cat, status, ISO3_Code, ISO2_Code, Country, 
+         region_name, Publ_year) %>%
+  # Remove those with status == NA (not present in any red list)
+  filter(!is.na(status))
+redlist_phenobs
+```
+
+## Data prep RL
+
+Cases where there is info for more than one year for a species and country:
+
+```{r}
+redlist_phenobs_dupl_diff <- redlist_phenobs %>%
+  group_by(name_res, ISO3_Code) %>%
+  filter(n() > 1, n_distinct(status) > 1) %>%
+  ungroup()
+redlist_phenobs_dupl_diff
+```
+
+Keep threat info for the latest publication year. In Canada, Russia, and United States, there is no info about publication year.
+
+Keep them separated:
+
+```{r}
+redlist_phenobs_CAN_RUS_USA <- redlist_phenobs %>%
+  filter(ISO3_Code %in% c("CAN", "RUS", "USA"))
+```
+
+Remove them:
+
+```{r}
+redlist_phenobs_no_CAN_RUS_USA <- redlist_phenobs %>%
+  filter(!ISO3_Code %in% c("CAN", "RUS", "USA"))
+```
+
+For other countries: If there are several rows for same publication year, pick the most severe red list category.
+
+```{r}
+redlist_phenobs_dupl_diff %>%
+  filter(!ISO3_Code %in% c("CAN", "RUS", "USA")) %>%
+  count(Redlist_cat)
+```
+
+```{r}
+severity_order <- c("CR", "EN", "VU", "NT", "LC")
+
+redlist_phenobs_no_CAN_RUS_USA_latest <- redlist_phenobs_no_CAN_RUS_USA %>%
+  group_by(name_res, ISO3_Code) %>%
+  filter(if (all(is.na(Publ_year))) TRUE else 
+    Publ_year == max(Publ_year, na.rm = TRUE)) %>%
+  slice(which.min(match(Redlist_cat, severity_order))) %>%
+  ungroup()
+
+redlist_phenobs_no_CAN_RUS_USA_latest
+```
+
+Check that there is only one entry for each species and country:
+
+```{r}
+redlist_phenobs_no_CAN_RUS_USA_latest %>% 
+  group_by(name_res, ISO3_Code) %>%
+  count() %>% filter(n > 1)
+```
+
+For Canada, Russia, and United States:
+
+```{r}
+redlist_phenobs_dupl_diff %>%
+  filter(ISO3_Code %in% c("CAN", "RUS", "USA")) %>%
+  count(Redlist_cat)
+```
+
+```{r}
+severity_threatened <- c("EX", "RE", "PE", "CR", "EN", "VU")
+severity_not_threatened <- c("NT", "LC")
+
+redlist_phenobs_CAN_RUS_USA <- redlist_phenobs_CAN_RUS_USA %>%
+  group_by(name_res) %>%
+  # Apply custom logic to pick ONE row but keep all columns
+  slice({
+    threatened_count <- sum(status == "threatened")
+    not_threatened_count <- sum(status == "not_threatened")
+    
+    # If there are more threatened rows than not threatened
+    if (threatened_count > not_threatened_count) {
+      # pick the first threatened row
+      which.max(status == "threatened") 
+      # Else if there are more not threatened rows
+    } else if (not_threatened_count > threatened_count) {
+      # pick the first not threatened row
+      which.max(status == "not_threatened")
+    } else {
+      # If there is a tie between threatened and not threatened rows,
+      # break by severity groups.
+      # Count severity categories
+      threatened_severity_count <- sum(Redlist_cat %in% severity_threatened)
+      not_threatened_severity_count <- sum(Redlist_cat %in% severity_not_threatened)
+      # If threatened severity count ≥ not threatened severity count
+      if (threatened_severity_count >= not_threatened_severity_count) {
+        # Picks the first row with EX/RES/PE/CR/EN/VU
+        which.max(Redlist_cat %in% severity_threatened)
+        # Else
+      } else {
+        # Picks the first row with NT/LC
+        which.max(Redlist_cat %in% severity_not_threatened)
+      }
+    }
+  }) %>%
+  ungroup()
+```
+
+For CAN, RUS, USA, check that there is only one entry for each species:
+
+```{r}
+redlist_phenobs_CAN_RUS_USA %>% group_by(name_res) %>%
+  count() %>% filter(n > 1)
+```
+
+Join no_CAN_RUS_USA and CAN_RUS_USA to get final RL for PhenObs:
+
+```{r}
+redlist_phenobs_final <- bind_rows(redlist_phenobs_no_CAN_RUS_USA_latest,
+                                   redlist_phenobs_CAN_RUS_USA)
+# Note that species that are not threatened in any country 
+# are absent from redlist_phenobs_final
+```
+
+# Join occurrence data and Red List data 
+
+```{r}
+redlist_phenobs_final_occ <- 
+  # Here, all 187 species are included
+  occ_matrix_pa %>% 
+  pivot_longer(cols = c(2:226), names_to = "iso3", values_to = "occurrence") %>%
+  # Here, only the species included in red lists in ANY country (i.e. 145 spp)
+  # are included
+  left_join(redlist_phenobs_final, by = c("species" = "name_res",
+                                        "iso3" = "ISO3_Code")) %>%
+  # Remove unneded columns
+  select(-Redlist_cat, -ISO2_Code, -Country, -region_name, -Publ_year) %>%
+  # Rename
+  rename(country = iso3) %>%
+  # Order columns
+  select(species, country, occurrence, status) %>%
+  mutate(status = ifelse(is.na(status), "not_threatened", status))
+```
+
+# Calculate % endangerment
+
+Proportion of countries where the species is endangered, and proportion of range where species is endangered.
+
+Add info on country areas:
+
+```{r}
+world <- ne_countries(
+  scale = "medium",
+  returnclass = "sf"
+)
+
+countries_area <- world %>%
+  st_as_sf() %>%
+  st_transform(8857) %>%
+  mutate(area_km2 = as.numeric(st_area(.))/1e6) %>%
+  st_drop_geometry() %>%
+  select(
+    country = iso_a3,
+    area_km2
+  )
+
+extra_codes <- tibble::tribble(
+  ~country, ~country_ref,
+  "FRA", "France",
+  "NOR", "Norway",
+  "GLP", "Guadeloupe",
+  "MTQ", "Martinique",
+  "MYT", "Mayotte",
+  "REU", "Reunion",
+  "GUF", "French Guiana",
+  "GIB", "Gibraltar",
+  "SJM", "Svalbard and Jan Mayen",
+  "TKL", "Tokelau",
+  "UMI", "United States Minor Outlying Islands"
+)
+
+extra_area <- extra_codes %>%
+  left_join(
+    world %>%
+      select(admin, geometry),
+    by = c("country_ref" = "admin")
+  ) %>%
+  st_as_sf() %>%
+  st_transform(8857) %>%
+  mutate(area_km2 = as.numeric(st_area(.))/1e6) %>%
+  st_drop_geometry() %>%
+  select(country, area_km2)
+
+countries_area <- bind_rows(countries_area, extra_area)
+
+countries_area <- countries_area %>%
+  bind_rows(
+    tibble(
+      country = c("KOS", "XKX"),
+      area_km2 = 10887
+    )
+  )
+
+redlist_phenobs_final_occ <- redlist_phenobs_final_occ %>%
+  left_join(countries_area) %>%
+  filter(country != "NA")
+```
+
+```{r}
+perc_endangerment <- redlist_phenobs_final_occ %>%
+  filter(occurrence > 0) %>%  # only countries where species is present
+  group_by(species) %>%
+  summarise(
+    total_countries = n_distinct(country),
+    threatened_countries = sum(status == "threatened"),
+
+    perc_endangerment =
+      (threatened_countries / total_countries) * 100,
+
+    total_area = sum(area_km2),
+
+    threatened_area =
+      sum(area_km2[status == "threatened"]),
+
+    perc_endangered_range =
+      (threatened_area / total_area) * 100,
+
+    .groups = "drop"
+  ) %>%
+  mutate(
+    prop_endangerment = perc_endangerment / 100,
+    prop_endangered_range = perc_endangered_range / 100
+  ) %>%
+  arrange(species)
+```
+
+```{r}
+hist(perc_endangerment$prop_endangerment)
+hist(perc_endangerment$prop_endangered_range)
+```
+
+# Data prep sensitivity data
+
+```{r}
+slopes_all_resolved <- slopes_all_resolved %>%
+  # Remove unneeded cols
+  select(-Species, -n_gardens, -temp_min, -temp_max, -temp_mean, -n_data) %>%
+  # Add variable for "sens" vs "not-sens"
+  mutate(sens_01 = factor(ifelse(ci_lower > 0 | ci_upper < 0, 1, 0))) %>%
+  pivot_wider(
+    names_from = stage,
+    values_from = c(mean_slope, ci_lower, ci_upper, slope_var, sens_01),
+    names_glue = "{.value}_{stage}"
+    )
+head(slopes_all_resolved)
+```
+
+# Prepare datasets for models
+
+## Sensitivity + % endangerment
+
+```{r}
+sens_per_endanger <- perc_endangerment %>% 
+  left_join(
+    slopes_all_resolved %>% 
+      select(name_res, starts_with("mean_"), starts_with("slope_var"),
+             starts_with("sens_01_")),
+    by = c("species" = "name_res"),
+    )
+sens_per_endanger %>% filter(is.na(perc_endangerment)) %>% nrow()
+sens_per_endanger %>% filter(is.na(mean_slope_FlOn)) %>% nrow() # 16 spp
+sens_per_endanger %>% filter(is.na(mean_slope_GSL)) %>% nrow() # 33 spp
+```
+
+## Sensitivity + % endangerment + stress
+
+```{r}
+sens_per_endanger_stress <- sens_per_endanger %>%
+  left_join(stress_resolved, by = c("species" = "name_res")) %>%
+  select(-Species)
+```
+
+## Sensitivity + % endangerment + Ellenberg tendency of change
+
+Deal with non-numeric values in indicator values
+
+Columns OEK_L - OEK_S and HAEUF_AE_change
+
+```{r}
+ellenberg <- ellenberg %>%
+  mutate(across(OEK_L:OEK_S, ~ parse_number(.)))
+```
+
+Join with sens_per_endanger:
+
+```{r}
+sens_per_endanger_stress_ell <- sens_per_endanger_stress %>%
+  left_join(ellenberg_resolved %>%
+              select(name_res, HAEUF_AE_change) %>%
+              rename(change = HAEUF_AE_change) %>%
+              group_by(name_res) %>%
+              # For duplicates, get the mean
+              summarise(change = as.integer(mean(change, na.rm = TRUE)),
+                        .groups = "drop"), 
+            by = c("species" = "name_res"))
+```
+
+# Reshape data
+
+```{r}
+sens_endanger <- sens_per_endanger %>% 
+  pivot_longer(cols = matches("^(mean_slope|slope_var|sens_01|sens_sign)_"),
+               names_to = c(".value", "stage"),
+               names_pattern = "(mean_slope|slope_var|sens_01|sens_sign)_(.*)")
+sens_endanger
+```
+
+```{r}
+sens_endanger_stress <- sens_per_endanger_stress %>% 
+  pivot_longer(cols = matches("^(mean_slope|slope_var|sens_01|sens_sign)_"),
+               names_to = c(".value", "stage"),
+               names_pattern = "(mean_slope|slope_var|sens_01|sens_sign)_(.*)")
+sens_endanger_stress
+```
+
+```{r}
+sens_endanger_stress_ell <- sens_per_endanger_stress_ell %>% 
+  pivot_longer(cols = matches("^(mean_slope|slope_var|sens_01|sens_sign)_"),
+               names_to = c(".value", "stage"),
+               names_pattern = "(mean_slope|slope_var|sens_01|sens_sign)_(.*)")
+sens_endanger_stress_ell
+```
+
+# Distributions
+
+```{r}
+ggplot(sens_endanger, aes(x = prop_endangerment)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Prop. endangerment", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = prop_endangered_range)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Prop. range endangered", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = factor(sens_01))) +
+  geom_bar() +
+  facet_wrap(~ stage) +
+  labs(x = "Sensitive (0 = No, 1 = Yes)", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = mean_slope)) +
+  geom_histogram(color = "black", fill = "grey") +
+  facet_wrap(~ stage, scales = "free") +
+  labs(x = "Sensitivity (mean slope)", y = "Number of species") +
+  theme_bw()
+```
+
+# Models endangerment ~ sensitivity 
+
+Filtering slope_var < 50 - clearer patterns.
+
+Binomial models with cbind(threatened_countries, total_countries - threatened_countries).
+
+Added prediction plots only for models with any significant effects.
+
+## Sensitive or not
+
+```{r}
+stage_names <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  distinct(stage) %>%
+  pull(stage)
+
+mod_sens_01 <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(cbind(threatened_countries, 
+                        total_countries - threatened_countries) ~ sens_01, 
+                   data = .x, 
+                  # Use betabinomial because of overdispersion with binomial
+                  family = betabinomial())) %>%
+  setNames(stage_names)
+mod_sens_01_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_endangered_range  ~ sens_01, 
+                   data = .x, 
+                  family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names)
+
+map_df(mod_sens_01, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_01_range, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_01$FlPeak))
+plot(ggpredict(mod_sens_01_range$LeafUnf, type = "zi_prob"))
+plot(ggpredict(mod_sens_01_range$LeafUnf, type = "fixed"))
+```
+
+## Sensitivity sign
+
+```{r}
+sens_endanger <- sens_endanger %>%
+  mutate(sens_sign = factor(case_when(
+    mean_slope > 0 ~ "positive",
+    mean_slope < 0 ~ "negative",
+    TRUE ~ NA_character_
+  )))
+```
+
+```{r}
+mod_sens_sign <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(cbind(threatened_countries, 
+                        total_countries - threatened_countries) ~ sens_sign, 
+                      data = .x, family = betabinomial())) %>%
+  setNames(stage_names)
+mod_sens_sign_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_endangered_range  ~ sens_sign, 
+                   data = .x, 
+                  family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names)
+
+map_df(mod_sens_sign, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_sign_range, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_sign$FlDur))
+```
+
+## Mean slopes
+
+### FlDur and GSL: all values
+
+```{r}
+stage_names_FlDur_GSL <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  distinct(stage) %>%
+  pull(stage)
+
+mod_sens_all <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(cbind(threatened_countries, 
+                        total_countries - threatened_countries) ~ mean_slope, 
+                  data = .x, family = betabinomial())) %>%
+  setNames(stage_names_FlDur_GSL)
+mod_sens_all_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_endangered_range ~ mean_slope, 
+                  data = .x, family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names_FlDur_GSL)
+
+map_df(mod_sens_all, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_all_range, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+### Other stages
+
+#### Negative slopes only
+
+```{r}
+stage_names_not_FlDur_GSL <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  distinct(stage) %>%
+  pull(stage)
+
+mod_sens_neg <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(cbind(threatened_countries, 
+                        total_countries - threatened_countries) ~ mean_slope, 
+                  data = .x, family = betabinomial())) %>%
+  setNames(stage_names_not_FlDur_GSL)
+mod_sens_neg_range <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_endangered_range ~ mean_slope, 
+                  data = .x, family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names_not_FlDur_GSL)
+
+map_df(mod_sens_neg, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_neg_range, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_neg$FlOn, terms="mean_slope [all]")) # p = 0.075
+plot(ggpredict(mod_sens_neg_range$SensOn, terms="mean_slope [all]", type = "zi_prob")) # p = 0.023
+```
+
+```{r}
+ggplot() +
+    geom_ribbon(data = data.frame(ggpredict(mod_sens_neg$FlOn,
+                                            terms="mean_slope [all]")),
+                aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+                alpha = 0.25, fill = "blue") +
+    geom_line(data = data.frame(ggpredict(mod_sens_neg$FlOn,
+                                          terms="mean_slope [all]")),
+              aes(x = x, y = predicted), color = "blue", linewidth = 1) +
+    geom_point(data = sens_endanger %>%
+                 filter(mean_slope < 0 & slope_var < 50 & stage == "FlOn"),
+               aes(x = mean_slope, y = prop_endangerment), alpha = 0.6) +
+    theme_bw() + ggtitle("p = 0.073") +
+    xlab("Sensitivity of flowering (negative values only)") +
+    ylab("Predicted probability of endangerment")
+```
+
+#### Positive slopes only
+
+```{r}
+mod_sens_pos <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope > 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(cbind(threatened_countries, 
+                        total_countries - threatened_countries) ~ mean_slope, 
+                  data = .x, family = betabinomial())) %>%
+  setNames(stage_names_not_FlDur_GSL)
+map_df(mod_sens_pos, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+# PCA
+
+```{r}
+pca_phen <- prcomp(sens_per_endanger %>% 
+                     select(starts_with("mean_slope_")) %>%
+                     drop_na(), 
+                   center = TRUE, scale. = TRUE)
+```
+
+```{r}
+scores <- as.data.frame(pca_phen$x) %>%
+  mutate(species = (sens_per_endanger %>%
+                      select(species, starts_with("mean_slope_")) %>%
+                      drop_na())$species) %>%
+  mutate(label = ifelse(abs(PC1) > quantile(abs(PC1), 0.95) |
+                          abs(PC2) > quantile(abs(PC2), 0.95),
+                        species, ""))
+```
+
+```{r}
+# Variable loadings for arrows
+loadings <- as.data.frame(pca_phen$rotation) %>%
+  mutate(variable = rownames(.)) %>%
+  # Remove mean_slope from variable names
+  mutate(variable = gsub("mean_slope_", "", variable))
+
+ggplot(scores %>%
+         left_join(
+           sens_per_endanger %>% 
+             select(species, prop_endangerment)
+           ), 
+       aes(x = PC1, y = PC2)) +
+  geom_point(alpha = 0.8, color = "steelblue"
+             ) +
+  geom_text_repel(aes(label = label), size = 3, max.overlaps = 15) +
+  geom_segment(data = loadings,
+               aes(x = 0, y = 0, xend = PC1*3, yend = PC2*3),
+               arrow = arrow(length = unit(0.2, "cm")),
+               color = "darkred") +
+  geom_text_repel(data = loadings,
+                  aes(x = PC1*3, y = PC2*3, label = variable),
+                  color = "red3", size = 4) +
+  theme_minimal() +
+  labs(x = "PC1", y = "PC2")
+```
+
+```{r}
+plot(pca_phen)
+```
+
+## Clustering
+
+```{r}
+dist_pcs <- dist(scores %>%
+                   select(PC1, PC2, PC3, PC4), 
+                 method = "euclidean")
+hc <- hclust(dist_pcs, method = "ward.D2")
+plot(hc)
+scores$cluster <- factor(cutree(hc, k = 3))
+ggplot(scores, aes(PC1, PC2, color = cluster)) +
+  geom_point(size = 2, alpha = 0.8) +
+  stat_ellipse(type = "norm", level = 0.68) +
+  theme_minimal()
+```
+
+### Plot with clusters
+
+```{r}
+ggplot(
+  scores %>%
+    left_join(
+      sens_per_endanger %>% 
+        select(species, prop_endangerment),
+      by = "species"
+    ),
+  aes(x = PC1, y = PC2, color = cluster)
+) +
+  geom_point(alpha = 0.5, size = 2) +
+  #geom_text_repel(aes(label = label), size = 3, max.overlaps = 15) +
+  geom_segment(
+    data = loadings,
+    aes(x = 0, y = 0, xend = PC1 * 3, yend = PC2 * 3),
+    arrow = arrow(length = unit(0.2, "cm")),
+    color = "black",
+    inherit.aes = FALSE
+  ) +
+  geom_text_repel(
+    data = loadings,
+    aes(x = PC1 * 4, y = PC2 * 4, label = variable),
+    color = "black",
+    size = 4,
+    inherit.aes = FALSE,
+    nudge_x = 0.1* sign(loadings$PC1),
+    nudge_y = 0.1 * sign(loadings$PC2),
+    box.padding = 0.2,      # distance around text box
+    point.padding = 0.2,    # distance from arrows/points
+    max.overlaps = Inf
+    ) +
+  theme_minimal() +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    color = "Cluster"
+  ) +
+  #stat_ellipse(type = "norm", level = 0.68) +
+  theme(legend.position = c(0.9, 0.8))
+```
+
+# RDA effect of endangerment
+
+## Endangered or not
+
+```{r}
+rda_trait_endanger <- rda(
+  sens_per_endanger %>% select(starts_with("mean_slope_")) %>% drop_na() ~ 
+    (sens_per_endanger %>%
+       mutate(endangerment = factor(
+         ifelse(prop_endangerment == 0, 0, 1)))%>% drop_na())$endangerment,
+  data = sens_per_endanger
+  )
+anova(rda_trait_endanger, permutations = 999)
+anova(rda_trait_endanger, by = "axis", permutations = 999)
+RsquareAdj(rda_trait_endanger)
+```
+
+## Proportion of endangerment
+
+```{r}
+rda_trait_endanger_prop <- rda(
+  sens_per_endanger %>% select(starts_with("mean_slope_")) %>% drop_na() ~ 
+    (sens_per_endanger%>% drop_na())$prop_endangerment,
+  data = sens_per_endanger
+  )
+anova(rda_trait_endanger_prop, permutations = 999)
+anova(rda_trait_endanger_prop, by = "axis", permutations = 999)
+RsquareAdj(rda_trait_endanger_prop)
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+

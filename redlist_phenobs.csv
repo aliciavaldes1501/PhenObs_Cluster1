@@ -1,0 +1,2329 @@
+name_res,Redlist_cat,Threat,Country,Publ_year,ISO3_Code
+Achillea millefolium,LC,not_threatened,Belgium,2019,BEL
+Achillea millefolium,LC,not_threatened,Estonia,2008,EST
+Achillea millefolium,LC,not_threatened,France,2018,FRA
+Achillea millefolium,LC,not_threatened,Germany,1999,DEU
+Achillea millefolium,LC,not_threatened,Germany,2018,DEU
+Achillea millefolium,LC,not_threatened,Ireland,2016,IRL
+Achillea millefolium,LC,not_threatened,Luxembourg,2005,LUX
+Achillea millefolium,LC,not_threatened,Netherlands,2012,NLD
+Achillea millefolium,LC,not_threatened,Switzerland,2002,CHE
+Achillea millefolium,LC,not_threatened,United Kingdom,2014,GBR
+Achillea millefolium,LC,not_threatened,Switzerland,2002,CHE
+Achillea millefolium,NT,not_threatened,Switzerland,2016,CHE
+Aconitum lycoctonum,EN,threatened,Austria,1999,AUT
+Aconitum lycoctonum,CR,threatened,Belarus,2005,BLR
+Aconitum lycoctonum,RE,extinct,Belgium,NA,BEL
+Aconitum lycoctonum,LC,not_threatened,Czech Republic,2017,CZE
+Aconitum lycoctonum,VU,threatened,Finland,2001,FIN
+Aconitum lycoctonum,EN,threatened,Germany,2011,DEU
+Aconitum lycoctonum,LC,not_threatened,Switzerland,2019,CHE
+Acorus calamus,VU,threatened,Bosnia and Herzegovina,2013,BIH
+Acorus calamus,LC,not_threatened,Estonia,2008,EST
+Acorus calamus,LC,not_threatened,Finland,2019,FIN
+Acorus calamus,LC,not_threatened,Germany,1999,DEU
+Acorus calamus,LC,not_threatened,Germany,2011,DEU
+Acorus calamus,LC,not_threatened,Germany,1996,DEU
+Acorus calamus,NT,not_threatened,Hungary,2007,HUN
+Acorus calamus,LC,not_threatened,Netherlands,2012,NLD
+Acorus calamus,NT,not_threatened,Norway,2006,NOR
+Acorus calamus,VU,threatened,Russia,NA,RUS
+Acorus calamus,NT,not_threatened,Russia,NA,RUS
+Acorus calamus,NT,not_threatened,Russia,NA,RUS
+Acorus calamus,CR,threatened,Russia,NA,RUS
+Acorus calamus,VU,threatened,Switzerland,2002,CHE
+Actaea spicata,LC,not_threatened,Austria,1999,AUT
+Actaea spicata,EN,threatened,Belgium,2019,BEL
+Actaea spicata,LC,not_threatened,Estonia,2008,EST
+Actaea spicata,LC,not_threatened,France,2018,FRA
+Actaea spicata,LC,not_threatened,Germany,1999,DEU
+Actaea spicata,LC,not_threatened,Germany,2011,DEU
+Actaea spicata,LC,not_threatened,Germany,2018,DEU
+Actaea spicata,LC,not_threatened,Luxembourg,2005,LUX
+Actaea spicata,NT,not_threatened,Netherlands,2012,NLD
+Actaea spicata,NT,not_threatened,Russia,NA,RUS
+Actaea spicata,LC,not_threatened,Russia,NA,RUS
+Actaea spicata,VU,threatened,Russia,NA,RUS
+Actaea spicata,CR,threatened,Russia,NA,RUS
+Actaea spicata,EX,extinct,Russia,NA,RUS
+Actaea spicata,NT,not_threatened,Russia,NA,RUS
+Actaea spicata,NT,not_threatened,Russia,NA,RUS
+Actaea spicata,LC,not_threatened,Switzerland,2016,CHE
+Actaea spicata,LC,not_threatened,United Kingdom,2005,GBR
+Actaea spicata,NT,not_threatened,United Kingdom,2007,GBR
+Adonis vernalis,VU,threatened,Austria,1999,AUT
+Adonis vernalis,EN,threatened,Austria,1999,AUT
+Adonis vernalis,EN,threatened,Bosnia and Herzegovina,2013,BIH
+Adonis vernalis,DD,not_evaluated_dd,Croatia,2007,HRV
+Adonis vernalis,VU,threatened,Czech Republic,2017,CZE
+Adonis vernalis,EN,threatened,Czech Republic,2012,CZE
+Adonis vernalis,NT,not_threatened,France,2012,FRA
+Adonis vernalis,EN,threatened,Germany,1996,DEU
+Adonis vernalis,NT,not_threatened,Hungary,2007,HUN
+Adonis vernalis,LC,not_threatened,Hungary,2007,HUN
+Adonis vernalis,EN,threatened,Italy,2018,ITA
+Adonis vernalis,EN,threatened,Kosovo,2013,XKX
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,CR,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,CR,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,LC,not_threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,CR,threatened,Russia,NA,RUS
+Adonis vernalis,VU,threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Russia,NA,RUS
+Adonis vernalis,NT,not_threatened,Sweden,2020,SWE
+Adonis vernalis,VU,threatened,Switzerland,2019,CHE
+Aegopodium podagraria,LC,not_threatened,Austria,1999,AUT
+Aegopodium podagraria,LC,not_threatened,Belgium,2019,BEL
+Aegopodium podagraria,LC,not_threatened,Estonia,2008,EST
+Aegopodium podagraria,LC,not_threatened,France,2018,FRA
+Aegopodium podagraria,LC,not_threatened,Germany,1999,DEU
+Aegopodium podagraria,LC,not_threatened,Germany,2011,DEU
+Aegopodium podagraria,LC,not_threatened,Germany,2018,DEU
+Aegopodium podagraria,LC,not_threatened,Ireland,2016,IRL
+Aegopodium podagraria,LC,not_threatened,Luxembourg,2005,LUX
+Aegopodium podagraria,LC,not_threatened,Netherlands,2012,NLD
+Aegopodium podagraria,NT,not_threatened,Russia,NA,RUS
+Aegopodium podagraria,LC,not_threatened,Switzerland,2002,CHE
+Aegopodium podagraria,LC,not_threatened,United Kingdom,2005,GBR
+Ajuga pyramidalis,LC,not_threatened,Austria,1999,AUT
+Ajuga pyramidalis,NT,not_threatened,Belarus,2005,BLR
+Ajuga pyramidalis,LC,not_threatened,Bosnia and Herzegovina,2013,BIH
+Ajuga pyramidalis,EN,threatened,Czech Republic,2017,CZE
+Ajuga pyramidalis,EN,threatened,Denmark,2019,DNK
+Ajuga pyramidalis,VU,threatened,Estonia,2008,EST
+Ajuga pyramidalis,NT,not_threatened,Finland,2019,FIN
+Ajuga pyramidalis,threatened,threatened,Germany,1999,DEU
+Ajuga pyramidalis,threatened,threatened,Germany,2011,DEU
+Ajuga pyramidalis,EN,threatened,Germany,1996,DEU
+Ajuga pyramidalis,VU,threatened,Greece,2009,GRC
+Ajuga pyramidalis,VU,threatened,Ireland,2016,IRL
+Ajuga pyramidalis,EN,threatened,Latvia,2003,LVA
+Ajuga pyramidalis,EN,threatened,Lithuania,2007,LTU
+Ajuga pyramidalis,VU,threatened,Lithuania,2007,LTU
+Ajuga pyramidalis,VU,threatened,Netherlands,2012,NLD
+Ajuga pyramidalis,VU,threatened,Russia,NA,RUS
+Ajuga pyramidalis,EN,threatened,Spain,2010,ESP
+Ajuga pyramidalis,LC,not_threatened,Switzerland,2019,CHE
+Ajuga pyramidalis,CR,threatened,United Kingdom,2014,GBR
+Ajuga pyramidalis,EN,threatened,United Kingdom,2014,GBR
+Ajuga pyramidalis,NT,not_threatened,United Kingdom,2007,GBR
+Ajuga pyramidalis,VU,threatened,United Kingdom,2005,GBR
+Alchemilla vulgaris,LC,not_threatened,Germany,2018,DEU
+Alchemilla xanthochlora,LC,not_threatened,Austria,1999,AUT
+Alchemilla xanthochlora,NT,not_threatened,Belgium,2019,BEL
+Alchemilla xanthochlora,NE,not_evaluated_dd,Estonia,1998,EST
+Alchemilla xanthochlora,NT,not_threatened,Estonia,2008,EST
+Alchemilla xanthochlora,LC,not_threatened,France,2018,FRA
+Alchemilla xanthochlora,LC,not_threatened,Germany,1999,DEU
+Alchemilla xanthochlora,LC,not_threatened,Germany,2011,DEU
+Alchemilla xanthochlora,LC,not_threatened,Germany,2018,DEU
+Alchemilla xanthochlora,threatened,threatened,Germany,1996,DEU
+Alchemilla xanthochlora,EN,threatened,Hungary,2007,HUN
+Alchemilla xanthochlora,LC,not_threatened,Ireland,2016,IRL
+Alchemilla xanthochlora,LC,not_threatened,Luxembourg,2005,LUX
+Alchemilla xanthochlora,EN,threatened,Netherlands,2012,NLD
+Alchemilla xanthochlora,VU,threatened,Norway,2010,NOR
+Alchemilla xanthochlora,NT,not_threatened,Sweden,2005,SWE
+Alchemilla xanthochlora,VU,threatened,Sweden,2000,SWE
+Alchemilla xanthochlora,LC,not_threatened,Switzerland,2016,CHE
+Alchemilla xanthochlora,LC,not_threatened,United Kingdom,2005,GBR
+Allium schoenoprasum,LC,not_threatened,Austria,1999,AUT
+Allium schoenoprasum,EN,threatened,Austria,1999,AUT
+Allium schoenoprasum,EN,threatened,Belarus,2005,BLR
+Allium schoenoprasum,NT,not_threatened,Czech Republic,2017,CZE
+Allium schoenoprasum,NT,not_threatened,Denmark,2019,DNK
+Allium schoenoprasum,LC,not_threatened,Estonia,2008,EST
+Allium schoenoprasum,threatened,threatened,Germany,1999,DEU
+Allium schoenoprasum,LC,not_threatened,Germany,2011,DEU
+Allium schoenoprasum,VU,threatened,Ireland,2016,IRL
+Allium schoenoprasum,VU,threatened,Latvia,2003,LVA
+Allium schoenoprasum,LC,not_threatened,Netherlands,2012,NLD
+Allium schoenoprasum,NT,not_threatened,Russia,NA,RUS
+Allium schoenoprasum,VU,threatened,Russia,NA,RUS
+Allium schoenoprasum,NT,not_threatened,Russia,NA,RUS
+Allium schoenoprasum,CR,threatened,Russia,NA,RUS
+Allium schoenoprasum,LC,not_threatened,Switzerland,2019,CHE
+Allium schoenoprasum,LC,not_threatened,United Kingdom,2014,GBR
+Allium schoenoprasum,LC,not_threatened,United Kingdom,2005,GBR
+Allium schoenoprasum,NT,not_threatened,United Kingdom,2007,GBR
+Allium schoenoprasum,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Allium ursinum,LC,not_threatened,Austria,1999,AUT
+Allium ursinum,EN,threatened,Austria,1999,AUT
+Allium ursinum,VU,threatened,Belarus,2005,BLR
+Allium ursinum,LC,not_threatened,Czech Republic,2017,CZE
+Allium ursinum,LC,not_threatened,Denmark,2019,DNK
+Allium ursinum,NT,not_threatened,Estonia,2008,EST
+Allium ursinum,LC,not_threatened,Finland,2019,FIN
+Allium ursinum,NT,not_threatened,Finland,2001,FIN
+Allium ursinum,LC,not_threatened,Germany,1999,DEU
+Allium ursinum,threatened,threatened,Germany,2005,DEU
+Allium ursinum,LC,not_threatened,Germany,2011,DEU
+Allium ursinum,LC,not_threatened,Germany,1996,DEU
+Allium ursinum,LC,not_threatened,Ireland,2016,IRL
+Allium ursinum,VU,threatened,Latvia,2003,LVA
+Allium ursinum,LC,not_threatened,Netherlands,2012,NLD
+Allium ursinum,NT,not_threatened,Russia,NA,RUS
+Allium ursinum,VU,threatened,Russia,NA,RUS
+Allium ursinum,CR,threatened,Russia,NA,RUS
+Allium ursinum,VU,threatened,Russia,NA,RUS
+Allium ursinum,NT,not_threatened,Russia,NA,RUS
+Allium ursinum,NT,not_threatened,Russia,NA,RUS
+Allium ursinum,NT,not_threatened,Russia,NA,RUS
+Allium ursinum,LC,not_threatened,Switzerland,2019,CHE
+Allium ursinum,LC,not_threatened,United Kingdom,2014,GBR
+Allium ursinum,LC,not_threatened,United Kingdom,2014,GBR
+Allium victorialis,LC,not_threatened,Austria,1999,AUT
+Allium victorialis,EN,threatened,Czech Republic,2017,CZE
+Allium victorialis,threatened,threatened,Germany,1999,DEU
+Allium victorialis,LC,not_threatened,Germany,1996,DEU
+Allium victorialis,EN,threatened,Hungary,2007,HUN
+Allium victorialis,LC,not_threatened,Switzerland,2019,CHE
+Althaea officinalis,VU,threatened,Austria,1999,AUT
+Althaea officinalis,EN,threatened,Austria,1999,AUT
+Althaea officinalis,EN,threatened,Czech Republic,2017,CZE
+Althaea officinalis,NT,not_threatened,Denmark,2019,DNK
+Althaea officinalis,NE,not_evaluated_dd,Estonia,2008,EST
+Althaea officinalis,EN,threatened,Germany,1999,DEU
+Althaea officinalis,EX,extinct,Germany,2005,DEU
+Althaea officinalis,EN,threatened,Germany,1996,DEU
+Althaea officinalis,NT,not_threatened,Ireland,2016,IRL
+Althaea officinalis,LC,not_threatened,Netherlands,2012,NLD
+Althaea officinalis,NT,not_threatened,Russia,NA,RUS
+Althaea officinalis,CR,threatened,Russia,NA,RUS
+Althaea officinalis,VU,threatened,Russia,NA,RUS
+Althaea officinalis,NT,not_threatened,Russia,NA,RUS
+Althaea officinalis,VU,threatened,Russia,NA,RUS
+Althaea officinalis,NT,not_threatened,Russia,NA,RUS
+Althaea officinalis,NT,not_threatened,Russia,NA,RUS
+Althaea officinalis,CR,threatened,Russia,NA,RUS
+Althaea officinalis,CR,threatened,Russia,NA,RUS
+Althaea officinalis,DD,not_evaluated_dd,Switzerland,2002,CHE
+Althaea officinalis,NT,not_threatened,United Kingdom,2014,GBR
+Althaea officinalis,NT,not_threatened,United Kingdom,2014,GBR
+Althaea officinalis,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Althaea officinalis,LC,not_threatened,United Kingdom,2005,GBR
+Hepatica nobilis,LC,not_threatened,Austria,1999,AUT
+Hepatica nobilis,LC,not_threatened,Estonia,2008,EST
+Hepatica nobilis,LC,not_threatened,Germany,1999,DEU
+Hepatica nobilis,threatened,threatened,Germany,2005,DEU
+Hepatica nobilis,EN,threatened,Germany,2011,DEU
+Hepatica nobilis,LC,not_threatened,Germany,1996,DEU
+Hepatica nobilis,LC,not_threatened,Hungary,2007,HUN
+Hepatica nobilis,LC,not_threatened,Switzerland,2002,CHE
+Anemone nemorosa,LC,not_threatened,Austria,1999,AUT
+Anemone nemorosa,LC,not_threatened,Belgium,2019,BEL
+Anemone nemorosa,LC,not_threatened,Estonia,2008,EST
+Anemone nemorosa,LC,not_threatened,France,2018,FRA
+Anemone nemorosa,LC,not_threatened,Germany,1999,DEU
+Anemone nemorosa,LC,not_threatened,Germany,2011,DEU
+Anemone nemorosa,LC,not_threatened,Germany,2018,DEU
+Anemone nemorosa,LC,not_threatened,Ireland,2016,IRL
+Anemone nemorosa,LC,not_threatened,Luxembourg,2005,LUX
+Anemone nemorosa,LC,not_threatened,Netherlands,2012,NLD
+Anemone nemorosa,VU,threatened,Portugal,2020,PRT
+Anemone nemorosa,LC,not_threatened,Russia,NA,RUS
+Anemone nemorosa,NT,not_threatened,Russia,NA,RUS
+Anemone nemorosa,VU,threatened,Russia,NA,RUS
+Anemone nemorosa,NT,not_threatened,Russia,NA,RUS
+Anemone nemorosa,VU,threatened,Russia,NA,RUS
+Anemone nemorosa,NT,not_threatened,Russia,NA,RUS
+Anemone nemorosa,CR,threatened,Russia,NA,RUS
+Anemone nemorosa,NT,not_threatened,Russia,NA,RUS
+Anemone nemorosa,EX,extinct,Russia,NA,RUS
+Anemone nemorosa,NT,not_threatened,Russia,NA,RUS
+Anemone nemorosa,LC,not_threatened,Russia,NA,RUS
+Anemone nemorosa,NT,not_threatened,Russia,NA,RUS
+Anemone nemorosa,LC,not_threatened,Switzerland,2016,CHE
+Anemone nemorosa,LC,not_threatened,United Kingdom,2014,GBR
+Anemone sylvestris,VU,threatened,Austria,1999,AUT
+Anemone sylvestris,EN,threatened,Austria,1999,AUT
+Anemone sylvestris,NT,not_threatened,Belarus,2005,BLR
+Anemone sylvestris,NT,not_threatened,Bulgaria,2009,BGR
+Anemone sylvestris,CR,threatened,Croatia,2005,HRV
+Anemone sylvestris,EN,threatened,Croatia,2007,HRV
+Anemone sylvestris,EN,threatened,Czech Republic,2017,CZE
+Anemone sylvestris,LC,not_threatened,Estonia,2008,EST
+Anemone sylvestris,EN,threatened,Germany,1999,DEU
+Anemone sylvestris,EN,threatened,Germany,2011,DEU
+Anemone sylvestris,NT,not_threatened,Hungary,2007,HUN
+Anemone sylvestris,DD,not_evaluated_dd,Latvia,2003,LVA
+Anemone sylvestris,RE,extinct,Luxembourg,2005,LUX
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,CR,threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,LC,not_threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,LC,not_threatened,Russia,NA,RUS
+Anemone sylvestris,EX,extinct,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,NT,not_threatened,Russia,NA,RUS
+Anemone sylvestris,VU,threatened,Russia,NA,RUS
+Anemone sylvestris,EX,extinct,Slovenia,2002,SVN
+Anemone sylvestris,NT,not_threatened,Sweden,2005,SWE
+Anemone sylvestris,LC,not_threatened,Sweden,2000,SWE
+Anemone sylvestris,CR,threatened,Switzerland,2019,CHE
+Anemone sylvestris,EN,threatened,Switzerland,2002,CHE
+Angelica archangelica,NT,not_threatened,Estonia,2008,EST
+Angelica archangelica,LC,not_threatened,Finland,2019,FIN
+Angelica archangelica,LC,not_threatened,Germany,1999,DEU
+Angelica archangelica,LC,not_threatened,Germany,2011,DEU
+Angelica archangelica,LC,not_threatened,Germany,1996,DEU
+Angelica archangelica,LC,not_threatened,Hungary,2007,HUN
+Angelica archangelica,NT,not_threatened,Hungary,2007,HUN
+Angelica archangelica,LC,not_threatened,Netherlands,2012,NLD
+Angelica archangelica,NT,not_threatened,Russia,NA,RUS
+Angelica archangelica,VU,threatened,Russia,NA,RUS
+Angelica archangelica,NT,not_threatened,Russia,NA,RUS
+Angelica archangelica,NT,not_threatened,Russia,NA,RUS
+Antennaria dioica,LC,not_threatened,Austria,1999,AUT
+Antennaria dioica,EN,threatened,Austria,1999,AUT
+Antennaria dioica,RE,extinct,Belgium,2006,BEL
+Antennaria dioica,EN,threatened,Czech Republic,2017,CZE
+Antennaria dioica,NT,not_threatened,Denmark,2019,DNK
+Antennaria dioica,LC,not_threatened,Estonia,2008,EST
+Antennaria dioica,NT,not_threatened,Finland,2019,FIN
+Antennaria dioica,EN,threatened,Germany,1999,DEU
+Antennaria dioica,threatened,threatened,Germany,2005,DEU
+Antennaria dioica,EN,threatened,Germany,2011,DEU
+Antennaria dioica,EN,threatened,Germany,1996,DEU
+Antennaria dioica,NT,not_threatened,Hungary,2007,HUN
+Antennaria dioica,LC,not_threatened,Ireland,2016,IRL
+Antennaria dioica,RE,extinct,Luxembourg,NA,LUX
+Antennaria dioica,VU,threatened,Netherlands,2012,NLD
+Antennaria dioica,DD,not_evaluated_dd,Russia,NA,RUS
+Antennaria dioica,NT,not_threatened,Russia,NA,RUS
+Antennaria dioica,CR,threatened,Russia,NA,RUS
+Antennaria dioica,VU,threatened,Russia,NA,RUS
+Antennaria dioica,LC,not_threatened,Switzerland,2019,CHE
+Antennaria dioica,VU,threatened,United Kingdom,2014,GBR
+Antennaria dioica,VU,threatened,United Kingdom,2014,GBR
+Antennaria dioica,LC,not_threatened,United Kingdom,2005,GBR
+Anthericum ramosum,LC,not_threatened,Austria,1999,AUT
+Anthericum ramosum,EN,threatened,Austria,1999,AUT
+Anthericum ramosum,EX,extinct,Belgium,2006,BEL
+Anthericum ramosum,LC,not_threatened,Czech Republic,2017,CZE
+Anthericum ramosum,NT,not_threatened,Denmark,2019,DNK
+Anthericum ramosum,threatened,threatened,Germany,1999,DEU
+Anthericum ramosum,EN,threatened,Germany,2005,DEU
+Anthericum ramosum,threatened,threatened,Germany,1996,DEU
+Anthericum ramosum,RE,extinct,Norway,2015,NOR
+Anthericum ramosum,CR,threatened,Russia,NA,RUS
+Anthericum ramosum,NT,not_threatened,Russia,NA,RUS
+Anthericum ramosum,NT,not_threatened,Russia,NA,RUS
+Anthericum ramosum,NT,not_threatened,Russia,NA,RUS
+Anthericum ramosum,LC,not_threatened,Switzerland,2019,CHE
+Anthoxanthum odoratum,LC,not_threatened,Austria,1999,AUT
+Anthoxanthum odoratum,LC,not_threatened,Belgium,2019,BEL
+Anthoxanthum odoratum,LC,not_threatened,Estonia,2008,EST
+Anthoxanthum odoratum,LC,not_threatened,France,2018,FRA
+Anthoxanthum odoratum,LC,not_threatened,Germany,1999,DEU
+Anthoxanthum odoratum,LC,not_threatened,Germany,2011,DEU
+Anthoxanthum odoratum,LC,not_threatened,Germany,2018,DEU
+Anthoxanthum odoratum,LC,not_threatened,Ireland,2016,IRL
+Anthoxanthum odoratum,LC,not_threatened,Luxembourg,2005,LUX
+Anthoxanthum odoratum,EX,extinct,Malta,1989,MLT
+Anthoxanthum odoratum,LC,not_threatened,Netherlands,2012,NLD
+Anthoxanthum odoratum,NT,not_threatened,Russia,NA,RUS
+Anthoxanthum odoratum,LC,not_threatened,Switzerland,2002,CHE
+Anthoxanthum odoratum,LC,not_threatened,United Kingdom,2005,GBR
+Aquilegia vulgaris,EN,threatened,Austria,1999,AUT
+Aquilegia vulgaris,NT,not_threatened,Czech Republic,2017,CZE
+Aquilegia vulgaris,VU,threatened,Czech Republic,2012,CZE
+Aquilegia vulgaris,LC,not_threatened,Denmark,2019,DNK
+Aquilegia vulgaris,LC,not_threatened,Estonia,2008,EST
+Aquilegia vulgaris,LC,not_threatened,Finland,2019,FIN
+Aquilegia vulgaris,threatened,threatened,Germany,1999,DEU
+Aquilegia vulgaris,EN,threatened,Germany,2011,DEU
+Aquilegia vulgaris,NT,not_threatened,Hungary,2007,HUN
+Aquilegia vulgaris,VU,threatened,Hungary,2007,HUN
+Aquilegia vulgaris,LC,not_threatened,Ireland,2016,IRL
+Aquilegia vulgaris,LC,not_threatened,Netherlands,2012,NLD
+Aquilegia vulgaris,LC,not_threatened,Switzerland,2019,CHE
+Aquilegia vulgaris,LC,not_threatened,United Kingdom,2014,GBR
+Aquilegia vulgaris,LC,not_threatened,United Kingdom,2014,GBR
+Armoracia rusticana,LC,not_threatened,Estonia,2008,EST
+Armoracia rusticana,LC,not_threatened,Germany,1999,DEU
+Armoracia rusticana,LC,not_threatened,Germany,2011,DEU
+Armoracia rusticana,LC,not_threatened,Germany,1996,DEU
+Armoracia rusticana,LC,not_threatened,Ireland,2016,IRL
+Armoracia rusticana,LC,not_threatened,Netherlands,2012,NLD
+Armoracia rusticana,LC,not_threatened,Switzerland,2019,CHE
+Armoracia rusticana,LC,not_threatened,United Kingdom,2014,GBR
+Armoracia rusticana,LC,not_threatened,United Kingdom,2005,GBR
+Artemisia absinthium,LC,not_threatened,Austria,1999,AUT
+Artemisia absinthium,LC,not_threatened,Estonia,2008,EST
+Artemisia absinthium,LC,not_threatened,Finland,2019,FIN
+Artemisia absinthium,LC,not_threatened,Germany,1999,DEU
+Artemisia absinthium,EN,threatened,Germany,2011,DEU
+Artemisia absinthium,LC,not_threatened,Germany,1996,DEU
+Artemisia absinthium,VU,threatened,Ireland,2016,IRL
+Artemisia absinthium,LC,not_threatened,Netherlands,2012,NLD
+Artemisia absinthium,LC,not_threatened,Switzerland,2019,CHE
+Artemisia absinthium,LC,not_threatened,United Kingdom,2014,GBR
+Artemisia absinthium,LC,not_threatened,United Kingdom,2014,GBR
+Arum italicum,LC,not_threatened,Belgium,2019,BEL
+Arum italicum,VU,threatened,Cyprus,2007,CYP
+Arum italicum,LC,not_threatened,France,2018,FRA
+Arum italicum,LC,not_threatened,Netherlands,2012,NLD
+Arum italicum,EN,threatened,Switzerland,2002,CHE
+Arum italicum,NT,not_threatened,Switzerland,2016,CHE
+Arum italicum,LC,not_threatened,United Kingdom,2014,GBR
+Arum maculatum,LC,not_threatened,Austria,1999,AUT
+Arum maculatum,LC,not_threatened,Belgium,2019,BEL
+Arum maculatum,VU,threatened,Czech Republic,2012,CZE
+Arum maculatum,LC,not_threatened,France,2018,FRA
+Arum maculatum,LC,not_threatened,Germany,1999,DEU
+Arum maculatum,LC,not_threatened,Germany,2011,DEU
+Arum maculatum,LC,not_threatened,Germany,2018,DEU
+Arum maculatum,LC,not_threatened,Ireland,2016,IRL
+Arum maculatum,LC,not_threatened,Luxembourg,2005,LUX
+Arum maculatum,LC,not_threatened,Netherlands,2012,NLD
+Arum maculatum,LC,not_threatened,Switzerland,2016,CHE
+Arum maculatum,LC,not_threatened,United Kingdom,2014,GBR
+Asarum europaeum,LC,not_threatened,Estonia,2008,EST
+Asarum europaeum,NT,not_threatened,Finland,2019,FIN
+Asarum europaeum,VU,threatened,Finland,2001,FIN
+Asarum europaeum,LC,not_threatened,Germany,1999,DEU
+Asarum europaeum,threatened,threatened,Germany,2005,DEU
+Asarum europaeum,VU,threatened,Norway,2015,NOR
+Asarum europaeum,NT,not_threatened,Russia,NA,RUS
+Asarum europaeum,NT,not_threatened,Russia,NA,RUS
+Asarum europaeum,VU,threatened,Russia,NA,RUS
+Asarum europaeum,NT,not_threatened,Russia,NA,RUS
+Asarum europaeum,CR,threatened,Russia,NA,RUS
+Asarum europaeum,VU,threatened,Russia,NA,RUS
+Asarum europaeum,VU,threatened,Russia,NA,RUS
+Asarum europaeum,NT,not_threatened,Russia,NA,RUS
+Asarum europaeum,CR,threatened,Russia,NA,RUS
+Asarum europaeum,LC,not_threatened,Switzerland,2019,CHE
+Asphodelus albus,LC,not_threatened,France,2018,FRA
+Asphodelus albus,VU,threatened,Hungary,2007,HUN
+Asphodelus albus,NT,not_threatened,Hungary,2007,HUN
+Asphodelus albus,VU,threatened,Switzerland,2016,CHE
+Atropa belladonna,CR,threatened,Albania,2013,ALB
+Atropa belladonna,EN,threatened,Albania,2013,ALB
+Atropa belladonna,LC,not_threatened,Austria,1999,AUT
+Atropa belladonna,VU,threatened,Bulgaria,2009,BGR
+Atropa belladonna,LC,not_threatened,Germany,1999,DEU
+Atropa belladonna,LC,not_threatened,Germany,2011,DEU
+Atropa belladonna,LC,not_threatened,Germany,1996,DEU
+Atropa belladonna,CR,threatened,Netherlands,2012,NLD
+Atropa belladonna,EN,threatened,Netherlands,2012,NLD
+Atropa belladonna,LC,not_threatened,Switzerland,2019,CHE
+Aurinia saxatilis,LC,not_threatened,Austria,1999,AUT
+Bistorta officinalis,NT,not_threatened,Austria,1999,AUT
+Bistorta officinalis,LC,not_threatened,France,2018,FRA
+Bistorta officinalis,EN,threatened,Germany,2005,DEU
+Bistorta officinalis,LC,not_threatened,Germany,2011,DEU
+Bistorta officinalis,LC,not_threatened,Germany,2018,DEU
+Brunnera macrophylla,NE,not_evaluated_dd,Estonia,2008,EST
+Bunias orientalis,LC,not_threatened,Estonia,2008,EST
+Bunias orientalis,LC,not_threatened,Finland,2019,FIN
+Bunias orientalis,LC,not_threatened,Germany,1999,DEU
+Bunias orientalis,LC,not_threatened,Germany,2011,DEU
+Bunias orientalis,VU,threatened,Netherlands,2012,NLD
+Bunias orientalis,LC,not_threatened,Switzerland,2002,CHE
+Buphthalmum salicifolium,LC,not_threatened,Austria,1999,AUT
+Buphthalmum salicifolium,EN,threatened,Austria,1999,AUT
+Buphthalmum salicifolium,EN,threatened,Czech Republic,2017,CZE
+Buphthalmum salicifolium,threatened,threatened,Czech Republic,2012,CZE
+Buphthalmum salicifolium,threatened,threatened,Germany,1999,DEU
+Buphthalmum salicifolium,NT,not_threatened,Hungary,2007,HUN
+Buphthalmum salicifolium,LC,not_threatened,Switzerland,2019,CHE
+Calla palustris,VU,threatened,Austria,1999,AUT
+Calla palustris,EN,threatened,Austria,1999,AUT
+Calla palustris,CR,threatened,Croatia,2005,HRV
+Calla palustris,EN,threatened,Croatia,2007,HRV
+Calla palustris,NT,not_threatened,Czech Republic,2017,CZE
+Calla palustris,VU,threatened,Czech Republic,2012,CZE
+Calla palustris,LC,not_threatened,Denmark,2019,DNK
+Calla palustris,LC,not_threatened,Estonia,2008,EST
+Calla palustris,LC,not_threatened,Finland,2019,FIN
+Calla palustris,VU,threatened,France,2012,FRA
+Calla palustris,EN,threatened,Germany,1999,DEU
+Calla palustris,EN,threatened,Germany,2005,DEU
+Calla palustris,EN,threatened,Germany,2011,DEU
+Calla palustris,EN,threatened,Germany,1996,DEU
+Calla palustris,EX,extinct,Hungary,2007,HUN
+Calla palustris,RE,extinct,Luxembourg,NA,LUX
+Calla palustris,LC,not_threatened,Netherlands,2012,NLD
+Calla palustris,NT,not_threatened,Russia,NA,RUS
+Calla palustris,NT,not_threatened,Russia,NA,RUS
+Calla palustris,VU,threatened,Russia,NA,RUS
+Calla palustris,VU,threatened,Russia,NA,RUS
+Calla palustris,NT,not_threatened,Russia,NA,RUS
+Calla palustris,NT,not_threatened,Russia,NA,RUS
+Calla palustris,NT,not_threatened,Russia,NA,RUS
+Calla palustris,VU,threatened,Russia,NA,RUS
+Calla palustris,CR,threatened,Russia,NA,RUS
+Calla palustris,VU,threatened,Russia,NA,RUS
+Calla palustris,EN,threatened,Slovenia,2002,SVN
+Calla palustris,EN,threatened,Switzerland,2019,CHE
+Calluna vulgaris,LC,not_threatened,Austria,1999,AUT
+Calluna vulgaris,EN,threatened,Austria,1999,AUT
+Calluna vulgaris,VU,threatened,Bulgaria,2009,BGR
+Calluna vulgaris,LC,not_threatened,Denmark,2019,DNK
+Calluna vulgaris,LC,not_threatened,Estonia,2008,EST
+Calluna vulgaris,LC,not_threatened,Finland,2019,FIN
+Calluna vulgaris,LC,not_threatened,Germany,1999,DEU
+Calluna vulgaris,EN,threatened,Germany,2005,DEU
+Calluna vulgaris,LC,not_threatened,Germany,2011,DEU
+Calluna vulgaris,LC,not_threatened,Germany,1996,DEU
+Calluna vulgaris,LC,not_threatened,Ireland,2016,IRL
+Calluna vulgaris,LC,not_threatened,Netherlands,2012,NLD
+Calluna vulgaris,CR,threatened,Russia,NA,RUS
+Calluna vulgaris,NT,not_threatened,Russia,NA,RUS
+Calluna vulgaris,NT,not_threatened,Russia,NA,RUS
+Calluna vulgaris,CR,threatened,Russia,NA,RUS
+Calluna vulgaris,VU,threatened,Russia,NA,RUS
+Calluna vulgaris,EX,extinct,Russia,NA,RUS
+Calluna vulgaris,EX,extinct,Russia,NA,RUS
+Calluna vulgaris,EX,extinct,Russia,NA,RUS
+Calluna vulgaris,CR,threatened,Russia,NA,RUS
+Calluna vulgaris,NT,not_threatened,Russia,NA,RUS
+Calluna vulgaris,NT,not_threatened,Russia,NA,RUS
+Calluna vulgaris,LC,not_threatened,Switzerland,2019,CHE
+Calluna vulgaris,NT,not_threatened,United Kingdom,2014,GBR
+Calluna vulgaris,LC,not_threatened,United Kingdom,2005,GBR
+Calluna vulgaris,NT,not_threatened,United Kingdom,2014,GBR
+Caltha palustris,VU,threatened,Albania,2013,ALB
+Caltha palustris,LC,not_threatened,Austria,1999,AUT
+Caltha palustris,EN,threatened,Austria,1999,AUT
+Caltha palustris,LC,not_threatened,Estonia,2008,EST
+Caltha palustris,LC,not_threatened,Finland,2019,FIN
+Caltha palustris,LC,not_threatened,Germany,1999,DEU
+Caltha palustris,EN,threatened,Germany,2005,DEU
+Caltha palustris,threatened,threatened,Germany,2011,DEU
+Caltha palustris,LC,not_threatened,Ireland,2016,IRL
+Caltha palustris,EN,threatened,Moldova,2015,MDA
+Caltha palustris,VU,threatened,Russia,NA,RUS
+Caltha palustris,NT,not_threatened,Russia,NA,RUS
+Caltha palustris,LC,not_threatened,Switzerland,2019,CHE
+Caltha palustris,LC,not_threatened,United Kingdom,2014,GBR
+Caltha palustris,LC,not_threatened,United Kingdom,2005,GBR
+Campanula rotundifolia,LC,not_threatened,Austria,1999,AUT
+Campanula rotundifolia,NT,not_threatened,Belgium,2019,BEL
+Campanula rotundifolia,LC,not_threatened,Estonia,2008,EST
+Campanula rotundifolia,LC,not_threatened,France,2018,FRA
+Campanula rotundifolia,LC,not_threatened,Germany,1999,DEU
+Campanula rotundifolia,LC,not_threatened,Germany,2011,DEU
+Campanula rotundifolia,LC,not_threatened,Germany,2018,DEU
+Campanula rotundifolia,LC,not_threatened,Ireland,2016,IRL
+Campanula rotundifolia,LC,not_threatened,Luxembourg,2005,LUX
+Campanula rotundifolia,LC,not_threatened,Netherlands,2012,NLD
+Campanula rotundifolia,VU,threatened,Norway,2010,NOR
+Campanula rotundifolia,NT,not_threatened,Russia,NA,RUS
+Campanula rotundifolia,VU,threatened,Russia,NA,RUS
+Campanula rotundifolia,LC,not_threatened,Switzerland,2002,CHE
+Campanula rotundifolia,LC,not_threatened,United Kingdom,2005,GBR
+Campanula rotundifolia,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Campanula rotundifolia,NT,not_threatened,United Kingdom,2014,GBR
+Cardamine bulbifera,LC,not_threatened,Austria,1999,AUT
+Cardamine bulbifera,CR,threatened,Belgium,2006,BEL
+Cardamine bulbifera,LC,not_threatened,Estonia,2008,EST
+Cardamine bulbifera,NT,not_threatened,France,2018,FRA
+Cardamine bulbifera,LC,not_threatened,Germany,1999,DEU
+Cardamine bulbifera,LC,not_threatened,Germany,2011,DEU
+Cardamine bulbifera,LC,not_threatened,Germany,2018,DEU
+Cardamine bulbifera,threatened,threatened,Lithuania,2007,LTU
+Cardamine bulbifera,R,threatened,Luxembourg,2005,LUX
+Cardamine bulbifera,NT,not_threatened,Russia,NA,RUS
+Cardamine bulbifera,NT,not_threatened,Russia,NA,RUS
+Cardamine bulbifera,VU,threatened,Russia,NA,RUS
+Cardamine bulbifera,NT,not_threatened,Russia,NA,RUS
+Cardamine bulbifera,VU,threatened,Russia,NA,RUS
+Cardamine bulbifera,NT,not_threatened,Russia,NA,RUS
+Cardamine bulbifera,EN,threatened,Russia,NA,RUS
+Cardamine bulbifera,NT,not_threatened,Russia,NA,RUS
+Cardamine bulbifera,LC,not_threatened,Switzerland,2016,CHE
+Cardamine bulbifera,LC,not_threatened,United Kingdom,2014,GBR
+Cardamine bulbifera,NT,not_threatened,United Kingdom,2007,GBR
+Centranthus ruber,NT,not_threatened,Belgium,2019,BEL
+Centranthus ruber,LC,not_threatened,France,2018,FRA
+Centranthus ruber,LC,not_threatened,Germany,1999,DEU
+Centranthus ruber,NE,not_evaluated_dd,Germany,2018,DEU
+Centranthus ruber,LC,not_threatened,Luxembourg,2005,LUX
+Centranthus ruber,threatened,threatened,Malta,1989,MLT
+Centranthus ruber,LC,not_threatened,Switzerland,2002,CHE
+Chelidonium majus,LC,not_threatened,Austria,1999,AUT
+Chelidonium majus,LC,not_threatened,Belgium,2019,BEL
+Chelidonium majus,LC,not_threatened,Estonia,2008,EST
+Chelidonium majus,LC,not_threatened,France,2018,FRA
+Chelidonium majus,LC,not_threatened,Germany,1999,DEU
+Chelidonium majus,LC,not_threatened,Germany,2011,DEU
+Chelidonium majus,LC,not_threatened,Germany,2018,DEU
+Chelidonium majus,LC,not_threatened,Ireland,2016,IRL
+Chelidonium majus,LC,not_threatened,Luxembourg,2005,LUX
+Chelidonium majus,LC,not_threatened,Netherlands,2012,NLD
+Chelidonium majus,LC,not_threatened,Switzerland,2002,CHE
+Chelidonium majus,LC,not_threatened,United Kingdom,2005,GBR
+Clematis integrifolia,EN,threatened,Austria,1999,AUT
+Clematis integrifolia,VU,threatened,Croatia,2005,HRV
+Clematis integrifolia,CR,threatened,Czech Republic,2017,CZE
+Clematis integrifolia,threatened,threatened,Czech Republic,2012,CZE
+Clematis integrifolia,LC,not_threatened,Hungary,2007,HUN
+Clematis integrifolia,NT,not_threatened,Hungary,2007,HUN
+Clematis integrifolia,EW,extinct,Italy,2018,ITA
+Clematis integrifolia,LC,not_threatened,Russia,NA,RUS
+Clematis integrifolia,VU,threatened,Russia,NA,RUS
+Clematis integrifolia,VU,threatened,Russia,NA,RUS
+Clematis integrifolia,VU,threatened,Russia,NA,RUS
+Clematis integrifolia,NT,not_threatened,Russia,NA,RUS
+Clematis integrifolia,DD,not_evaluated_dd,Russia,NA,RUS
+Clematis integrifolia,NT,not_threatened,Russia,NA,RUS
+Clematis integrifolia,NT,not_threatened,Russia,NA,RUS
+Clematis integrifolia,NT,not_threatened,Russia,NA,RUS
+Clematis integrifolia,DD,not_evaluated_dd,Switzerland,2002,CHE
+Clematis recta,NT,not_threatened,Austria,1999,AUT
+Clematis recta,EN,threatened,Austria,1999,AUT
+Clematis recta,EN,threatened,Belarus,2005,BLR
+Clematis recta,NT,not_threatened,Czech Republic,2017,CZE
+Clematis recta,VU,threatened,Czech Republic,2012,CZE
+Clematis recta,NE,not_evaluated_dd,Estonia,2008,EST
+Clematis recta,CR,threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,CR,threatened,Russia,NA,RUS
+Clematis recta,VU,threatened,Russia,NA,RUS
+Clematis recta,CR,threatened,Russia,NA,RUS
+Clematis recta,VU,threatened,Russia,NA,RUS
+Clematis recta,CR,threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Russia,NA,RUS
+Clematis recta,NT,not_threatened,Switzerland,2019,CHE
+Colchicum autumnale,EN,threatened,Albania,2013,ALB
+Colchicum autumnale,LC,not_threatened,Austria,1999,AUT
+Colchicum autumnale,EN,threatened,Austria,1999,AUT
+Colchicum autumnale,VU,threatened,Estonia,2008,EST
+Colchicum autumnale,LC,not_threatened,Germany,1999,DEU
+Colchicum autumnale,threatened,threatened,Germany,2005,DEU
+Colchicum autumnale,EN,threatened,Germany,2011,DEU
+Colchicum autumnale,LC,not_threatened,Germany,1996,DEU
+Colchicum autumnale,EN,threatened,Ireland,2016,IRL
+Colchicum autumnale,LC,not_threatened,Netherlands,2012,NLD
+Colchicum autumnale,DD,not_evaluated_dd,Russia,NA,RUS
+Colchicum autumnale,NT,not_threatened,Russia,NA,RUS
+Colchicum autumnale,CR,threatened,Russia,NA,RUS
+Colchicum autumnale,LC,not_threatened,Switzerland,2019,CHE
+Colchicum autumnale,LC,not_threatened,United Kingdom,2014,GBR
+Colchicum autumnale,LC,not_threatened,United Kingdom,2014,GBR
+Colchicum autumnale,NT,not_threatened,United Kingdom,2005,GBR
+Comarum palustre,VU,threatened,Austria,1999,AUT
+Comarum palustre,LC,not_threatened,Belgium,2019,BEL
+Comarum palustre,LC,not_threatened,Czech Republic,2012,CZE
+Comarum palustre,LC,not_threatened,Estonia,2008,EST
+Comarum palustre,LC,not_threatened,France,2018,FRA
+Comarum palustre,EN,threatened,Germany,2011,DEU
+Comarum palustre,LC,not_threatened,Germany,2018,DEU
+Comarum palustre,EN,threatened,Hungary,2007,HUN
+Comarum palustre,LC,not_threatened,Ireland,2016,IRL
+Comarum palustre,VU,threatened,Luxembourg,2005,LUX
+Comarum palustre,LC,not_threatened,Netherlands,2012,NLD
+Comarum palustre,NT,not_threatened,Russia,NA,RUS
+Comarum palustre,NT,not_threatened,Russia,NA,RUS
+Comarum palustre,VU,threatened,Russia,NA,RUS
+Comarum palustre,VU,threatened,Slovakia,2014,SVK
+Comarum palustre,NT,not_threatened,United Kingdom,2014,GBR
+Conium maculatum,EN,threatened,Albania,2013,ALB
+Conium maculatum,LC,not_threatened,Austria,1999,AUT
+Conium maculatum,EN,threatened,Austria,1999,AUT
+Conium maculatum,LC,not_threatened,Estonia,2008,EST
+Conium maculatum,LC,not_threatened,Finland,2019,FIN
+Conium maculatum,EN,threatened,Germany,1999,DEU
+Conium maculatum,threatened,threatened,Germany,2005,DEU
+Conium maculatum,LC,not_threatened,Germany,2011,DEU
+Conium maculatum,LC,not_threatened,Germany,1996,DEU
+Conium maculatum,LC,not_threatened,Ireland,2016,IRL
+Conium maculatum,RE,extinct,Liechtenstein,2006,LIE
+Conium maculatum,LC,not_threatened,Netherlands,2012,NLD
+Conium maculatum,EN,threatened,Slovenia,2002,SVN
+Conium maculatum,NT,not_threatened,Switzerland,2019,CHE
+Conium maculatum,VU,threatened,Switzerland,2002,CHE
+Conium maculatum,LC,not_threatened,United Kingdom,2014,GBR
+Conium maculatum,LC,not_threatened,United Kingdom,2005,GBR
+Convallaria majalis,CR,threatened,Albania,2013,ALB
+Convallaria majalis,EN,threatened,Albania,2013,ALB
+Convallaria majalis,EN,threatened,Andorra,2008,AND
+Convallaria majalis,LC,not_threatened,Austria,1999,AUT
+Convallaria majalis,NT,not_threatened,Bosnia and Herzegovina,2013,BIH
+Convallaria majalis,LC,not_threatened,Denmark,2019,DNK
+Convallaria majalis,LC,not_threatened,Finland,2019,FIN
+Convallaria majalis,LC,not_threatened,Germany,1999,DEU
+Convallaria majalis,LC,not_threatened,Germany,2011,DEU
+Convallaria majalis,LC,not_threatened,Germany,1996,DEU
+Convallaria majalis,LC,not_threatened,Netherlands,2012,NLD
+Convallaria majalis,NT,not_threatened,Russia,NA,RUS
+Convallaria majalis,LC,not_threatened,Russia,NA,RUS
+Convallaria majalis,DD,not_evaluated_dd,Russia,NA,RUS
+Convallaria majalis,NT,not_threatened,Russia,NA,RUS
+Convallaria majalis,LC,not_threatened,Switzerland,2019,CHE
+Convallaria majalis,LC,not_threatened,United Kingdom,2014,GBR
+Convallaria majalis,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Convallaria majalis,LC,not_threatened,United Kingdom,2005,GBR
+Corydalis solida,LC,not_threatened,Austria,1999,AUT
+Corydalis solida,NT,not_threatened,Belgium,2019,BEL
+Corydalis solida,LC,not_threatened,Estonia,2008,EST
+Corydalis solida,LC,not_threatened,France,2018,FRA
+Corydalis solida,LC,not_threatened,Germany,1999,DEU
+Corydalis solida,LC,not_threatened,Germany,2011,DEU
+Corydalis solida,LC,not_threatened,Germany,2018,DEU
+Corydalis solida,LC,not_threatened,Luxembourg,2005,LUX
+Corydalis solida,LC,not_threatened,Netherlands,2012,NLD
+Corydalis solida,NT,not_threatened,Russia,NA,RUS
+Corydalis solida,NT,not_threatened,Russia,NA,RUS
+Corydalis solida,LC,not_threatened,Russia,NA,RUS
+Corydalis solida,LC,not_threatened,Russia,NA,RUS
+Corydalis solida,LC,not_threatened,Switzerland,2002,CHE
+Crocus speciosus,VU,threatened,Greece,2009,GRC
+Crocus speciosus,VU,threatened,Russia,NA,RUS
+Crocus speciosus,NT,not_threatened,Russia,NA,RUS
+Crocus speciosus,VU,threatened,Russia,NA,RUS
+Crocus speciosus,CR,threatened,Russia,NA,RUS
+Crocus speciosus,VU,threatened,Ukraine,2009,UKR
+Cyclamen coum,LC,not_threatened,Bulgaria,2009,BGR
+Cyclamen coum,VU,threatened,Russia,NA,RUS
+Cyclamen coum,VU,threatened,Switzerland,2002,CHE
+Cyclamen coum,EN,threatened,Ukraine,2009,UKR
+Dactylis glomerata,LC,not_threatened,Belgium,2019,BEL
+Dactylis glomerata,LC,not_threatened,Estonia,2008,EST
+Dactylis glomerata,LC,not_threatened,France,2018,FRA
+Dactylis glomerata,LC,not_threatened,Germany,1999,DEU
+Dactylis glomerata,LC,not_threatened,Germany,2018,DEU
+Dactylis glomerata,LC,not_threatened,Ireland,2016,IRL
+Dactylis glomerata,LC,not_threatened,Luxembourg,2005,LUX
+Dactylis glomerata,LC,not_threatened,Netherlands,2012,NLD
+Dactylis glomerata,LC,not_threatened,Switzerland,2016,CHE
+Dactylis glomerata,LC,not_threatened,United Kingdom,2005,GBR
+Daphne laureola,LC,not_threatened,Austria,1999,AUT
+Daphne laureola,EN,threatened,Austria,1999,AUT
+Daphne laureola,EN,threatened,Bosnia and Herzegovina,2013,BIH
+Daphne laureola,EN,threatened,Bulgaria,2015,BGR
+Daphne laureola,NT,not_threatened,Croatia,2007,HRV
+Daphne laureola,threatened,threatened,Germany,1999,DEU
+Daphne laureola,EN,threatened,Germany,1996,DEU
+Daphne laureola,NT,not_threatened,Hungary,2007,HUN
+Daphne laureola,VU,threatened,Romania,2009,ROU
+Daphne laureola,LC,not_threatened,Switzerland,2019,CHE
+Daphne laureola,LC,not_threatened,United Kingdom,2014,GBR
+Daphne laureola,LC,not_threatened,United Kingdom,2005,GBR
+Dianthus superbus,EN,threatened,Bosnia and Herzegovina,2013,BIH
+Dianthus superbus,EN,threatened,Czech Republic,2017,CZE
+Dianthus superbus,NT,not_threatened,Denmark,2019,DNK
+Dianthus superbus,CR,threatened,Estonia,2008,EST
+Dianthus superbus,EN,threatened,Estonia,2008,EST
+Dianthus superbus,LC,not_threatened,Finland,2019,FIN
+Dianthus superbus,VU,threatened,Finland,2019,FIN
+Dianthus superbus,EN,threatened,Finland,2010,FIN
+Dianthus superbus,EN,threatened,Germany,1999,DEU
+Dianthus superbus,threatened,threatened,Germany,2005,DEU
+Dianthus superbus,NT,not_threatened,Hungary,2007,HUN
+Dianthus superbus,LC,not_threatened,Kosovo,2013,XKX
+Dianthus superbus,CR,threatened,Latvia,2003,LVA
+Dianthus superbus,CR,threatened,Lithuania,2007,LTU
+Dianthus superbus,EN,threatened,Lithuania,2007,LTU
+Dianthus superbus,RE,extinct,Netherlands,2012,NLD
+Dianthus superbus,REW,extinct,Netherlands,2014,NLD
+Dianthus superbus,NT,not_threatened,Norway,2006,NOR
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,VU,threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,VU,threatened,Russia,NA,RUS
+Dianthus superbus,VU,threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,VU,threatened,Russia,NA,RUS
+Dianthus superbus,NT,not_threatened,Russia,NA,RUS
+Dianthus superbus,VU,threatened,Russia,NA,RUS
+Dianthus superbus,EN,threatened,Sweden,2020,SWE
+Dianthus superbus,LC,not_threatened,Switzerland,2019,CHE
+Dictamnus albus,VU,threatened,Austria,1999,AUT
+Dictamnus albus,EN,threatened,Austria,1999,AUT
+Dictamnus albus,NT,not_threatened,Czech Republic,2017,CZE
+Dictamnus albus,VU,threatened,Czech Republic,2012,CZE
+Dictamnus albus,EN,threatened,Germany,1999,DEU
+Dictamnus albus,EX,extinct,Germany,2011,DEU
+Dictamnus albus,LC,not_threatened,Hungary,2007,HUN
+Dictamnus albus,NT,not_threatened,Russia,NA,RUS
+Dictamnus albus,NT,not_threatened,Russia,NA,RUS
+Dictamnus albus,DD,not_evaluated_dd,Russia,NA,RUS
+Dictamnus albus,VU,threatened,Russia,NA,RUS
+Dictamnus albus,VU,threatened,Switzerland,2019,CHE
+Dictamnus albus,R,threatened,Ukraine,2009,UKR
+Dryas octopetala,LC,not_threatened,Austria,1999,AUT
+Dryas octopetala,VU,threatened,Bosnia and Herzegovina,2013,BIH
+Dryas octopetala,DD,not_evaluated_dd,Croatia,2007,HRV
+Dryas octopetala,NT,not_threatened,Finland,2019,FIN
+Dryas octopetala,LC,not_threatened,Germany,1996,DEU
+Dryas octopetala,VU,threatened,Greece,2009,GRC
+Dryas octopetala,LC,not_threatened,Ireland,2016,IRL
+Dryas octopetala,NT,not_threatened,Russia,NA,RUS
+Dryas octopetala,NT,not_threatened,Russia,NA,RUS
+Dryas octopetala,NT,not_threatened,Russia,NA,RUS
+Dryas octopetala,NT,not_threatened,Russia,NA,RUS
+Dryas octopetala,LC,not_threatened,Switzerland,2019,CHE
+Dryas octopetala,R,threatened,Ukraine,2009,UKR
+Dryas octopetala,VU,threatened,United Kingdom,2014,GBR
+Dryas octopetala,EN,threatened,United Kingdom,2008,GBR
+Dryas octopetala,NT,not_threatened,United Kingdom,2007,GBR
+Dryas octopetala,VU,threatened,United Kingdom,2014,GBR
+Dryas octopetala,LC,not_threatened,United Kingdom,2005,GBR
+Chamaenerion dodonaei,LC,not_threatened,Austria,1999,AUT
+Chamaenerion dodonaei,LC,not_threatened,Austria,1999,AUT
+Chamaenerion dodonaei,EN,threatened,Austria,1999,AUT
+Chamaenerion dodonaei,LC,not_threatened,Germany,1999,DEU
+Chamaenerion dodonaei,LC,not_threatened,Germany,1996,DEU
+Chamaenerion dodonaei,LC,not_threatened,Hungary,2007,HUN
+Chamaenerion dodonaei,NT,not_threatened,Hungary,2007,HUN
+Chamaenerion dodonaei,NT,not_threatened,Switzerland,2016,CHE
+Chamaenerion dodonaei,LC,not_threatened,Switzerland,2002,CHE
+Eranthis hyemalis,PEX,threatened,Bosnia and Herzegovina,2000,BIH
+Eranthis hyemalis,DD,not_evaluated_dd,France,2018,FRA
+Eranthis hyemalis,NE,not_evaluated_dd,Germany,2018,DEU
+Eranthis hyemalis,LC,not_threatened,Germany,1996,DEU
+Eranthis hyemalis,NT,not_threatened,Hungary,2007,HUN
+Eranthis hyemalis,LC,not_threatened,Netherlands,2012,NLD
+Eranthis hyemalis,NT,not_threatened,Switzerland,2002,CHE
+Eranthis hyemalis,LC,not_threatened,Switzerland,2016,CHE
+Eryngium campestre,NT,not_threatened,Austria,1999,AUT
+Eryngium campestre,EN,threatened,Austria,1999,AUT
+Eryngium campestre,VU,threatened,Cyprus,2007,CYP
+Eryngium campestre,EN,threatened,Germany,1999,DEU
+Eryngium campestre,LC,not_threatened,Germany,2011,DEU
+Eryngium campestre,threatened,threatened,Germany,1996,DEU
+Eryngium campestre,LC,not_threatened,Netherlands,2012,NLD
+Eryngium campestre,EX,extinct,Slovenia,2002,SVN
+Eryngium campestre,EN,threatened,Switzerland,2019,CHE
+Eryngium campestre,NT,not_threatened,United Kingdom,2014,GBR
+Eryngium campestre,RE,threatened,United Kingdom,2008,GBR
+Eryngium campestre,threatened,threatened,United Kingdom,2007,GBR
+Eryngium campestre,EN,threatened,United Kingdom,2005,GBR
+Eryngium campestre,NT,not_threatened,United Kingdom,2014,GBR
+Eupatorium cannabinum,LC,not_threatened,Austria,1999,AUT
+Eupatorium cannabinum,LC,not_threatened,Belgium,2019,BEL
+Eupatorium cannabinum,LC,not_threatened,Estonia,2008,EST
+Eupatorium cannabinum,LC,not_threatened,France,2018,FRA
+Eupatorium cannabinum,LC,not_threatened,Germany,1999,DEU
+Eupatorium cannabinum,LC,not_threatened,Germany,2011,DEU
+Eupatorium cannabinum,LC,not_threatened,Germany,2018,DEU
+Eupatorium cannabinum,LC,not_threatened,Ireland,2016,IRL
+Eupatorium cannabinum,LC,not_threatened,Luxembourg,2005,LUX
+Eupatorium cannabinum,LC,not_threatened,Netherlands,2012,NLD
+Eupatorium cannabinum,NT,not_threatened,Norway,2006,NOR
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,LC,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,VU,threatened,Russia,NA,RUS
+Eupatorium cannabinum,VU,threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,VU,threatened,Russia,NA,RUS
+Eupatorium cannabinum,NT,not_threatened,Russia,NA,RUS
+Eupatorium cannabinum,LC,not_threatened,Switzerland,2002,CHE
+Eupatorium cannabinum,LC,not_threatened,United Kingdom,2005,GBR
+Ficaria verna,LC,not_threatened,Austria,1999,AUT
+Ficaria verna,LC,not_threatened,Finland,2019,FIN
+Ficaria verna,LC,not_threatened,Germany,2011,DEU
+Ficaria verna,LC,not_threatened,Ireland,2016,IRL
+Ficaria verna,LC,not_threatened,Russia,NA,RUS
+Ficaria verna,NT,not_threatened,Russia,NA,RUS
+Ficaria verna,DD,not_evaluated_dd,Russia,NA,RUS
+Ficaria verna,LC,not_threatened,United Kingdom,2014,GBR
+Ficaria verna,LC,not_threatened,United Kingdom,2014,GBR
+Filipendula vulgaris,VU,threatened,Austria,1999,AUT
+Filipendula vulgaris,EN,threatened,Austria,1999,AUT
+Filipendula vulgaris,EX,extinct,Belgium,2006,BEL
+Filipendula vulgaris,LC,not_threatened,Denmark,2019,DNK
+Filipendula vulgaris,LC,not_threatened,Estonia,2008,EST
+Filipendula vulgaris,LC,not_threatened,Finland,2019,FIN
+Filipendula vulgaris,EN,threatened,Germany,1999,DEU
+Filipendula vulgaris,threatened,threatened,Germany,2005,DEU
+Filipendula vulgaris,EN,threatened,Germany,2011,DEU
+Filipendula vulgaris,threatened,threatened,Germany,1996,DEU
+Filipendula vulgaris,LC,not_threatened,Ireland,2016,IRL
+Filipendula vulgaris,CR,threatened,Netherlands,2012,NLD
+Filipendula vulgaris,EN,threatened,Netherlands,2012,NLD
+Filipendula vulgaris,NT,not_threatened,Norway,2015,NOR
+Filipendula vulgaris,DD,not_evaluated_dd,Russia,NA,RUS
+Filipendula vulgaris,CR,threatened,Russia,NA,RUS
+Filipendula vulgaris,VU,threatened,Russia,NA,RUS
+Filipendula vulgaris,VU,threatened,Russia,NA,RUS
+Filipendula vulgaris,VU,threatened,Russia,NA,RUS
+Filipendula vulgaris,VU,threatened,Switzerland,2019,CHE
+Filipendula vulgaris,LC,not_threatened,United Kingdom,2014,GBR
+Filipendula vulgaris,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Filipendula vulgaris,LC,not_threatened,United Kingdom,2014,GBR
+Fragaria vesca,LC,not_threatened,Austria,1999,AUT
+Fragaria vesca,LC,not_threatened,Belgium,2019,BEL
+Fragaria vesca,LC,not_threatened,Estonia,2008,EST
+Fragaria vesca,LC,not_threatened,France,2018,FRA
+Fragaria vesca,LC,not_threatened,Germany,1999,DEU
+Fragaria vesca,LC,not_threatened,Germany,2011,DEU
+Fragaria vesca,LC,not_threatened,Germany,2018,DEU
+Fragaria vesca,LC,not_threatened,Ireland,2016,IRL
+Fragaria vesca,LC,not_threatened,Luxembourg,2005,LUX
+Fragaria vesca,LC,not_threatened,Netherlands,2012,NLD
+Fragaria vesca,LC,not_threatened,Switzerland,2002,CHE
+Fragaria vesca,NT,not_threatened,United Kingdom,2014,GBR
+Fragaria vesca,LC,not_threatened,United Kingdom,2005,GBR
+Galanthus nivalis,VU,threatened,Andorra,2008,AND
+Galanthus nivalis,LC,not_threatened,Austria,1999,AUT
+Galanthus nivalis,EN,threatened,Austria,1999,AUT
+Galanthus nivalis,LC,not_threatened,Bosnia and Herzegovina,2013,BIH
+Galanthus nivalis,EN,threatened,Bulgaria,2015,BGR
+Galanthus nivalis,NT,not_threatened,Czech Republic,2017,CZE
+Galanthus nivalis,VU,threatened,Czech Republic,2012,CZE
+Galanthus nivalis,LC,not_threatened,Germany,1999,DEU
+Galanthus nivalis,LC,not_threatened,Germany,2011,DEU
+Galanthus nivalis,NT,not_threatened,Greece,2009,GRC
+Galanthus nivalis,LC,not_threatened,Hungary,2007,HUN
+Galanthus nivalis,LC,not_threatened,Italy,2018,ITA
+Galanthus nivalis,VU,threatened,Moldova,2015,MDA
+Galanthus nivalis,LC,not_threatened,Netherlands,2012,NLD
+Galanthus nivalis,LC,not_threatened,Switzerland,2019,CHE
+Galanthus nivalis,NT,not_threatened,Switzerland,2002,CHE
+Galega officinalis,VU,threatened,Austria,1999,AUT
+Galega officinalis,EN,threatened,Austria,1999,AUT
+Galega officinalis,NT,not_threatened,Czech Republic,2017,CZE
+Galega officinalis,LC,not_threatened,Czech Republic,2012,CZE
+Galega officinalis,LC,not_threatened,Germany,1999,DEU
+Galega officinalis,LC,not_threatened,Germany,1996,DEU
+Galega officinalis,NT,not_threatened,Russia,NA,RUS
+Galega officinalis,VU,threatened,Switzerland,2002,CHE
+Galium mollugo,LC,not_threatened,Austria,1999,AUT
+Galium mollugo,EN,threatened,Austria,1999,AUT
+Galium mollugo,DD,not_evaluated_dd,Czech Republic,2017,CZE
+Galium mollugo,LC,not_threatened,Czech Republic,2012,CZE
+Galium mollugo,LC,not_threatened,Denmark,2019,DNK
+Galium mollugo,LC,not_threatened,Estonia,2008,EST
+Galium mollugo,LC,not_threatened,Germany,1999,DEU
+Galium mollugo,LC,not_threatened,Germany,1996,DEU
+Galium mollugo,LC,not_threatened,Netherlands,2012,NLD
+Galium mollugo,LC,not_threatened,Switzerland,2019,CHE
+Galium mollugo,LC,not_threatened,United Kingdom,2005,GBR
+Galium odoratum,EN,threatened,Andorra,2008,AND
+Galium odoratum,LC,not_threatened,Austria,1999,AUT
+Galium odoratum,LC,not_threatened,Belgium,2019,BEL
+Galium odoratum,LC,not_threatened,Estonia,2008,EST
+Galium odoratum,NT,not_threatened,Finland,2001,FIN
+Galium odoratum,LC,not_threatened,France,2018,FRA
+Galium odoratum,LC,not_threatened,Germany,1999,DEU
+Galium odoratum,LC,not_threatened,Germany,2011,DEU
+Galium odoratum,LC,not_threatened,Germany,2018,DEU
+Galium odoratum,LC,not_threatened,Ireland,2016,IRL
+Galium odoratum,LC,not_threatened,Luxembourg,2005,LUX
+Galium odoratum,LC,not_threatened,Netherlands,2012,NLD
+Galium odoratum,CR,threatened,Russia,NA,RUS
+Galium odoratum,NT,not_threatened,Russia,NA,RUS
+Galium odoratum,NT,not_threatened,Russia,NA,RUS
+Galium odoratum,VU,threatened,Russia,NA,RUS
+Galium odoratum,LC,not_threatened,Switzerland,2002,CHE
+Galium odoratum,LC,not_threatened,United Kingdom,2014,GBR
+Galium odoratum,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Genista sagittalis,LC,not_threatened,Austria,1999,AUT
+Genista sagittalis,LC,not_threatened,Switzerland,2019,CHE
+Genista tinctoria,EN,threatened,Andorra,2008,AND
+Genista tinctoria,LC,not_threatened,Austria,1999,AUT
+Genista tinctoria,EN,threatened,Austria,1999,AUT
+Genista tinctoria,LC,not_threatened,Denmark,2019,DNK
+Genista tinctoria,NE,not_evaluated_dd,Estonia,2008,EST
+Genista tinctoria,LC,not_threatened,Germany,1999,DEU
+Genista tinctoria,threatened,threatened,Germany,2005,DEU
+Genista tinctoria,NT,not_threatened,Netherlands,2012,NLD
+Genista tinctoria,EN,threatened,Norway,2006,NOR
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,VU,threatened,Russia,NA,RUS
+Genista tinctoria,VU,threatened,Sweden,2020,SWE
+Genista tinctoria,NT,not_threatened,Sweden,2000,SWE
+Genista tinctoria,LC,not_threatened,Switzerland,2019,CHE
+Genista tinctoria,VU,threatened,United Kingdom,2014,GBR
+Genista tinctoria,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Genista tinctoria,VU,threatened,United Kingdom,2014,GBR
+Genista tinctoria,LC,not_threatened,United Kingdom,2005,GBR
+Genista tinctoria,EN,threatened,Andorra,2008,AND
+Genista tinctoria,LC,not_threatened,Austria,1999,AUT
+Genista tinctoria,EN,threatened,Austria,1999,AUT
+Genista tinctoria,LC,not_threatened,Denmark,2019,DNK
+Genista tinctoria,NE,not_evaluated_dd,Estonia,2008,EST
+Genista tinctoria,LC,not_threatened,Germany,1999,DEU
+Genista tinctoria,threatened,threatened,Germany,2005,DEU
+Genista tinctoria,NT,not_threatened,Netherlands,2012,NLD
+Genista tinctoria,EN,threatened,Norway,2006,NOR
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,NT,not_threatened,Russia,NA,RUS
+Genista tinctoria,VU,threatened,Russia,NA,RUS
+Genista tinctoria,VU,threatened,Sweden,2020,SWE
+Genista tinctoria,NT,not_threatened,Sweden,2000,SWE
+Genista tinctoria,LC,not_threatened,Switzerland,2019,CHE
+Genista tinctoria,VU,threatened,United Kingdom,2014,GBR
+Genista tinctoria,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Genista tinctoria,VU,threatened,United Kingdom,2014,GBR
+Genista tinctoria,LC,not_threatened,United Kingdom,2005,GBR
+Gentiana cruciata,NT,not_threatened,Austria,1999,AUT
+Gentiana cruciata,EN,threatened,Austria,1999,AUT
+Gentiana cruciata,VU,threatened,Belarus,2005,BLR
+Gentiana cruciata,EN,threatened,Czech Republic,2017,CZE
+Gentiana cruciata,EN,threatened,Germany,1999,DEU
+Gentiana cruciata,EN,threatened,Germany,2011,DEU
+Gentiana cruciata,EN,threatened,Germany,1996,DEU
+Gentiana cruciata,NT,not_threatened,Hungary,2007,HUN
+Gentiana cruciata,VU,threatened,Latvia,2003,LVA
+Gentiana cruciata,EN,threatened,Lithuania,2007,LTU
+Gentiana cruciata,VU,threatened,Lithuania,2007,LTU
+Gentiana cruciata,RE,extinct,Luxembourg,2005,LUX
+Gentiana cruciata,LC,not_threatened,Netherlands,2012,NLD
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,DD,not_evaluated_dd,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,EN,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,NT,not_threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Russia,NA,RUS
+Gentiana cruciata,VU,threatened,Switzerland,2019,CHE
+Gentiana lutea,EN,threatened,Albania,2013,ALB
+Gentiana lutea,EN,threatened,Bosnia and Herzegovina,2013,BIH
+Gentiana lutea,EN,threatened,Bulgaria,2015,BGR
+Gentiana lutea,VU,threatened,Croatia,2005,HRV
+Gentiana lutea,threatened,threatened,Germany,1999,DEU
+Gentiana lutea,EN,threatened,Germany,1996,DEU
+Gentiana lutea,NT,not_threatened,Italy,2018,ITA
+Gentiana lutea,VU,threatened,Kosovo,2013,XKX
+Gentiana lutea,VU,threatened,Slovenia,2002,SVN
+Gentiana lutea,LC,not_threatened,Switzerland,2019,CHE
+Gentiana lutea,VU,threatened,Ukraine,2009,UKR
+Geranium sanguineum,NT,not_threatened,Austria,1999,AUT
+Geranium sanguineum,EN,threatened,Austria,1999,AUT
+Geranium sanguineum,NT,not_threatened,Czech Republic,2017,CZE
+Geranium sanguineum,LC,not_threatened,Czech Republic,2012,CZE
+Geranium sanguineum,LC,not_threatened,Denmark,2019,DNK
+Geranium sanguineum,LC,not_threatened,Estonia,2008,EST
+Geranium sanguineum,LC,not_threatened,Finland,2019,FIN
+Geranium sanguineum,LC,not_threatened,Germany,1999,DEU
+Geranium sanguineum,threatened,threatened,Germany,2005,DEU
+Geranium sanguineum,EN,threatened,Germany,2011,DEU
+Geranium sanguineum,LC,not_threatened,Ireland,2016,IRL
+Geranium sanguineum,NT,not_threatened,Russia,NA,RUS
+Geranium sanguineum,NT,not_threatened,Russia,NA,RUS
+Geranium sanguineum,NT,not_threatened,Russia,NA,RUS
+Geranium sanguineum,NT,not_threatened,Russia,NA,RUS
+Geranium sanguineum,NT,not_threatened,Russia,NA,RUS
+Geranium sanguineum,LC,not_threatened,Switzerland,2019,CHE
+Geranium sanguineum,NT,not_threatened,United Kingdom,2014,GBR
+Geranium sanguineum,NT,not_threatened,United Kingdom,2014,GBR
+Geranium sanguineum,LC,not_threatened,United Kingdom,2005,GBR
+Geranium sanguineum,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Geum rivale,LC,not_threatened,Austria,1999,AUT
+Geum rivale,EN,threatened,Austria,1999,AUT
+Geum rivale,RE,extinct,Belgium,2020,BEL
+Geum rivale,LC,not_threatened,Denmark,2019,DNK
+Geum rivale,LC,not_threatened,Estonia,2008,EST
+Geum rivale,LC,not_threatened,Finland,2019,FIN
+Geum rivale,LC,not_threatened,Germany,1999,DEU
+Geum rivale,threatened,threatened,Germany,2005,DEU
+Geum rivale,EN,threatened,Germany,2011,DEU
+Geum rivale,CR,threatened,Hungary,2007,HUN
+Geum rivale,EN,threatened,Hungary,2007,HUN
+Geum rivale,LC,not_threatened,Ireland,2016,IRL
+Geum rivale,VU,threatened,Netherlands,2012,NLD
+Geum rivale,VU,threatened,Russia,NA,RUS
+Geum rivale,LC,not_threatened,Switzerland,2019,CHE
+Geum rivale,LC,not_threatened,United Kingdom,2014,GBR
+Geum rivale,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Geum rivale,LC,not_threatened,United Kingdom,2014,GBR
+Geum urbanum,LC,not_threatened,Austria,1999,AUT
+Geum urbanum,LC,not_threatened,Belgium,2019,BEL
+Geum urbanum,VU,threatened,Cyprus,2007,CYP
+Geum urbanum,LC,not_threatened,Estonia,2008,EST
+Geum urbanum,LC,not_threatened,France,2018,FRA
+Geum urbanum,LC,not_threatened,Germany,1999,DEU
+Geum urbanum,LC,not_threatened,Germany,2011,DEU
+Geum urbanum,LC,not_threatened,Germany,2018,DEU
+Geum urbanum,LC,not_threatened,Ireland,2016,IRL
+Geum urbanum,LC,not_threatened,Luxembourg,2005,LUX
+Geum urbanum,LC,not_threatened,Netherlands,2012,NLD
+Geum urbanum,LC,not_threatened,Switzerland,2016,CHE
+Geum urbanum,LC,not_threatened,United Kingdom,2005,GBR
+Globularia cordifolia,LC,not_threatened,Austria,1999,AUT
+Globularia cordifolia,EN,threatened,Austria,1999,AUT
+Globularia cordifolia,EN,threatened,Hungary,2007,HUN
+Globularia cordifolia,CR,threatened,Hungary,2007,HUN
+Globularia cordifolia,LC,not_threatened,Switzerland,2019,CHE
+Glycyrrhiza glabra,EN,threatened,Bulgaria,2015,BGR
+Glycyrrhiza glabra,CR,threatened,Romania,2009,ROU
+Glycyrrhiza glabra,DD,not_evaluated_dd,Russia,NA,RUS
+Glycyrrhiza glabra,NT,not_threatened,Russia,NA,RUS
+Glycyrrhiza glabra,NT,not_threatened,Russia,NA,RUS
+Glycyrrhiza glabra,DD,not_evaluated_dd,Slovenia,2002,SVN
+Glycyrrhiza glabra,DD,not_evaluated_dd,Switzerland,2002,CHE
+Gratiola officinalis,EN,threatened,Austria,1999,AUT
+Gratiola officinalis,RE,extinct,Belgium,NA,BEL
+Gratiola officinalis,EX,extinct,Belgium,NA,BEL
+Gratiola officinalis,EN,threatened,Czech Republic,2017,CZE
+Gratiola officinalis,RE,extinct,Estonia,2008,EST
+Gratiola officinalis,PE,threatened,Estonia,1998,EST
+Gratiola officinalis,threatened,threatened,Germany,1999,DEU
+Gratiola officinalis,EX,extinct,Germany,2005,DEU
+Gratiola officinalis,threatened,threatened,Germany,2011,DEU
+Gratiola officinalis,EN,threatened,Germany,1996,DEU
+Gratiola officinalis,EN,threatened,Latvia,2003,LVA
+Gratiola officinalis,CR,threatened,Lithuania,2007,LTU
+Gratiola officinalis,EN,threatened,Lithuania,2007,LTU
+Gratiola officinalis,RE,extinct,Luxembourg,2005,LUX
+Gratiola officinalis,EN,threatened,Netherlands,2012,NLD
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,NT,not_threatened,Russia,NA,RUS
+Gratiola officinalis,DD,not_evaluated_dd,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,NT,not_threatened,Russia,NA,RUS
+Gratiola officinalis,NT,not_threatened,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,CR,threatened,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Russia,NA,RUS
+Gratiola officinalis,NT,not_threatened,Russia,NA,RUS
+Gratiola officinalis,VU,threatened,Slovenia,2002,SVN
+Gratiola officinalis,VU,threatened,Switzerland,2019,CHE
+Helianthemum nummularium,EN,threatened,Austria,1999,AUT
+Helianthemum nummularium,LC,not_threatened,Estonia,2008,EST
+Helianthemum nummularium,NT,not_threatened,Finland,2019,FIN
+Helianthemum nummularium,threatened,threatened,Germany,1999,DEU
+Helianthemum nummularium,EN,threatened,Germany,2011,DEU
+Helianthemum nummularium,NT,not_threatened,Hungary,2007,HUN
+Helianthemum nummularium,CR,threatened,Ireland,2016,IRL
+Helianthemum nummularium,EN,threatened,Ireland,2016,IRL
+Helianthemum nummularium,VU,threatened,Latvia,2003,LVA
+Helianthemum nummularium,EN,threatened,Netherlands,2012,NLD
+Helianthemum nummularium,CR,threatened,Norway,2015,NOR
+Helianthemum nummularium,EN,threatened,Norway,2006,NOR
+Helianthemum nummularium,VU,threatened,Russia,NA,RUS
+Helianthemum nummularium,NT,not_threatened,Russia,NA,RUS
+Helianthemum nummularium,EN,threatened,Russia,NA,RUS
+Helianthemum nummularium,CR,threatened,Russia,NA,RUS
+Helianthemum nummularium,VU,threatened,Russia,NA,RUS
+Helianthemum nummularium,EX,extinct,Russia,NA,RUS
+Helianthemum nummularium,CR,threatened,Russia,NA,RUS
+Helianthemum nummularium,VU,threatened,Russia,NA,RUS
+Helianthemum nummularium,CR,threatened,Russia,NA,RUS
+Helianthemum nummularium,NT,not_threatened,Russia,NA,RUS
+Helianthemum nummularium,NT,not_threatened,Russia,NA,RUS
+Helianthemum nummularium,VU,threatened,Russia,NA,RUS
+Helianthemum nummularium,NT,not_threatened,Russia,NA,RUS
+Helianthemum nummularium,VU,threatened,Russia,NA,RUS
+Helianthemum nummularium,NT,not_threatened,Sweden,2020,SWE
+Helianthemum nummularium,LC,not_threatened,Switzerland,2019,CHE
+Helianthemum nummularium,NT,not_threatened,United Kingdom,2014,GBR
+Helianthemum nummularium,NT,not_threatened,United Kingdom,2014,GBR
+Helianthemum nummularium,LC,not_threatened,United Kingdom,2005,GBR
+Helianthemum nummularium,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Helichrysum arenarium,EN,threatened,Austria,1999,AUT
+Helichrysum arenarium,EN,threatened,Czech Republic,2017,CZE
+Helichrysum arenarium,NT,not_threatened,Denmark,2019,DNK
+Helichrysum arenarium,PEX,threatened,France,NA,FRA
+Helichrysum arenarium,EN,threatened,France,2012,FRA
+Helichrysum arenarium,EN,threatened,Germany,1999,DEU
+Helichrysum arenarium,EX,extinct,Germany,2011,DEU
+Helichrysum arenarium,EN,threatened,Germany,1996,DEU
+Helichrysum arenarium,NT,not_threatened,Hungary,2007,HUN
+Helichrysum arenarium,RE,extinct,Luxembourg,2005,LUX
+Helichrysum arenarium,VU,threatened,Netherlands,2012,NLD
+Helichrysum arenarium,NT,not_threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Russia,NA,RUS
+Helichrysum arenarium,CR,threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Russia,NA,RUS
+Helichrysum arenarium,NT,not_threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Russia,NA,RUS
+Helichrysum arenarium,NT,not_threatened,Russia,NA,RUS
+Helichrysum arenarium,LC,not_threatened,Russia,NA,RUS
+Helichrysum arenarium,NT,not_threatened,Russia,NA,RUS
+Helichrysum arenarium,LC,not_threatened,Russia,NA,RUS
+Helichrysum arenarium,CR,threatened,Russia,NA,RUS
+Helichrysum arenarium,VU,threatened,Sweden,2020,SWE
+Helleborus niger,LC,not_threatened,Austria,1999,AUT
+Helleborus niger,EN,threatened,Austria,1999,AUT
+Helleborus niger,VU,threatened,Croatia,2005,HRV
+Helleborus niger,EN,threatened,Germany,1996,DEU
+Helleborus niger,LC,not_threatened,Switzerland,2019,CHE
+Helleborus niger,NT,not_threatened,Switzerland,2002,CHE
+Helleborus orientalis,CR,threatened,Russia,NA,RUS
+Helleborus orientalis,NT,not_threatened,Russia,NA,RUS
+Helleborus orientalis,CR,threatened,Russia,NA,RUS
+Helleborus orientalis,NT,not_threatened,Switzerland,2002,CHE
+Helleborus viridis,LC,not_threatened,Austria,1999,AUT
+Helleborus viridis,EN,threatened,Austria,1999,AUT
+Helleborus viridis,EN,threatened,Germany,1999,DEU
+Helleborus viridis,EN,threatened,Netherlands,2012,NLD
+Helleborus viridis,NT,not_threatened,Switzerland,2019,CHE
+Helleborus viridis,LC,not_threatened,United Kingdom,2014,GBR
+Helleborus viridis,LC,not_threatened,United Kingdom,2014,GBR
+Helleborus viridis,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Hemerocallis fulva,NE,not_evaluated_dd,Estonia,2008,EST
+Hemerocallis fulva,LC,not_threatened,Germany,1999,DEU
+Hemerocallis fulva,NE,not_evaluated_dd,Germany,2018,DEU
+Hemerocallis fulva,LC,not_threatened,Germany,1996,DEU
+Hemerocallis fulva,LC,not_threatened,Switzerland,2002,CHE
+Humulus lupulus,LC,not_threatened,Austria,1999,AUT
+Humulus lupulus,LC,not_threatened,Belgium,2019,BEL
+Humulus lupulus,LC,not_threatened,Estonia,2008,EST
+Humulus lupulus,LC,not_threatened,France,2018,FRA
+Humulus lupulus,LC,not_threatened,Germany,1999,DEU
+Humulus lupulus,LC,not_threatened,Germany,2011,DEU
+Humulus lupulus,LC,not_threatened,Germany,2018,DEU
+Humulus lupulus,LC,not_threatened,Luxembourg,2005,LUX
+Humulus lupulus,LC,not_threatened,Netherlands,2012,NLD
+Humulus lupulus,NT,not_threatened,Russia,NA,RUS
+Humulus lupulus,LC,not_threatened,Switzerland,2002,CHE
+Humulus lupulus,LC,not_threatened,United Kingdom,2005,GBR
+Hypericum perforatum,EN,threatened,Albania,2013,ALB
+Hypericum perforatum,LC,not_threatened,Austria,1999,AUT
+Hypericum perforatum,LC,not_threatened,Denmark,2019,DNK
+Hypericum perforatum,LC,not_threatened,Estonia,2008,EST
+Hypericum perforatum,LC,not_threatened,Finland,2019,FIN
+Hypericum perforatum,LC,not_threatened,Germany,1999,DEU
+Hypericum perforatum,LC,not_threatened,Germany,1996,DEU
+Hypericum perforatum,LC,not_threatened,Ireland,2016,IRL
+Hypericum perforatum,LC,not_threatened,Netherlands,2012,NLD
+Hypericum perforatum,LC,not_threatened,Russia,NA,RUS
+Hypericum perforatum,LC,not_threatened,Switzerland,2019,CHE
+Hypericum perforatum,LC,not_threatened,United Kingdom,2014,GBR
+Hypericum perforatum,LC,not_threatened,United Kingdom,2005,GBR
+Iberis sempervirens,LC,not_threatened,France,2018,FRA
+Iberis sempervirens,NT,not_threatened,Switzerland,2002,CHE
+Iris pseudacorus,VU,threatened,Albania,2013,ALB
+Iris pseudacorus,LC,not_threatened,Austria,1999,AUT
+Iris pseudacorus,EN,threatened,Austria,1999,AUT
+Iris pseudacorus,LC,not_threatened,Denmark,2019,DNK
+Iris pseudacorus,LC,not_threatened,Estonia,2008,EST
+Iris pseudacorus,LC,not_threatened,Finland,2019,FIN
+Iris pseudacorus,LC,not_threatened,Germany,1999,DEU
+Iris pseudacorus,LC,not_threatened,Germany,2011,DEU
+Iris pseudacorus,LC,not_threatened,Germany,1996,DEU
+Iris pseudacorus,LC,not_threatened,Ireland,2016,IRL
+Iris pseudacorus,EX,extinct,Malta,1989,MLT
+Iris pseudacorus,LC,not_threatened,Netherlands,2012,NLD
+Iris pseudacorus,VU,threatened,Russia,NA,RUS
+Iris pseudacorus,NT,not_threatened,Russia,NA,RUS
+Iris pseudacorus,NT,not_threatened,Russia,NA,RUS
+Iris pseudacorus,NT,not_threatened,Russia,NA,RUS
+Iris pseudacorus,NT,not_threatened,Russia,NA,RUS
+Iris pseudacorus,VU,threatened,Russia,NA,RUS
+Iris pseudacorus,VU,threatened,Russia,NA,RUS
+Iris pseudacorus,NT,not_threatened,Russia,NA,RUS
+Iris pseudacorus,LC,not_threatened,Switzerland,2019,CHE
+Iris pseudacorus,LC,not_threatened,United Kingdom,2014,GBR
+Iris pseudacorus,LC,not_threatened,United Kingdom,2005,GBR
+Lamium album,LC,not_threatened,Austria,1999,AUT
+Lamium album,LC,not_threatened,Belgium,2019,BEL
+Lamium album,LC,not_threatened,Estonia,2008,EST
+Lamium album,LC,not_threatened,France,2018,FRA
+Lamium album,LC,not_threatened,Germany,1999,DEU
+Lamium album,LC,not_threatened,Germany,2011,DEU
+Lamium album,LC,not_threatened,Germany,2018,DEU
+Lamium album,LC,not_threatened,Ireland,2016,IRL
+Lamium album,LC,not_threatened,Luxembourg,2005,LUX
+Lamium album,LC,not_threatened,Netherlands,2012,NLD
+Lamium album,LC,not_threatened,Switzerland,2002,CHE
+Lamium album,LC,not_threatened,United Kingdom,2014,GBR
+Lathyrus vernus,LC,not_threatened,Austria,1999,AUT
+Lathyrus vernus,NT,not_threatened,Denmark,2019,DNK
+Lathyrus vernus,LC,not_threatened,Estonia,2008,EST
+Lathyrus vernus,LC,not_threatened,Finland,2019,FIN
+Lathyrus vernus,LC,not_threatened,Germany,1999,DEU
+Lathyrus vernus,threatened,threatened,Germany,2005,DEU
+Lathyrus vernus,LC,not_threatened,Germany,2011,DEU
+Lathyrus vernus,LC,not_threatened,Germany,1996,DEU
+Lathyrus vernus,DD,not_evaluated_dd,Russia,NA,RUS
+Lathyrus vernus,NT,not_threatened,Russia,NA,RUS
+Lathyrus vernus,LC,not_threatened,Switzerland,2019,CHE
+Lavandula angustifolia,LC,not_threatened,France,2018,FRA
+Lavandula angustifolia,EN,threatened,Switzerland,2002,CHE
+Leonurus cardiaca,EN,threatened,Austria,1999,AUT
+Leonurus cardiaca,LC,not_threatened,Estonia,2008,EST
+Leonurus cardiaca,NT,not_threatened,Finland,2019,FIN
+Leonurus cardiaca,LC,not_threatened,Netherlands,2012,NLD
+Leonurus cardiaca,EN,threatened,Norway,2010,NOR
+Leonurus cardiaca,EN,threatened,Slovenia,2002,SVN
+Leonurus cardiaca,VU,threatened,Sweden,2020,SWE
+Leonurus cardiaca,NT,not_threatened,Sweden,2000,SWE
+Leonurus cardiaca,EN,threatened,Switzerland,2019,CHE
+Leucanthemum vulgare,NT,not_threatened,Austria,1999,AUT
+Leucanthemum vulgare,LC,not_threatened,Belgium,2019,BEL
+Leucanthemum vulgare,LC,not_threatened,Estonia,2008,EST
+Leucanthemum vulgare,DD,not_evaluated_dd,France,2018,FRA
+Leucanthemum vulgare,DD,not_evaluated_dd,Germany,1999,DEU
+Leucanthemum vulgare,LC,not_threatened,Germany,1996,DEU
+Leucanthemum vulgare,LC,not_threatened,Ireland,2016,IRL
+Leucanthemum vulgare,LC,not_threatened,Luxembourg,2005,LUX
+Leucanthemum vulgare,LC,not_threatened,Netherlands,2012,NLD
+Leucanthemum vulgare,LC,not_threatened,Russia,NA,RUS
+Leucanthemum vulgare,LC,not_threatened,Switzerland,2002,CHE
+Leucanthemum vulgare,LC,not_threatened,United Kingdom,2014,GBR
+Leucojum aestivum,EN,threatened,Austria,1999,AUT
+Leucojum aestivum,VU,threatened,Bulgaria,2009,BGR
+Leucojum aestivum,EN,threatened,Czech Republic,2017,CZE
+Leucojum aestivum,EX,extinct,Germany,2011,DEU
+Leucojum aestivum,LC,not_threatened,Germany,1996,DEU
+Leucojum aestivum,VU,threatened,Greece,2009,GRC
+Leucojum aestivum,NT,not_threatened,Hungary,2007,HUN
+Leucojum aestivum,LC,not_threatened,Ireland,2016,IRL
+Leucojum aestivum,CR,threatened,Moldova,2015,MDA
+Leucojum aestivum,LC,not_threatened,Netherlands,2012,NLD
+Leucojum aestivum,VU,threatened,Russia,NA,RUS
+Leucojum aestivum,VU,threatened,Russia,NA,RUS
+Leucojum aestivum,VU,threatened,Slovenia,2002,SVN
+Leucojum aestivum,EN,threatened,Switzerland,2019,CHE
+Leucojum aestivum,VU,threatened,Switzerland,2002,CHE
+Leucojum aestivum,VU,threatened,Ukraine,2009,UKR
+Leucojum aestivum,LC,not_threatened,United Kingdom,2014,GBR
+Leucojum aestivum,LC,not_threatened,United Kingdom,2014,GBR
+Leucojum vernum,LC,not_threatened,Austria,1999,AUT
+Leucojum vernum,EN,threatened,Austria,1999,AUT
+Leucojum vernum,NT,not_threatened,Czech Republic,2017,CZE
+Leucojum vernum,VU,threatened,Czech Republic,2012,CZE
+Leucojum vernum,threatened,threatened,Germany,1999,DEU
+Leucojum vernum,EN,threatened,Germany,2011,DEU
+Leucojum vernum,EN,threatened,Germany,1996,DEU
+Leucojum vernum,NT,not_threatened,Hungary,2007,HUN
+Leucojum vernum,LC,not_threatened,Netherlands,2012,NLD
+Leucojum vernum,LC,not_threatened,Switzerland,2019,CHE
+Linum perenne,CR,threatened,Austria,1999,AUT
+Linum perenne,EN,threatened,Austria,1999,AUT
+Linum perenne,RE,threatened,Czech Republic,2017,CZE
+Linum perenne,EX,extinct,Germany,1999,DEU
+Linum perenne,threatened,threatened,Germany,1996,DEU
+Linum perenne,DD,not_evaluated_dd,Hungary,2007,HUN
+Linum perenne,LC,not_threatened,Russia,NA,RUS
+Linum perenne,NT,not_threatened,Russia,NA,RUS
+Linum perenne,NT,not_threatened,Russia,NA,RUS
+Linum perenne,NT,not_threatened,Russia,NA,RUS
+Linum perenne,CR,threatened,Russia,NA,RUS
+Linum perenne,CR,threatened,Russia,NA,RUS
+Linum perenne,LC,not_threatened,Russia,NA,RUS
+Linum perenne,VU,threatened,Russia,NA,RUS
+Linum perenne,LC,not_threatened,United Kingdom,2014,GBR
+Linum perenne,LC,not_threatened,United Kingdom,2014,GBR
+Linum perenne,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Linum perenne,NT,not_threatened,United Kingdom,2007,GBR
+Lotus corniculatus,LC,not_threatened,Austria,1999,AUT
+Lotus corniculatus,LC,not_threatened,Belgium,2019,BEL
+Lotus corniculatus,LC,not_threatened,Denmark,2019,DNK
+Lotus corniculatus,LC,not_threatened,Estonia,2008,EST
+Lotus corniculatus,LC,not_threatened,Finland,2019,FIN
+Lotus corniculatus,LC,not_threatened,Germany,1999,DEU
+Lotus corniculatus,threatened,threatened,Germany,2011,DEU
+Lotus corniculatus,LC,not_threatened,Germany,1996,DEU
+Lotus corniculatus,LC,not_threatened,Ireland,2016,IRL
+Lotus corniculatus,LC,not_threatened,Netherlands,2012,NLD
+Lotus corniculatus,VU,threatened,Russia,NA,RUS
+Lotus corniculatus,VU,threatened,Russia,NA,RUS
+Lotus corniculatus,LC,not_threatened,Switzerland,2019,CHE
+Lotus corniculatus,LC,not_threatened,United Kingdom,2014,GBR
+Lotus corniculatus,LC,not_threatened,United Kingdom,2014,GBR
+Lotus maritimus,VU,threatened,Austria,1999,AUT
+Lotus maritimus,EN,threatened,Austria,1999,AUT
+Lotus maritimus,NT,not_threatened,Czech Republic,2017,CZE
+Lotus maritimus,VU,threatened,Czech Republic,2012,CZE
+Lotus maritimus,EN,threatened,Germany,1999,DEU
+Lotus maritimus,LC,not_threatened,Germany,2011,DEU
+Lotus maritimus,NT,not_threatened,Switzerland,2019,CHE
+Lotus maritimus,LC,not_threatened,Switzerland,2002,CHE
+Lunaria rediviva,LC,not_threatened,Austria,1999,AUT
+Lunaria rediviva,EN,threatened,Austria,1999,AUT
+Lunaria rediviva,NT,not_threatened,Belarus,2005,BLR
+Lunaria rediviva,LC,not_threatened,Czech Republic,2017,CZE
+Lunaria rediviva,NT,not_threatened,Denmark,2019,DNK
+Lunaria rediviva,NT,not_threatened,Estonia,2008,EST
+Lunaria rediviva,LC,not_threatened,Germany,1999,DEU
+Lunaria rediviva,LC,not_threatened,Germany,2011,DEU
+Lunaria rediviva,LC,not_threatened,Germany,1996,DEU
+Lunaria rediviva,NT,not_threatened,Hungary,2007,HUN
+Lunaria rediviva,DD,not_evaluated_dd,Latvia,2003,LVA
+Lunaria rediviva,EN,threatened,Moldova,2015,MDA
+Lunaria rediviva,DD,not_evaluated_dd,Russia,NA,RUS
+Lunaria rediviva,CR,threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,VU,threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,CR,threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,NT,not_threatened,Russia,NA,RUS
+Lunaria rediviva,EN,threatened,Russia,NA,RUS
+Lunaria rediviva,VU,threatened,Spain,2010,ESP
+Lunaria rediviva,NT,not_threatened,Sweden,2020,SWE
+Lunaria rediviva,VU,threatened,Sweden,2000,SWE
+Lunaria rediviva,LC,not_threatened,Switzerland,2019,CHE
+Lupinus polyphyllus,NE,not_evaluated_dd,Estonia,2008,EST
+Lupinus polyphyllus,LC,not_threatened,Germany,1999,DEU
+Lupinus polyphyllus,LC,not_threatened,Germany,2011,DEU
+Lupinus polyphyllus,NE,not_evaluated_dd,Germany,2018,DEU
+Lupinus polyphyllus,LC,not_threatened,Germany,1996,DEU
+Lupinus polyphyllus,LC,not_threatened,Netherlands,2012,NLD
+Lupinus polyphyllus,LC,not_threatened,Switzerland,2002,CHE
+Mentha longifolia,LC,not_threatened,Austria,1999,AUT
+Mentha longifolia,NE,not_evaluated_dd,Estonia,2008,EST
+Mentha longifolia,LC,not_threatened,France,2018,FRA
+Mentha longifolia,DD,not_evaluated_dd,Germany,1999,DEU
+Mentha longifolia,LC,not_threatened,Germany,2011,DEU
+Mentha longifolia,LC,not_threatened,Germany,2018,DEU
+Mentha longifolia,NE,not_evaluated_dd,Lithuania,2007,LTU
+Mentha longifolia,LC,not_threatened,Netherlands,2012,NLD
+Mentha longifolia,EN,threatened,Portugal,2020,PRT
+Mentha longifolia,LC,not_threatened,Switzerland,2002,CHE
+Menyanthes trifoliata,CR,threatened,Albania,2013,ALB
+Menyanthes trifoliata,EN,threatened,Albania,2013,ALB
+Menyanthes trifoliata,NT,not_threatened,Austria,1999,AUT
+Menyanthes trifoliata,EN,threatened,Austria,1999,AUT
+Menyanthes trifoliata,LC,not_threatened,Bosnia and Herzegovina,2013,BIH
+Menyanthes trifoliata,EN,threatened,Bulgaria,2015,BGR
+Menyanthes trifoliata,EN,threatened,Croatia,2005,HRV
+Menyanthes trifoliata,DD,not_evaluated_dd,Croatia,2007,HRV
+Menyanthes trifoliata,NT,not_threatened,Czech Republic,2017,CZE
+Menyanthes trifoliata,VU,threatened,Czech Republic,2012,CZE
+Menyanthes trifoliata,LC,not_threatened,Denmark,2019,DNK
+Menyanthes trifoliata,LC,not_threatened,Estonia,2008,EST
+Menyanthes trifoliata,LC,not_threatened,Finland,2019,FIN
+Menyanthes trifoliata,EN,threatened,Germany,1999,DEU
+Menyanthes trifoliata,EN,threatened,Germany,2005,DEU
+Menyanthes trifoliata,EN,threatened,Germany,2011,DEU
+Menyanthes trifoliata,EN,threatened,Germany,1996,DEU
+Menyanthes trifoliata,EN,threatened,Hungary,2007,HUN
+Menyanthes trifoliata,LC,not_threatened,Ireland,2016,IRL
+Menyanthes trifoliata,LC,not_threatened,Netherlands,2012,NLD
+Menyanthes trifoliata,CR,threatened,Russia,NA,RUS
+Menyanthes trifoliata,CR,threatened,Russia,NA,RUS
+Menyanthes trifoliata,NT,not_threatened,Russia,NA,RUS
+Menyanthes trifoliata,NT,not_threatened,Russia,NA,RUS
+Menyanthes trifoliata,CR,threatened,Russia,NA,RUS
+Menyanthes trifoliata,VU,threatened,Slovenia,2002,SVN
+Menyanthes trifoliata,LC,not_threatened,Switzerland,2019,CHE
+Menyanthes trifoliata,LC,not_threatened,United Kingdom,2014,GBR
+Menyanthes trifoliata,LC,not_threatened,United Kingdom,2014,GBR
+Menyanthes trifoliata,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Mercurialis perennis,VU,threatened,Andorra,2008,AND
+Mercurialis perennis,LC,not_threatened,Austria,1999,AUT
+Mercurialis perennis,LC,not_threatened,Belgium,2019,BEL
+Mercurialis perennis,LC,not_threatened,Estonia,2008,EST
+Mercurialis perennis,LC,not_threatened,France,2018,FRA
+Mercurialis perennis,LC,not_threatened,Germany,1999,DEU
+Mercurialis perennis,threatened,threatened,Germany,2005,DEU
+Mercurialis perennis,LC,not_threatened,Germany,2011,DEU
+Mercurialis perennis,LC,not_threatened,Germany,2018,DEU
+Mercurialis perennis,WL,not_evaluated_dd,Ireland,2016,IRL
+Mercurialis perennis,LC,not_threatened,Luxembourg,2005,LUX
+Mercurialis perennis,LC,not_threatened,Netherlands,2012,NLD
+Mercurialis perennis,NT,not_threatened,Portugal,2020,PRT
+Mercurialis perennis,NT,not_threatened,Russia,NA,RUS
+Mercurialis perennis,NT,not_threatened,Russia,NA,RUS
+Mercurialis perennis,NT,not_threatened,Russia,NA,RUS
+Mercurialis perennis,VU,threatened,Russia,NA,RUS
+Mercurialis perennis,NT,not_threatened,Russia,NA,RUS
+Mercurialis perennis,LC,not_threatened,Switzerland,2002,CHE
+Mercurialis perennis,LC,not_threatened,United Kingdom,2014,GBR
+Narcissus pseudonarcissus,LC,not_threatened,Belgium,2019,BEL
+Narcissus pseudonarcissus,LC,not_threatened,France,2018,FRA
+Narcissus pseudonarcissus,LC,not_threatened,Germany,2011,DEU
+Narcissus pseudonarcissus,VU,threatened,Germany,2018,DEU
+Narcissus pseudonarcissus,EN,threatened,Germany,1996,DEU
+Narcissus pseudonarcissus,VU,threatened,Luxembourg,2005,LUX
+Narcissus pseudonarcissus,LC,not_threatened,Netherlands,2012,NLD
+Narcissus pseudonarcissus,NT,not_threatened,Switzerland,2016,CHE
+Narcissus pseudonarcissus,LC,not_threatened,United Kingdom,2014,GBR
+Origanum vulgare,EN,threatened,Albania,2013,ALB
+Origanum vulgare,LC,not_threatened,Austria,1999,AUT
+Origanum vulgare,PE,threatened,Cyprus,2007,CYP
+Origanum vulgare,LC,not_threatened,Denmark,2019,DNK
+Origanum vulgare,LC,not_threatened,Estonia,2008,EST
+Origanum vulgare,LC,not_threatened,Finland,2019,FIN
+Origanum vulgare,LC,not_threatened,Germany,1999,DEU
+Origanum vulgare,EX,extinct,Germany,2005,DEU
+Origanum vulgare,LC,not_threatened,Germany,2011,DEU
+Origanum vulgare,LC,not_threatened,Ireland,2016,IRL
+Origanum vulgare,LC,not_threatened,Netherlands,2012,NLD
+Origanum vulgare,NT,not_threatened,Russia,NA,RUS
+Origanum vulgare,NT,not_threatened,Russia,NA,RUS
+Origanum vulgare,LC,not_threatened,Russia,NA,RUS
+Origanum vulgare,VU,threatened,Russia,NA,RUS
+Origanum vulgare,LC,not_threatened,Switzerland,2019,CHE
+Origanum vulgare,LC,not_threatened,United Kingdom,2014,GBR
+Origanum vulgare,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Origanum vulgare,LC,not_threatened,United Kingdom,2005,GBR
+Oxalis acetosella,LC,not_threatened,Austria,1999,AUT
+Oxalis acetosella,LC,not_threatened,Belgium,2019,BEL
+Oxalis acetosella,LC,not_threatened,Estonia,2008,EST
+Oxalis acetosella,LC,not_threatened,France,2018,FRA
+Oxalis acetosella,LC,not_threatened,Germany,1999,DEU
+Oxalis acetosella,LC,not_threatened,Germany,2011,DEU
+Oxalis acetosella,LC,not_threatened,Germany,2018,DEU
+Oxalis acetosella,LC,not_threatened,Ireland,2016,IRL
+Oxalis acetosella,LC,not_threatened,Luxembourg,2005,LUX
+Oxalis acetosella,LC,not_threatened,Netherlands,2012,NLD
+Oxalis acetosella,LC,not_threatened,Portugal,2020,PRT
+Oxalis acetosella,NT,not_threatened,Russia,NA,RUS
+Oxalis acetosella,NT,not_threatened,Russia,NA,RUS
+Oxalis acetosella,NT,not_threatened,Russia,NA,RUS
+Oxalis acetosella,NT,not_threatened,Russia,NA,RUS
+Oxalis acetosella,LC,not_threatened,Switzerland,2016,CHE
+Oxalis acetosella,LC,not_threatened,United Kingdom,2005,GBR
+Oxalis acetosella,NT,not_threatened,United Kingdom,2014,GBR
+Paeonia officinalis,CR,threatened,Bosnia and Herzegovina,2013,BIH
+Paeonia officinalis,NT,not_threatened,Croatia,2007,HRV
+Paeonia officinalis,EN,threatened,Hungary,2007,HUN
+Paeonia officinalis,VU,threatened,Switzerland,2002,CHE
+Paeonia peregrina,EN,threatened,Italy,2018,ITA
+Paeonia peregrina,VU,threatened,Kosovo,2013,XKX
+Paeonia peregrina,CR,threatened,Moldova,2015,MDA
+Paris quadrifolia,LC,not_threatened,Austria,1999,AUT
+Paris quadrifolia,LC,not_threatened,Belgium,2019,BEL
+Paris quadrifolia,LC,not_threatened,Estonia,2008,EST
+Paris quadrifolia,LC,not_threatened,France,2018,FRA
+Paris quadrifolia,LC,not_threatened,Germany,1999,DEU
+Paris quadrifolia,EN,threatened,Germany,2005,DEU
+Paris quadrifolia,LC,not_threatened,Germany,2011,DEU
+Paris quadrifolia,LC,not_threatened,Germany,2018,DEU
+Paris quadrifolia,LC,not_threatened,Luxembourg,2005,LUX
+Paris quadrifolia,NT,not_threatened,Netherlands,2012,NLD
+Paris quadrifolia,LC,not_threatened,Russia,NA,RUS
+Paris quadrifolia,NT,not_threatened,Russia,NA,RUS
+Paris quadrifolia,NT,not_threatened,Russia,NA,RUS
+Paris quadrifolia,LC,not_threatened,Switzerland,2002,CHE
+Paris quadrifolia,LC,not_threatened,United Kingdom,2014,GBR
+Paris quadrifolia,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Petasites hybridus,LC,not_threatened,Austria,1999,AUT
+Petasites hybridus,LC,not_threatened,Belgium,2019,BEL
+Petasites hybridus,LC,not_threatened,Estonia,2008,EST
+Petasites hybridus,LC,not_threatened,Germany,1999,DEU
+Petasites hybridus,LC,not_threatened,Germany,2011,DEU
+Petasites hybridus,LC,not_threatened,Germany,1996,DEU
+Petasites hybridus,LC,not_threatened,Ireland,2016,IRL
+Petasites hybridus,LC,not_threatened,Netherlands,2012,NLD
+Petasites hybridus,VU,threatened,Russia,NA,RUS
+Petasites hybridus,LC,not_threatened,Switzerland,2002,CHE
+Petasites hybridus,LC,not_threatened,United Kingdom,2005,GBR
+Petasites hybridus,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Plantago lanceolata,LC,not_threatened,Austria,1999,AUT
+Plantago lanceolata,LC,not_threatened,Belgium,2019,BEL
+Plantago lanceolata,LC,not_threatened,Estonia,2008,EST
+Plantago lanceolata,LC,not_threatened,France,2018,FRA
+Plantago lanceolata,LC,not_threatened,Germany,1999,DEU
+Plantago lanceolata,LC,not_threatened,Germany,2011,DEU
+Plantago lanceolata,LC,not_threatened,Germany,2018,DEU
+Plantago lanceolata,LC,not_threatened,Ireland,2016,IRL
+Plantago lanceolata,LC,not_threatened,Luxembourg,2005,LUX
+Plantago lanceolata,LC,not_threatened,Netherlands,2012,NLD
+Plantago lanceolata,LC,not_threatened,Switzerland,2002,CHE
+Plantago lanceolata,LC,not_threatened,United Kingdom,2014,GBR
+Polygonatum multiflorum,LC,not_threatened,Austria,1999,AUT
+Polygonatum multiflorum,LC,not_threatened,Belgium,2019,BEL
+Polygonatum multiflorum,LC,not_threatened,France,2018,FRA
+Polygonatum multiflorum,LC,not_threatened,Germany,1999,DEU
+Polygonatum multiflorum,EN,threatened,Germany,2005,DEU
+Polygonatum multiflorum,LC,not_threatened,Germany,2011,DEU
+Polygonatum multiflorum,LC,not_threatened,Germany,2018,DEU
+Polygonatum multiflorum,LC,not_threatened,Luxembourg,2005,LUX
+Polygonatum multiflorum,LC,not_threatened,Netherlands,2012,NLD
+Polygonatum multiflorum,NT,not_threatened,Russia,NA,RUS
+Polygonatum multiflorum,NT,not_threatened,Russia,NA,RUS
+Polygonatum multiflorum,NT,not_threatened,Russia,NA,RUS
+Polygonatum multiflorum,NT,not_threatened,Russia,NA,RUS
+Polygonatum multiflorum,NT,not_threatened,Russia,NA,RUS
+Polygonatum multiflorum,LC,not_threatened,Switzerland,2016,CHE
+Polygonatum multiflorum,LC,not_threatened,United Kingdom,2005,GBR
+Primula veris,DD,not_evaluated_dd,Andorra,2008,AND
+Primula veris,NT,not_threatened,Austria,1999,AUT
+Primula veris,EN,threatened,Austria,1999,AUT
+Primula veris,LC,not_threatened,Czech Republic,2017,CZE
+Primula veris,LC,not_threatened,Denmark,2019,DNK
+Primula veris,LC,not_threatened,Estonia,2008,EST
+Primula veris,LC,not_threatened,Finland,2019,FIN
+Primula veris,threatened,threatened,Germany,2005,DEU
+Primula veris,EN,threatened,Germany,2011,DEU
+Primula veris,LC,not_threatened,Ireland,2016,IRL
+Primula veris,LC,not_threatened,Netherlands,2012,NLD
+Primula veris,DD,not_evaluated_dd,Russia,NA,RUS
+Primula veris,LC,not_threatened,Russia,NA,RUS
+Primula veris,NT,not_threatened,Russia,NA,RUS
+Primula veris,NT,not_threatened,Russia,NA,RUS
+Primula veris,NT,not_threatened,Russia,NA,RUS
+Primula veris,NT,not_threatened,Russia,NA,RUS
+Primula veris,NT,not_threatened,Russia,NA,RUS
+Primula veris,VU,threatened,Russia,NA,RUS
+Primula veris,LC,not_threatened,Switzerland,2019,CHE
+Primula veris,LC,not_threatened,United Kingdom,2014,GBR
+Primula veris,LC,not_threatened,United Kingdom,2005,GBR
+Prunella grandiflora,NT,not_threatened,Austria,1999,AUT
+Prunella grandiflora,EN,threatened,Austria,1999,AUT
+Prunella grandiflora,EX,extinct,Belgium,2006,BEL
+Prunella grandiflora,NT,not_threatened,Czech Republic,2017,CZE
+Prunella grandiflora,VU,threatened,Czech Republic,2012,CZE
+Prunella grandiflora,EN,threatened,Denmark,2019,DNK
+Prunella grandiflora,NE,not_evaluated_dd,Estonia,2008,EST
+Prunella grandiflora,threatened,threatened,Germany,1999,DEU
+Prunella grandiflora,EX,extinct,Germany,2005,DEU
+Prunella grandiflora,EN,threatened,Germany,2011,DEU
+Prunella grandiflora,threatened,threatened,Germany,1996,DEU
+Prunella grandiflora,LC,not_threatened,Hungary,2007,HUN
+Prunella grandiflora,CR,threatened,Latvia,2003,LVA
+Prunella grandiflora,EN,threatened,Lithuania,2007,LTU
+Prunella grandiflora,VU,threatened,Lithuania,2007,LTU
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,NT,not_threatened,Russia,NA,RUS
+Prunella grandiflora,LC,not_threatened,Switzerland,2019,CHE
+Prunella vulgaris,LC,not_threatened,Austria,1999,AUT
+Prunella vulgaris,LC,not_threatened,Belgium,2019,BEL
+Prunella vulgaris,LC,not_threatened,Estonia,2008,EST
+Prunella vulgaris,LC,not_threatened,France,2018,FRA
+Prunella vulgaris,LC,not_threatened,Germany,1999,DEU
+Prunella vulgaris,LC,not_threatened,Germany,2011,DEU
+Prunella vulgaris,LC,not_threatened,Germany,2018,DEU
+Prunella vulgaris,LC,not_threatened,Ireland,2016,IRL
+Prunella vulgaris,LC,not_threatened,Luxembourg,2005,LUX
+Prunella vulgaris,LC,not_threatened,Netherlands,2012,NLD
+Prunella vulgaris,LC,not_threatened,Switzerland,2002,CHE
+Prunella vulgaris,LC,not_threatened,United Kingdom,2005,GBR
+Pulsatilla vulgaris,CR,threatened,Austria,1999,AUT
+Pulsatilla vulgaris,REW,extinct,Netherlands,2014,NLD
+Ranunculus acris,LC,not_threatened,Belgium,2019,BEL
+Ranunculus acris,LC,not_threatened,Estonia,2008,EST
+Ranunculus acris,LC,not_threatened,France,2018,FRA
+Ranunculus acris,LC,not_threatened,Germany,1999,DEU
+Ranunculus acris,LC,not_threatened,Germany,2018,DEU
+Ranunculus acris,LC,not_threatened,Ireland,2016,IRL
+Ranunculus acris,LC,not_threatened,Luxembourg,2005,LUX
+Ranunculus acris,LC,not_threatened,Netherlands,2012,NLD
+Ranunculus acris,LC,not_threatened,Switzerland,2002,CHE
+Ranunculus acris,LC,not_threatened,United Kingdom,2014,GBR
+Ranunculus acris,LC,not_threatened,Switzerland,2019,CHE
+Ranunculus lanuginosus,LC,not_threatened,Austria,1999,AUT
+Ranunculus lanuginosus,LC,not_threatened,Denmark,2019,DNK
+Ranunculus lanuginosus,VU,threatened,Estonia,2008,EST
+Ranunculus lanuginosus,threatened,threatened,Estonia,1998,EST
+Ranunculus lanuginosus,NE,not_evaluated_dd,Finland,2019,FIN
+Ranunculus lanuginosus,LC,not_threatened,Germany,1999,DEU
+Ranunculus lanuginosus,LC,not_threatened,Germany,2011,DEU
+Ranunculus lanuginosus,LC,not_threatened,Germany,1996,DEU
+Ranunculus lanuginosus,VU,threatened,Latvia,2003,LVA
+Ranunculus lanuginosus,NT,not_threatened,Russia,NA,RUS
+Ranunculus lanuginosus,LC,not_threatened,Switzerland,2019,CHE
+Rumex acetosa,LC,not_threatened,Austria,1999,AUT
+Rumex acetosa,EN,threatened,Austria,1999,AUT
+Rumex acetosa,LC,not_threatened,Denmark,2019,DNK
+Rumex acetosa,LC,not_threatened,Finland,2019,FIN
+Rumex acetosa,LC,not_threatened,Germany,1999,DEU
+Rumex acetosa,threatened,threatened,Germany,2005,DEU
+Rumex acetosa,LC,not_threatened,Germany,2011,DEU
+Rumex acetosa,LC,not_threatened,Germany,1996,DEU
+Rumex acetosa,LC,not_threatened,Ireland,2016,IRL
+Rumex acetosa,LC,not_threatened,Netherlands,2012,NLD
+Rumex acetosa,LC,not_threatened,Switzerland,2019,CHE
+Rumex acetosa,LC,not_threatened,United Kingdom,2014,GBR
+Rumex acetosa,LC,not_threatened,United Kingdom,2005,GBR
+Salvia nemorosa,LC,not_threatened,Austria,1999,AUT
+Salvia nemorosa,EN,threatened,Austria,1999,AUT
+Salvia nemorosa,EN,threatened,Croatia,2005,HRV
+Salvia nemorosa,NE,not_evaluated_dd,Estonia,2008,EST
+Salvia nemorosa,EN,threatened,Germany,1999,DEU
+Salvia nemorosa,LC,not_threatened,Germany,2011,DEU
+Salvia nemorosa,LC,not_threatened,Germany,1996,DEU
+Salvia officinalis,VU,threatened,Albania,2013,ALB
+Salvia officinalis,LC,not_threatened,Germany,1996,DEU
+Salvia officinalis,EW,extinct,Kosovo,2013,XKX
+Salvia officinalis,R,threatened,Slovenia,2002,SVN
+Salvia officinalis,VU,threatened,Switzerland,2002,CHE
+Salvia pratensis,NT,not_threatened,Austria,1999,AUT
+Salvia pratensis,EN,threatened,Austria,1999,AUT
+Salvia pratensis,NT,not_threatened,Belarus,2005,BLR
+Salvia pratensis,VU,threatened,Bosnia and Herzegovina,2013,BIH
+Salvia pratensis,NE,not_evaluated_dd,Estonia,2008,EST
+Salvia pratensis,LC,not_threatened,Germany,1999,DEU
+Salvia pratensis,EN,threatened,Germany,2011,DEU
+Salvia pratensis,threatened,threatened,Germany,1996,DEU
+Salvia pratensis,VU,threatened,Lithuania,2007,LTU
+Salvia pratensis,threatened,threatened,Lithuania,2007,LTU
+Salvia pratensis,VU,threatened,Netherlands,2012,NLD
+Salvia pratensis,VU,threatened,Russia,NA,RUS
+Salvia pratensis,VU,threatened,Sweden,2020,SWE
+Salvia pratensis,EN,threatened,Sweden,2010,SWE
+Salvia pratensis,LC,not_threatened,Switzerland,2019,CHE
+Salvia pratensis,NT,not_threatened,United Kingdom,2014,GBR
+Salvia pratensis,CR,threatened,United Kingdom,2008,GBR
+Salvia pratensis,NT,not_threatened,United Kingdom,2014,GBR
+Saponaria officinalis,LC,not_threatened,Austria,1999,AUT
+Saponaria officinalis,LC,not_threatened,Belgium,2019,BEL
+Saponaria officinalis,LC,not_threatened,Estonia,2008,EST
+Saponaria officinalis,LC,not_threatened,France,2018,FRA
+Saponaria officinalis,LC,not_threatened,Germany,1999,DEU
+Saponaria officinalis,LC,not_threatened,Germany,2011,DEU
+Saponaria officinalis,LC,not_threatened,Germany,2018,DEU
+Saponaria officinalis,LC,not_threatened,Ireland,2016,IRL
+Saponaria officinalis,LC,not_threatened,Luxembourg,2005,LUX
+Saponaria officinalis,LC,not_threatened,Netherlands,2012,NLD
+Saponaria officinalis,LC,not_threatened,Switzerland,2002,CHE
+Saponaria officinalis,LC,not_threatened,United Kingdom,2014,GBR
+Saxifraga paniculata,LC,not_threatened,Austria,1999,AUT
+Saxifraga paniculata,EN,threatened,Austria,1999,AUT
+Saxifraga paniculata,NT,not_threatened,Czech Republic,2017,CZE
+Saxifraga paniculata,VU,threatened,Czech Republic,2012,CZE
+Saxifraga paniculata,threatened,threatened,Germany,1999,DEU
+Saxifraga paniculata,LC,not_threatened,Germany,1996,DEU
+Saxifraga paniculata,NT,not_threatened,Hungary,2007,HUN
+Saxifraga paniculata,EN,threatened,Norway,2015,NOR
+Saxifraga paniculata,NT,not_threatened,Norway,2010,NOR
+Saxifraga paniculata,LC,not_threatened,Switzerland,2019,CHE
+Scabiosa ochroleuca,LC,not_threatened,Austria,1999,AUT
+Scabiosa ochroleuca,EN,threatened,Austria,1999,AUT
+Scabiosa ochroleuca,NE,not_evaluated_dd,Estonia,2008,EST
+Scabiosa ochroleuca,LC,not_threatened,Germany,1996,DEU
+Scabiosa ochroleuca,NT,not_threatened,Russia,NA,RUS
+Scabiosa ochroleuca,VU,threatened,Russia,NA,RUS
+Scabiosa ochroleuca,VU,threatened,Russia,NA,RUS
+Scabiosa ochroleuca,NT,not_threatened,Russia,NA,RUS
+Scabiosa ochroleuca,NT,not_threatened,Russia,NA,RUS
+Scabiosa ochroleuca,EN,threatened,Switzerland,2002,CHE
+Scilla siberica,LC,not_threatened,Estonia,2008,EST
+Scilla siberica,LC,not_threatened,Germany,1996,DEU
+Scilla siberica,LC,not_threatened,Netherlands,2012,NLD
+Scilla siberica,CR,threatened,Russia,NA,RUS
+Scilla siberica,VU,threatened,Russia,NA,RUS
+Scilla siberica,CR,threatened,Russia,NA,RUS
+Scilla siberica,NT,not_threatened,Russia,NA,RUS
+Scilla siberica,VU,threatened,Russia,NA,RUS
+Scilla siberica,LC,not_threatened,Russia,NA,RUS
+Scilla siberica,NT,not_threatened,Russia,NA,RUS
+Scilla siberica,VU,threatened,Russia,NA,RUS
+Scilla siberica,VU,threatened,Switzerland,2002,CHE
+Scopolia carniolica,NT,not_threatened,Austria,1999,AUT
+Scopolia carniolica,VU,threatened,Hungary,2007,HUN
+Scopolia carniolica,NT,not_threatened,Hungary,2007,HUN
+Scopolia carniolica,VU,threatened,Moldova,2015,MDA
+Coronilla varia,NE,not_evaluated_dd,Estonia,2008,EST
+Coronilla varia,LC,not_threatened,France,2018,FRA
+Coronilla varia,LC,not_threatened,Germany,1996,DEU
+Coronilla varia,LC,not_threatened,Austria,1999,AUT
+Coronilla varia,DD,not_evaluated_dd,Russia,NA,RUS
+Coronilla varia,CR,threatened,Russia,NA,RUS
+Senecio nemorensis,LC,not_threatened,Germany,2018,DEU
+Senecio nemorensis,VU,threatened,Netherlands,2012,NLD
+Senecio nemorensis,NT,not_threatened,Russia,NA,RUS
+Senecio nemorensis,NT,not_threatened,Russia,NA,RUS
+Senecio nemorensis,VU,threatened,Russia,NA,RUS
+Senecio nemorensis,NT,not_threatened,Russia,NA,RUS
+Senecio nemorensis,CR,threatened,Russia,NA,RUS
+Senecio nemorensis,NT,not_threatened,Russia,NA,RUS
+Senecio nemorensis,NT,not_threatened,Russia,NA,RUS
+Silene dioica,LC,not_threatened,Austria,1999,AUT
+Silene dioica,LC,not_threatened,Belgium,2019,BEL
+Silene dioica,LC,not_threatened,Estonia,2008,EST
+Silene dioica,LC,not_threatened,France,2018,FRA
+Silene dioica,LC,not_threatened,Germany,1999,DEU
+Silene dioica,LC,not_threatened,Germany,2011,DEU
+Silene dioica,LC,not_threatened,Germany,2018,DEU
+Silene dioica,LC,not_threatened,Hungary,2007,HUN
+Silene dioica,LC,not_threatened,Ireland,2016,IRL
+Silene dioica,LC,not_threatened,Luxembourg,2005,LUX
+Silene dioica,LC,not_threatened,Netherlands,2012,NLD
+Silene dioica,NT,not_threatened,Russia,NA,RUS
+Silene dioica,DD,not_evaluated_dd,Russia,NA,RUS
+Silene dioica,VU,threatened,Russia,NA,RUS
+Silene dioica,LC,not_threatened,Switzerland,2002,CHE
+Silene dioica,LC,not_threatened,United Kingdom,2014,GBR
+Silene nutans,NT,not_threatened,Belgium,2019,BEL
+Silene nutans,VU,threatened,Bulgaria,2009,BGR
+Silene nutans,LC,not_threatened,Estonia,2008,EST
+Silene nutans,LC,not_threatened,France,2018,FRA
+Silene nutans,LC,not_threatened,Germany,1999,DEU
+Silene nutans,EN,threatened,Germany,2005,DEU
+Silene nutans,EN,threatened,Germany,2011,DEU
+Silene nutans,LC,not_threatened,Germany,2018,DEU
+Silene nutans,LC,not_threatened,Luxembourg,2005,LUX
+Silene nutans,LC,not_threatened,Netherlands,2012,NLD
+Silene nutans,NT,not_threatened,Norway,2010,NOR
+Silene nutans,NT,not_threatened,Russia,NA,RUS
+Silene nutans,LC,not_threatened,Russia,NA,RUS
+Silene nutans,NT,not_threatened,Russia,NA,RUS
+Silene nutans,EX,extinct,Russia,NA,RUS
+Silene nutans,LC,not_threatened,Russia,NA,RUS
+Silene nutans,LC,not_threatened,Switzerland,2002,CHE
+Silene nutans,NT,not_threatened,United Kingdom,2005,GBR
+Silene nutans,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Silene vulgaris,LC,not_threatened,Belgium,2019,BEL
+Silene vulgaris,EN,threatened,Bulgaria,2011,BGR
+Silene vulgaris,LC,not_threatened,Estonia,2008,EST
+Silene vulgaris,LC,not_threatened,France,2018,FRA
+Silene vulgaris,LC,not_threatened,Germany,1999,DEU
+Silene vulgaris,LC,not_threatened,Germany,2018,DEU
+Silene vulgaris,LC,not_threatened,Ireland,2016,IRL
+Silene vulgaris,LC,not_threatened,Luxembourg,2005,LUX
+Silene vulgaris,LC,not_threatened,Netherlands,2012,NLD
+Silene vulgaris,LC,not_threatened,Switzerland,2002,CHE
+Silene vulgaris,LC,not_threatened,United Kingdom,2005,GBR
+Solanum dulcamara,LC,not_threatened,Austria,1999,AUT
+Solanum dulcamara,LC,not_threatened,Belgium,2019,BEL
+Solanum dulcamara,LC,not_threatened,Estonia,2008,EST
+Solanum dulcamara,LC,not_threatened,France,2018,FRA
+Solanum dulcamara,LC,not_threatened,Germany,1999,DEU
+Solanum dulcamara,LC,not_threatened,Germany,2011,DEU
+Solanum dulcamara,LC,not_threatened,Germany,2018,DEU
+Solanum dulcamara,LC,not_threatened,Ireland,2016,IRL
+Solanum dulcamara,LC,not_threatened,Luxembourg,2005,LUX
+Solanum dulcamara,LC,not_threatened,Netherlands,2012,NLD
+Solanum dulcamara,NT,not_threatened,Russia,NA,RUS
+Solanum dulcamara,LC,not_threatened,Switzerland,2002,CHE
+Solanum dulcamara,LC,not_threatened,United Kingdom,2014,GBR
+Solidago canadensis,LC,not_threatened,Estonia,2008,EST
+Solidago canadensis,LC,not_threatened,Germany,1999,DEU
+Solidago canadensis,LC,not_threatened,Germany,2011,DEU
+Solidago canadensis,LC,not_threatened,Germany,1996,DEU
+Solidago canadensis,LC,not_threatened,Netherlands,2012,NLD
+Solidago canadensis,LC,not_threatened,Switzerland,2002,CHE
+Solidago virgaurea,LC,not_threatened,Austria,1999,AUT
+Solidago virgaurea,NT,not_threatened,Belgium,2019,BEL
+Solidago virgaurea,LC,not_threatened,Estonia,2008,EST
+Solidago virgaurea,LC,not_threatened,France,2018,FRA
+Solidago virgaurea,LC,not_threatened,Germany,1999,DEU
+Solidago virgaurea,threatened,threatened,Germany,2005,DEU
+Solidago virgaurea,LC,not_threatened,Germany,2018,DEU
+Solidago virgaurea,LC,not_threatened,Ireland,2016,IRL
+Solidago virgaurea,LC,not_threatened,Luxembourg,2005,LUX
+Solidago virgaurea,LC,not_threatened,Netherlands,2012,NLD
+Solidago virgaurea,LC,not_threatened,Switzerland,2002,CHE
+Solidago virgaurea,LC,not_threatened,United Kingdom,2005,GBR
+Solidago virgaurea,NT,not_threatened,United Kingdom,2014,GBR
+Solidago virgaurea,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Stachys officinalis,NT,not_threatened,Russia,NA,RUS
+Tanacetum vulgare,LC,not_threatened,Austria,1999,AUT
+Tanacetum vulgare,LC,not_threatened,Belgium,2019,BEL
+Tanacetum vulgare,LC,not_threatened,Estonia,2008,EST
+Tanacetum vulgare,LC,not_threatened,France,2018,FRA
+Tanacetum vulgare,LC,not_threatened,Germany,1999,DEU
+Tanacetum vulgare,LC,not_threatened,Germany,2011,DEU
+Tanacetum vulgare,LC,not_threatened,Germany,2018,DEU
+Tanacetum vulgare,LC,not_threatened,Ireland,2016,IRL
+Tanacetum vulgare,LC,not_threatened,Luxembourg,2005,LUX
+Tanacetum vulgare,LC,not_threatened,Netherlands,2012,NLD
+Tanacetum vulgare,LC,not_threatened,Switzerland,2016,CHE
+Tanacetum vulgare,LC,not_threatened,United Kingdom,2014,GBR
+Thalictrum minus,EN,threatened,Austria,1999,AUT
+Thalictrum minus,DD,not_evaluated_dd,Estonia,2008,EST
+Thalictrum minus,NE,not_evaluated_dd,Estonia,1998,EST
+Thalictrum minus,EN,threatened,Germany,1999,DEU
+Thalictrum minus,LC,not_threatened,Hungary,2007,HUN
+Thalictrum minus,LC,not_threatened,Ireland,2016,IRL
+Thalictrum minus,LC,not_threatened,Netherlands,2012,NLD
+Thalictrum minus,VU,threatened,Norway,2015,NOR
+Thalictrum minus,DD,not_evaluated_dd,Russia,NA,RUS
+Thalictrum minus,LC,not_threatened,Switzerland,2019,CHE
+Thalictrum minus,LC,not_threatened,United Kingdom,2014,GBR
+Thalictrum minus,LC,not_threatened,United Kingdom,2014,GBR
+Thymus serpyllum,CR,threatened,Austria,1999,AUT
+Thymus serpyllum,threatened,threatened,Austria,1999,AUT
+Thymus serpyllum,NT,not_threatened,Czech Republic,2017,CZE
+Thymus serpyllum,LC,not_threatened,Czech Republic,2012,CZE
+Thymus serpyllum,LC,not_threatened,Denmark,2019,DNK
+Thymus serpyllum,LC,not_threatened,Estonia,2008,EST
+Thymus serpyllum,EN,threatened,Germany,1999,DEU
+Thymus serpyllum,EN,threatened,Germany,2005,DEU
+Thymus serpyllum,EN,threatened,Germany,2011,DEU
+Thymus serpyllum,threatened,threatened,Germany,1996,DEU
+Thymus serpyllum,VU,threatened,Netherlands,2012,NLD
+Thymus serpyllum,DD,not_evaluated_dd,Russia,NA,RUS
+Thymus serpyllum,NT,not_threatened,Russia,NA,RUS
+Thymus serpyllum,DD,not_evaluated_dd,Russia,NA,RUS
+Thymus serpyllum,NT,not_threatened,Russia,NA,RUS
+Thymus serpyllum,VU,threatened,Russia,NA,RUS
+Thymus serpyllum,NT,not_threatened,Russia,NA,RUS
+Thymus serpyllum,NT,not_threatened,Russia,NA,RUS
+Thymus serpyllum,NT,not_threatened,Russia,NA,RUS
+Thymus serpyllum,NT,not_threatened,Sweden,2020,SWE
+Thymus serpyllum,LC,not_threatened,United Kingdom,2014,GBR
+Thymus serpyllum,LC,not_threatened,United Kingdom,2014,GBR
+Thymus serpyllum,threatened,threatened,United Kingdom,2007,GBR
+Trifolium pratense,LC,not_threatened,Belgium,2019,BEL
+Trifolium pratense,LC,not_threatened,Estonia,2008,EST
+Trifolium pratense,LC,not_threatened,France,2018,FRA
+Trifolium pratense,LC,not_threatened,Germany,1999,DEU
+Trifolium pratense,LC,not_threatened,Germany,2018,DEU
+Trifolium pratense,LC,not_threatened,Ireland,2016,IRL
+Trifolium pratense,LC,not_threatened,Luxembourg,2005,LUX
+Trifolium pratense,LC,not_threatened,Netherlands,2012,NLD
+Trifolium pratense,LC,not_threatened,Switzerland,2002,CHE
+Trifolium pratense,LC,not_threatened,United Kingdom,2005,GBR
+Trollius europaeus,VU,threatened,Albania,2013,ALB
+Trollius europaeus,LC,not_threatened,Austria,1999,AUT
+Trollius europaeus,EN,threatened,Austria,1999,AUT
+Trollius europaeus,NT,not_threatened,Belarus,2005,BLR
+Trollius europaeus,LC,not_threatened,Bosnia and Herzegovina,2013,BIH
+Trollius europaeus,NT,not_threatened,Bulgaria,2009,BGR
+Trollius europaeus,NT,not_threatened,Croatia,2007,HRV
+Trollius europaeus,NT,not_threatened,Denmark,2019,DNK
+Trollius europaeus,LC,not_threatened,Estonia,2008,EST
+Trollius europaeus,LC,not_threatened,Finland,2019,FIN
+Trollius europaeus,EN,threatened,Germany,1999,DEU
+Trollius europaeus,EX,extinct,Germany,2005,DEU
+Trollius europaeus,EN,threatened,Germany,1996,DEU
+Trollius europaeus,CR,threatened,Hungary,2007,HUN
+Trollius europaeus,NT,not_threatened,Ireland,2016,IRL
+Trollius europaeus,LC,not_threatened,Kosovo,2013,XKX
+Trollius europaeus,NT,not_threatened,Russia,NA,RUS
+Trollius europaeus,VU,threatened,Russia,NA,RUS
+Trollius europaeus,NT,not_threatened,Russia,NA,RUS
+Trollius europaeus,NT,not_threatened,Russia,NA,RUS
+Trollius europaeus,VU,threatened,Russia,NA,RUS
+Trollius europaeus,NT,not_threatened,Russia,NA,RUS
+Trollius europaeus,NT,not_threatened,Russia,NA,RUS
+Trollius europaeus,VU,threatened,Russia,NA,RUS
+Trollius europaeus,VU,threatened,Russia,NA,RUS
+Trollius europaeus,LC,not_threatened,Switzerland,2019,CHE
+Trollius europaeus,LC,not_threatened,United Kingdom,2014,GBR
+Trollius europaeus,LC,not_threatened,United Kingdom,2005,GBR
+Tulipa sylvestris,VU,threatened,Albania,2013,ALB
+Tulipa sylvestris,EN,threatened,Austria,1999,AUT
+Tulipa sylvestris,EN,threatened,Bosnia and Herzegovina,2013,BIH
+Tulipa sylvestris,NT,not_threatened,Croatia,2007,HRV
+Tulipa sylvestris,NE,not_evaluated_dd,Estonia,2008,EST
+Tulipa sylvestris,EN,threatened,Germany,1999,DEU
+Tulipa sylvestris,threatened,threatened,Germany,2005,DEU
+Tulipa sylvestris,EN,threatened,Germany,2011,DEU
+Tulipa sylvestris,EN,threatened,Germany,1996,DEU
+Tulipa sylvestris,VU,threatened,Malta,1989,MLT
+Tulipa sylvestris,EN,threatened,Malta,1989,MLT
+Tulipa sylvestris,LC,not_threatened,Netherlands,2012,NLD
+Tulipa sylvestris,VU,threatened,Switzerland,2019,CHE
+Tulipa sylvestris,EN,threatened,Switzerland,2002,CHE
+Tussilago farfara,LC,not_threatened,Austria,1999,AUT
+Tussilago farfara,LC,not_threatened,Belgium,2019,BEL
+Tussilago farfara,VU,threatened,Cyprus,2007,CYP
+Tussilago farfara,LC,not_threatened,Estonia,2008,EST
+Tussilago farfara,LC,not_threatened,France,2018,FRA
+Tussilago farfara,LC,not_threatened,Germany,1999,DEU
+Tussilago farfara,LC,not_threatened,Germany,2011,DEU
+Tussilago farfara,LC,not_threatened,Germany,2018,DEU
+Tussilago farfara,LC,not_threatened,Ireland,2016,IRL
+Tussilago farfara,LC,not_threatened,Luxembourg,2005,LUX
+Tussilago farfara,LC,not_threatened,Netherlands,2012,NLD
+Tussilago farfara,LC,not_threatened,Switzerland,2002,CHE
+Tussilago farfara,LC,not_threatened,United Kingdom,2005,GBR
+Urtica dioica,LC,not_threatened,Belgium,2019,BEL
+Urtica dioica,LC,not_threatened,Estonia,2008,EST
+Urtica dioica,LC,not_threatened,France,2018,FRA
+Urtica dioica,LC,not_threatened,Germany,1999,DEU
+Urtica dioica,LC,not_threatened,Germany,2011,DEU
+Urtica dioica,LC,not_threatened,Germany,2018,DEU
+Urtica dioica,LC,not_threatened,Ireland,2016,IRL
+Urtica dioica,LC,not_threatened,Luxembourg,2005,LUX
+Urtica dioica,LC,not_threatened,Netherlands,2012,NLD
+Urtica dioica,LC,not_threatened,Switzerland,2016,CHE
+Urtica dioica,LC,not_threatened,United Kingdom,2014,GBR
+Vaccinium myrtillus,VU,threatened,Albania,2013,ALB
+Vaccinium myrtillus,LC,not_threatened,Austria,1999,AUT
+Vaccinium myrtillus,LC,not_threatened,Denmark,2019,DNK
+Vaccinium myrtillus,LC,not_threatened,Estonia,2008,EST
+Vaccinium myrtillus,LC,not_threatened,Finland,2019,FIN
+Vaccinium myrtillus,LC,not_threatened,Germany,1999,DEU
+Vaccinium myrtillus,LC,not_threatened,Germany,2011,DEU
+Vaccinium myrtillus,LC,not_threatened,Germany,1996,DEU
+Vaccinium myrtillus,LC,not_threatened,Ireland,2016,IRL
+Vaccinium myrtillus,LC,not_threatened,Netherlands,2012,NLD
+Vaccinium myrtillus,EX,extinct,Russia,NA,RUS
+Vaccinium myrtillus,CR,threatened,Russia,NA,RUS
+Vaccinium myrtillus,DD,not_evaluated_dd,Russia,NA,RUS
+Vaccinium myrtillus,VU,threatened,Russia,NA,RUS
+Vaccinium myrtillus,CR,threatened,Russia,NA,RUS
+Vaccinium myrtillus,VU,threatened,Russia,NA,RUS
+Vaccinium myrtillus,VU,threatened,Spain,2010,ESP
+Vaccinium myrtillus,LC,not_threatened,Switzerland,2019,CHE
+Vaccinium myrtillus,LC,not_threatened,United Kingdom,2014,GBR
+Vaccinium myrtillus,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Vaccinium myrtillus,LC,not_threatened,United Kingdom,2014,GBR
+Vaccinium oxycoccos,VU,threatened,Austria,1999,AUT
+Vaccinium oxycoccos,NT,not_threatened,Russia,NA,RUS
+Vaccinium oxycoccos,EX,extinct,Russia,NA,RUS
+Vaccinium oxycoccos,CR,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,NT,not_threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,CR,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,NT,not_threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,CR,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,NT,not_threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,NT,not_threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,DD,not_evaluated_dd,Russia,NA,RUS
+Vaccinium oxycoccos,CR,threatened,Russia,NA,RUS
+Vaccinium oxycoccos,VU,threatened,Russia,NA,RUS
+Veratrum album,EN,threatened,Austria,1999,AUT
+Veratrum album,DD,not_evaluated_dd,Croatia,2007,HRV
+Veratrum album,LC,not_threatened,Czech Republic,2017,CZE
+Veratrum album,CR,threatened,Finland,2019,FIN
+Veratrum album,EN,threatened,Finland,2001,FIN
+Veratrum album,LC,not_threatened,Germany,1996,DEU
+Veratrum album,NT,not_threatened,Hungary,2007,HUN
+Veratrum album,LC,not_threatened,Switzerland,2019,CHE
+Veratrum album,VU,threatened,Switzerland,2002,CHE
+Veratrum nigrum,NT,not_threatened,Austria,1999,AUT
+Veratrum nigrum,EN,threatened,Austria,1999,AUT
+Veratrum nigrum,EN,threatened,Czech Republic,2017,CZE
+Veratrum nigrum,threatened,threatened,Czech Republic,2012,CZE
+Veratrum nigrum,VU,threatened,France,2012,FRA
+Veratrum nigrum,LC,not_threatened,Russia,NA,RUS
+Veratrum nigrum,VU,threatened,Russia,NA,RUS
+Veratrum nigrum,NT,not_threatened,Russia,NA,RUS
+Veratrum nigrum,CR,threatened,Russia,NA,RUS
+Veratrum nigrum,NT,not_threatened,Russia,NA,RUS
+Veratrum nigrum,VU,threatened,Slovenia,2002,SVN
+Veratrum nigrum,EN,threatened,Switzerland,2019,CHE
+Vinca minor,LC,not_threatened,Austria,1999,AUT
+Vinca minor,LC,not_threatened,Belgium,2019,BEL
+Vinca minor,NE,not_evaluated_dd,Estonia,2008,EST
+Vinca minor,LC,not_threatened,France,2018,FRA
+Vinca minor,LC,not_threatened,Germany,1999,DEU
+Vinca minor,LC,not_threatened,Germany,2011,DEU
+Vinca minor,LC,not_threatened,Germany,2018,DEU
+Vinca minor,LC,not_threatened,Luxembourg,2005,LUX
+Vinca minor,LC,not_threatened,Netherlands,2012,NLD
+Vinca minor,DD,not_evaluated_dd,Russia,NA,RUS
+Vinca minor,LC,not_threatened,Switzerland,2002,CHE
+Vinca minor,LC,not_threatened,United Kingdom,2014,GBR
+Vincetoxicum hirundinaria,LC,not_threatened,Austria,1999,AUT
+Vincetoxicum hirundinaria,CR,threatened,Belgium,2019,BEL
+Vincetoxicum hirundinaria,VU,threatened,Luxembourg,2005,LUX
+Vincetoxicum hirundinaria,RE,extinct,Norway,2015,NOR
+Vincetoxicum hirundinaria,NT,not_threatened,Russia,NA,RUS
+Vincetoxicum hirundinaria,NT,not_threatened,Russia,NA,RUS
+Vincetoxicum hirundinaria,NT,not_threatened,Russia,NA,RUS
+Vincetoxicum hirundinaria,NT,not_threatened,Russia,NA,RUS
+Vincetoxicum hirundinaria,NT,not_threatened,Russia,NA,RUS
+Vincetoxicum hirundinaria,VU,threatened,Russia,NA,RUS
+Viola odorata,LC,not_threatened,Austria,1999,AUT
+Viola odorata,LC,not_threatened,Belgium,2019,BEL
+Viola odorata,LC,not_threatened,Estonia,2008,EST
+Viola odorata,LC,not_threatened,France,2018,FRA
+Viola odorata,LC,not_threatened,Germany,1999,DEU
+Viola odorata,LC,not_threatened,Germany,2011,DEU
+Viola odorata,LC,not_threatened,Germany,2018,DEU
+Viola odorata,LC,not_threatened,Ireland,2016,IRL
+Viola odorata,LC,not_threatened,Luxembourg,2005,LUX
+Viola odorata,PEX,threatened,Malta,1989,MLT
+Viola odorata,EX,extinct,Malta,1989,MLT
+Viola odorata,LC,not_threatened,Netherlands,2012,NLD
+Viola odorata,NT,not_threatened,Russia,NA,RUS
+Viola odorata,CR,threatened,Russia,NA,RUS
+Viola odorata,LC,not_threatened,Switzerland,2002,CHE
+Viola odorata,LC,not_threatened,United Kingdom,2005,GBR
+Viscaria vulgaris,NT,not_threatened,Russia,NA,RUS
+Viscaria vulgaris,NT,not_threatened,Russia,NA,RUS
+Ajuga reptans,VU,threatened,Andorra,2008,AND
+Ajuga reptans,LC,not_threatened,Austria,1999,AUT
+Ajuga reptans,LC,not_threatened,Belgium,2019,BEL
+Ajuga reptans,EN,threatened,Estonia,1998,EST
+Ajuga reptans,VU,threatened,Estonia,2008,EST
+Ajuga reptans,LC,not_threatened,France,2018,FRA
+Ajuga reptans,LC,not_threatened,Germany,1999,DEU
+Ajuga reptans,threatened,threatened,Germany,2005,DEU
+Ajuga reptans,LC,not_threatened,Germany,2011,DEU
+Ajuga reptans,LC,not_threatened,Germany,2018,DEU
+Ajuga reptans,LC,not_threatened,Ireland,2016,IRL
+Ajuga reptans,LC,not_threatened,Luxembourg,2005,LUX
+Ajuga reptans,LC,not_threatened,Netherlands,2012,NLD
+Ajuga reptans,EN,threatened,Norway,2006,NOR
+Ajuga reptans,NT,not_threatened,Russia,NA,RUS
+Ajuga reptans,LC,not_threatened,Switzerland,2016,CHE
+Ajuga reptans,LC,not_threatened,United Kingdom,2005,GBR
+Arctostaphylos uva-ursi,LC,not_threatened,Albania,2013,ALB
+Arctostaphylos uva-ursi,LC,not_threatened,Austria,1999,AUT
+Arctostaphylos uva-ursi,VU,threatened,Bulgaria,2009,BGR
+Arctostaphylos uva-ursi,NT,not_threatened,Croatia,2005,HRV
+Arctostaphylos uva-ursi,VU,threatened,Croatia,2007,HRV
+Arctostaphylos uva-ursi,EN,threatened,Czech Republic,2017,CZE
+Arctostaphylos uva-ursi,LC,not_threatened,Denmark,2019,DNK
+Arctostaphylos uva-ursi,LC,not_threatened,Finland,2019,FIN
+Arctostaphylos uva-ursi,threatened,threatened,Germany,1999,DEU
+Arctostaphylos uva-ursi,EX,extinct,Germany,2005,DEU
+Arctostaphylos uva-ursi,EX,extinct,Germany,2011,DEU
+Arctostaphylos uva-ursi,EN,threatened,Germany,1996,DEU
+Arctostaphylos uva-ursi,LC,not_threatened,Ireland,2016,IRL
+Arctostaphylos uva-ursi,EN,threatened,Netherlands,2012,NLD
+Arctostaphylos uva-ursi,VU,threatened,Romania,2009,ROU
+Arctostaphylos uva-ursi,VU,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,NT,not_threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,CR,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,CR,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,CR,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,CR,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,CR,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,CR,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,NT,not_threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,NT,not_threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,VU,threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,NT,not_threatened,Russia,NA,RUS
+Arctostaphylos uva-ursi,LC,not_threatened,Switzerland,2019,CHE
+Arctostaphylos uva-ursi,NT,not_threatened,United Kingdom,2014,GBR
+Carex sylvatica,LC,not_threatened,Austria,1999,AUT
+Carex sylvatica,LC,not_threatened,Belgium,2019,BEL
+Carex sylvatica,LC,not_threatened,Estonia,2008,EST
+Carex sylvatica,LC,not_threatened,France,2018,FRA
+Carex sylvatica,LC,not_threatened,Germany,1999,DEU
+Carex sylvatica,EX,extinct,Germany,2005,DEU
+Carex sylvatica,LC,not_threatened,Germany,2011,DEU
+Carex sylvatica,LC,not_threatened,Germany,2018,DEU
+Carex sylvatica,LC,not_threatened,Ireland,2016,IRL
+Carex sylvatica,LC,not_threatened,Luxembourg,2005,LUX
+Carex sylvatica,LC,not_threatened,Netherlands,2012,NLD
+Carex sylvatica,EN,threatened,Portugal,2020,PRT
+Carex sylvatica,NT,not_threatened,Russia,NA,RUS
+Carex sylvatica,VU,threatened,Russia,NA,RUS
+Carex sylvatica,LC,not_threatened,Switzerland,2002,CHE
+Carex sylvatica,LC,not_threatened,United Kingdom,2005,GBR
+Hydrocotyle vulgaris,EN,threatened,Austria,1999,AUT
+Hydrocotyle vulgaris,threatened,threatened,Austria,1999,AUT
+Hydrocotyle vulgaris,CR,threatened,Belarus,2005,BLR
+Hydrocotyle vulgaris,DD,not_evaluated_dd,Bosnia and Herzegovina,2013,BIH
+Hydrocotyle vulgaris,EN,threatened,Croatia,2005,HRV
+Hydrocotyle vulgaris,DD,not_evaluated_dd,Croatia,2007,HRV
+Hydrocotyle vulgaris,VU,threatened,Czech Republic,2017,CZE
+Hydrocotyle vulgaris,LC,not_threatened,Denmark,2019,DNK
+Hydrocotyle vulgaris,CR,threatened,Estonia,2008,EST
+Hydrocotyle vulgaris,threatened,threatened,Estonia,1998,EST
+Hydrocotyle vulgaris,EN,threatened,Estonia,2008,EST
+Hydrocotyle vulgaris,EN,threatened,Germany,1999,DEU
+Hydrocotyle vulgaris,threatened,threatened,Germany,2005,DEU
+Hydrocotyle vulgaris,LC,not_threatened,Germany,2011,DEU
+Hydrocotyle vulgaris,LC,not_threatened,Germany,1996,DEU
+Hydrocotyle vulgaris,EN,threatened,Hungary,2007,HUN
+Hydrocotyle vulgaris,LC,not_threatened,Ireland,2016,IRL
+Hydrocotyle vulgaris,EN,threatened,Italy,2018,ITA
+Hydrocotyle vulgaris,EN,threatened,Latvia,2003,LVA
+Hydrocotyle vulgaris,CR,threatened,Lithuania,2007,LTU
+Hydrocotyle vulgaris,RE,extinct,Luxembourg,NA,LUX
+Hydrocotyle vulgaris,LC,not_threatened,Netherlands,2012,NLD
+Hydrocotyle vulgaris,NT,not_threatened,Norway,2015,NOR
+Hydrocotyle vulgaris,VU,threatened,Slovenia,2002,SVN
+Hydrocotyle vulgaris,VU,threatened,Switzerland,2019,CHE
+Hydrocotyle vulgaris,R,threatened,Ukraine,2009,UKR
+Hydrocotyle vulgaris,NT,not_threatened,United Kingdom,2014,GBR
+Hydrocotyle vulgaris,NE,not_evaluated_dd,United Kingdom,2014,GBR
+Hydrocotyle vulgaris,NT,not_threatened,United Kingdom,2014,GBR
+Hydrocotyle vulgaris,LC,not_threatened,United Kingdom,2005,GBR
+Paeonia daurica,VU,threatened,Ukraine,2009,UKR
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,EN,threatened,Albania,2013,ALB
+Trapa natans,VU,threatened,Austria,1999,AUT
+Trapa natans,EN,threatened,Austria,1999,AUT
+Trapa natans,VU,threatened,Belarus,2005,BLR
+Trapa natans,EN,threatened,Bulgaria,2015,BGR
+Trapa natans,NT,not_threatened,Croatia,2007,HRV
+Trapa natans,EN,threatened,Czech Republic,2017,CZE
+Trapa natans,threatened,threatened,Czech Republic,2012,CZE
+Trapa natans,EN,threatened,Germany,1999,DEU
+Trapa natans,EX,extinct,Germany,2005,DEU
+Trapa natans,EX,extinct,Germany,2011,DEU
+Trapa natans,EN,threatened,Germany,1996,DEU
+Trapa natans,LC,not_threatened,Hungary,2007,HUN
+Trapa natans,NT,not_threatened,Italy,2018,ITA
+Trapa natans,CR,threatened,Latvia,2003,LVA
+Trapa natans,EX,extinct,Lithuania,2007,LTU
+Trapa natans,PE,threatened,Lithuania,2007,LTU
+Trapa natans,CR,threatened,Moldova,2015,MDA
+Trapa natans,RE,extinct,Netherlands,2012,NLD
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,EN,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,EX,extinct,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,DD,not_evaluated_dd,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,LC,not_threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,NT,not_threatened,Russia,NA,RUS
+Trapa natans,CR,threatened,Russia,NA,RUS
+Trapa natans,VU,threatened,Slovenia,2002,SVN
+Trapa natans,RE,extinct,Spain,2010,ESP
+Trapa natans,EX,extinct,Spain,2008,ESP
+Trapa natans,RE,extinct,Sweden,2020,SWE
+Trapa natans,CR,threatened,Switzerland,2019,CHE
+Trapa natans,EN,threatened,Switzerland,2002,CHE
+Centaurea scabiosa,NT,not_threatened,Belgium,2019,BEL
+Centaurea scabiosa,LC,not_threatened,Estonia,2008,EST
+Centaurea scabiosa,LC,not_threatened,France,2018,FRA
+Centaurea scabiosa,LC,not_threatened,Germany,1999,DEU
+Centaurea scabiosa,LC,not_threatened,Germany,2018,DEU
+Centaurea scabiosa,NT,not_threatened,Ireland,2016,IRL
+Centaurea scabiosa,LC,not_threatened,Luxembourg,2005,LUX
+Centaurea scabiosa,LC,not_threatened,Netherlands,2012,NLD
+Centaurea scabiosa,LC,not_threatened,Switzerland,2002,CHE
+Centaurea scabiosa,LC,not_threatened,United Kingdom,2005,GBR
+Helosciadium repens,VU,threatened,Austria,1999,AUT
+Saxifraga rotundifolia,VU,threatened,Andorra,2008,AND
+Saxifraga rotundifolia,LC,not_threatened,Austria,1999,AUT
+Saxifraga rotundifolia,EN,threatened,Austria,1999,AUT
+Saxifraga rotundifolia,LC,not_threatened,Germany,1999,DEU
+Saxifraga rotundifolia,LC,not_threatened,Germany,1996,DEU
+Saxifraga rotundifolia,LC,not_threatened,Switzerland,2019,CHE
+Vaccinium uliginosum,VU,threatened,Albania,2013,ALB
+Vaccinium uliginosum,NT,not_threatened,Austria,1999,AUT
+Vaccinium uliginosum,EN,threatened,Austria,1999,AUT
+Vaccinium uliginosum,RE,extinct,Belgium,2020,BEL
+Vaccinium uliginosum,VU,threatened,Bosnia and Herzegovina,2013,BIH
+Vaccinium uliginosum,DD,not_evaluated_dd,Croatia,2007,HRV
+Vaccinium uliginosum,LC,not_threatened,Denmark,2019,DNK
+Vaccinium uliginosum,LC,not_threatened,Estonia,2008,EST
+Vaccinium uliginosum,LC,not_threatened,Finland,2019,FIN
+Vaccinium uliginosum,threatened,threatened,Germany,1999,DEU
+Vaccinium uliginosum,EN,threatened,Germany,2011,DEU
+Vaccinium uliginosum,threatened,threatened,Germany,1996,DEU
+Vaccinium uliginosum,LC,not_threatened,Netherlands,2012,NLD
+Vaccinium uliginosum,EN,threatened,Norway,2010,NOR
+Vaccinium uliginosum,VU,threatened,Russia,NA,RUS
+Vaccinium uliginosum,VU,threatened,Russia,NA,RUS
+Vaccinium uliginosum,CR,threatened,Russia,NA,RUS
+Vaccinium uliginosum,NT,not_threatened,Russia,NA,RUS
+Vaccinium uliginosum,CR,threatened,Russia,NA,RUS
+Vaccinium uliginosum,EX,extinct,Russia,NA,RUS
+Vaccinium uliginosum,VU,threatened,Slovenia,2002,SVN
+Vaccinium uliginosum,NT,not_threatened,Switzerland,2019,CHE
+Vaccinium uliginosum,LC,not_threatened,Switzerland,2002,CHE
+Vaccinium uliginosum,LC,not_threatened,United Kingdom,2014,GBR
+Vaccinium uliginosum,LC,not_threatened,United Kingdom,2005,GBR
+Knautia arvensis,NT,not_threatened,Belgium,2019,BEL
+Knautia arvensis,LC,not_threatened,Estonia,2008,EST
+Knautia arvensis,LC,not_threatened,Germany,1999,DEU
+Knautia arvensis,LC,not_threatened,Germany,2011,DEU
+Knautia arvensis,LC,not_threatened,Germany,1996,DEU
+Knautia arvensis,LC,not_threatened,Ireland,2016,IRL
+Knautia arvensis,LC,not_threatened,Luxembourg,2005,LUX
+Knautia arvensis,LC,not_threatened,Netherlands,2012,NLD
+Knautia arvensis,LC,not_threatened,Switzerland,2016,CHE
+Knautia arvensis,NT,not_threatened,United Kingdom,2014,GBR
+Knautia arvensis,LC,not_threatened,United Kingdom,2005,GBR
+Agrimonia eupatoria,LC,not_threatened,Austria,1999,AUT
+Agrimonia eupatoria,NT,not_threatened,Belgium,2019,BEL
+Agrimonia eupatoria,EN,threatened,Cyprus,2007,CYP
+Agrimonia eupatoria,LC,not_threatened,Estonia,2008,EST
+Agrimonia eupatoria,LC,not_threatened,France,2018,FRA
+Agrimonia eupatoria,LC,not_threatened,Germany,1999,DEU
+Agrimonia eupatoria,LC,not_threatened,Germany,2011,DEU
+Agrimonia eupatoria,LC,not_threatened,Germany,2018,DEU
+Agrimonia eupatoria,LC,not_threatened,Ireland,2016,IRL
+Agrimonia eupatoria,LC,not_threatened,Luxembourg,2005,LUX
+Agrimonia eupatoria,LC,not_threatened,Netherlands,2012,NLD
+Agrimonia eupatoria,NT,not_threatened,Russia,NA,RUS
+Agrimonia eupatoria,LC,not_threatened,Switzerland,2002,CHE
+Agrimonia eupatoria,LC,not_threatened,United Kingdom,2014,GBR
+Oenothera biennis,DD,not_evaluated_dd,Estonia,2008,EST
+Oenothera biennis,LC,not_threatened,Germany,1999,DEU
+Oenothera biennis,LC,not_threatened,Germany,1996,DEU
+Oenothera biennis,LC,not_threatened,Netherlands,2012,NLD
+Oenothera biennis,LC,not_threatened,Switzerland,2002,CHE
+Thymus praecox,CR,threatened,Belgium,2006,BEL
+Thymus praecox,EN,threatened,Germany,2011,DEU
+Thymus praecox,LC,not_threatened,Germany,2018,DEU
+Thymus praecox,R,threatened,Luxembourg,2005,LUX
+Thymus praecox,EN,threatened,Netherlands,2012,NLD
+Thymus praecox,NT,not_threatened,Norway,2010,NOR
+Thymus praecox,CR,threatened,Poland,2016,POL
+Thymus praecox,LC,not_threatened,Switzerland,2002,CHE

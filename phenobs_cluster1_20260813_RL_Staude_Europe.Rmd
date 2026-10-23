@@ -1,0 +1,2582 @@
+---
+title: "PhenObs Cluster 1 analyses"
+author: "Alicia Valdés"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: inline
+---
+
+# Load libraries needed
+
+```{r}
+library(readr)
+library(here)
+library(tidyverse)
+library(purrr)
+library(sf)
+library(glmmTMB)
+library(ggeffects)
+library(taxize)
+library(rgbif)
+library(readxl)
+library(gridExtra)
+library(furrr)
+library(countrycode)
+library(progress)
+library(ggrepel)
+library(corrplot)
+library(vegan)
+library(broom)
+library(broom.mixed)
+library(rnaturalearth)
+library(units)
+library(sysfonts)
+library(showtext)
+library(reproduciblemanuscript)
+library(modelsummary)
+library(patchwork)
+library(flextable)
+library(officer)
+```
+
+# Set ggplot theme
+
+```{r}
+font_add("Times", "C:/Windows/Fonts/times.ttf")
+showtext_auto()
+```
+
+
+```{r}
+windowsFonts(Times = windowsFont("Times New Roman"))
+```
+
+```{r}
+theme_set(
+  theme_bw(base_family = "Times") +
+    theme(
+      text = element_text(size = 30),
+      axis.title = element_text(size = 30),
+      axis.text = element_text(size = 24),
+      plot.title = element_text(size = 30)
+    )
+)
+```
+
+# Load previously created objects
+
+```{r}
+load(here("objects", "sens_per_endanger_RL_Staude_Europe.Rdata"))
+load(here("objects", "sens_per_endanger_stress_RL_Staude_Europe.Rdata"))
+load(here("objects", "sens_per_endanger_stress_ell_RL_Staude_Europe.Rdata"))
+```
+
+# Read data
+
+## Red List
+
+Load Red List data (MOTIVATE subset).
+
+Downloaded from https://github.com/istaude/threatened-nonnatives/blob/main/Data/redlist_checked.csv
+
+```{r}
+redlist <- read_csv(here("data", "raw", "Staude_et_al_2025", "redlist_checked.csv"))
+redlist
+```
+
+## Sensitivity
+
+Read sensitivity data (slopes from Robert).
+
+```{r}
+slopes_FlOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlOn.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "FlOn")
+slopes_SensOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_SenOn.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "SensOn")
+slopes_LeafUnf <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_LeafUnf.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "LeafUnf")
+slopes_GSL <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_GSL.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "GSL")
+slopes_FrOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FrOn.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "FrOn")
+slopes_FlDur <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlDur.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "FlDur")
+slopes_FlPeak <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlPeak.csv")) %>%
+  dplyr::select(-...1) %>% mutate(stage = "FlPeak")
+```
+
+```{r}
+slopes_FlOn
+slopes_SensOn
+slopes_LeafUnf
+slopes_GSL
+slopes_FrOn
+slopes_FlDur
+slopes_FlPeak
+```
+
+### Join and get unique species
+
+```{r}
+slopes_all <- bind_rows(slopes_FlOn, slopes_SensOn, slopes_LeafUnf, slopes_GSL,
+                        slopes_FrOn, slopes_FlDur, slopes_FlPeak)
+```
+
+```{r}
+slopes_all_species <- slopes_all %>% distinct(Species)
+```
+
+## Stress tolerance
+
+Read stress tolerance scores.
+
+```{r}
+stress <- read_delim(here("data", "raw", "Stress_Tolerance.csv"), delim = ";") %>%
+  rename(stress_tol = `Stress tolerator score_percentage`)
+stress
+```
+
+## Ellenberg tendency of change
+
+Read Ellenberg tendency of change data.
+
+```{r}
+ellenberg <- read_excel(here("data", "raw", "IndicatorValues_Ellenberg.xlsx")) 
+ellenberg
+```
+
+# Resolve species names
+
+Resolve species in all datasets to GBIF accepted names using the package taxize:
+
+## Species in sensitivity data
+
+```{r eval=FALSE, include=FALSE}
+length(slopes_all_species$Species) # 187
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- slopes_all_species$Species[1:50]
+spp2 <- slopes_all_species$Species[51:100]
+spp3 <- slopes_all_species$Species[101:150]
+spp4 <- slopes_all_species$Species[151:187]
+
+# Getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4)
+
+# Add to sp_list
+slopes_all_species_resolved <- slopes_all_species %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+slopes_all_resolved <- slopes_all %>%
+  left_join(slopes_all_species_resolved)
+```
+
+## Species in  Red List data
+
+Resolve species (accepted_taxon_name) to GBIF accepted names:
+
+```{r eval=FALSE, include=FALSE}
+length(unique(redlist$accepted_taxon_name)) # 36710
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunk_size <- 50
+chunks <- split(unique(redlist$accepted_taxon_name), 
+                ceiling(seq_along(unique(redlist$accepted_taxon_name)) / 
+                          chunk_size))
+
+# Helper to resolve one chunk using GBIF Backbone (data_sources = 11)
+resolve_chunk_tbl <- function(x) {
+  gna_verifier(
+    names = x,
+    data_sources = 11,       # GBIF Backbone Taxonomy
+    all_matches = FALSE,     # best match only
+    output_type = "table"
+  )
+}
+
+# Process chunks with progress messages
+resolved_tbl <- tryCatch(
+  {
+    imap_dfr(
+      chunks,
+      function(chunk, i) {
+
+        message(
+          sprintf(
+            "Processing chunk %s of %s (%.1f%%)",
+            i,
+            length(chunks),
+            100 * as.numeric(i) / length(chunks)
+          )
+        )
+
+        resolve_chunk_tbl(chunk)
+      }
+    )
+  },
+  error = function(e) {
+    message("Error: ", e$message)
+    NULL
+  }
+)
+```
+
+```{r eval=FALSE, include=FALSE}
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    rl_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(rl_name_clean, .keep_all = TRUE)
+
+redlist_with_clean <- redlist %>%
+  mutate(
+    rl_name_raw   = accepted_taxon_name,
+    rl_name_clean = str_squish(rl_name_raw)
+  )
+
+# Left-join: keep ALL rows from redlist
+redlist_resolved <- redlist_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              dplyr::select(rl_name_clean, name_res), 
+            by = "rl_name_clean")
+```
+
+## Species in stress tolerance scores
+
+```{r eval=FALSE, include=FALSE}
+length(stress$Species) # 263
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- stress$Species[1:50]
+spp2 <- stress$Species[51:100]
+spp3 <- stress$Species[101:150]
+spp4 <- stress$Species[151:200]
+spp5 <- stress$Species[201:250]
+spp6 <- stress$Species[251:263]
+
+# Unconventional way for getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+resolved_5 <- gna_verifier(spp5, data_sources = 11)
+resolved_6 <- gna_verifier(spp6, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4, 
+                      resolved_5, resolved_6)
+
+# Add to sp_list
+stress_resolved <- stress %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+```
+
+## Species in Ellenberg tendency of change data
+
+```{r}
+ellenberg <- ellenberg %>%
+  mutate(Art = ifelse(Art == "Primula veris (officinalis)#f)", 
+                      "Primula veris (officinalis)", Art))
+```
+
+```{r eval=FALSE, include=FALSE}
+length(unique(ellenberg$Art)) # 2791
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+# Chunk the names into groups of <= 50
+chunks <- split(unique(ellenberg$Art), 
+                ceiling(seq_along(unique(ellenberg$Art)) / 
+                          chunk_size))
+```
+
+```{r eval=FALSE, include=FALSE}
+resolved_tbl_list <- vector("list", length(chunks))
+for (i in seq_along(chunks)) {
+  cat("Resolving chunk", i, "of", length(chunks), 
+      " (n =", length(chunks[[i]]), ")\n")
+  res <- try(resolve_chunk_tbl(chunks[[i]]), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    cat("Chunk", i, "failed with:\n", attr(res, "condition")$message, "\n")
+    break
+  }
+  resolved_tbl_list[[i]] <- res
+}
+resolved_tbl <- dplyr::bind_rows(resolved_tbl_list)
+```
+
+```{r eval=FALSE, include=FALSE}
+resolved_tbl2 <- resolved_tbl %>%
+  rename(
+    ellenberg_name_clean = submittedName,           
+    name_res = currentCanonicalFull
+  ) %>%
+  # If duplicates exist in resolved_tbl (same submitted name multiple times),
+  # keep the first/best one:
+  distinct(ellenberg_name_clean, .keep_all = TRUE)
+
+ellenberg_with_clean <- ellenberg %>%
+  mutate(
+    ellenberg_name_raw   = Art,
+    ellenberg_name_clean = str_squish(ellenberg_name_raw)
+  )
+
+# Left-join: keep ALL rows from ellenberg
+ellenberg_resolved <- ellenberg_with_clean %>%
+  left_join(resolved_tbl2 %>%
+              dplyr::select(ellenberg_name_clean, name_res), 
+            by = "ellenberg_name_clean") %>% dplyr::select(-Art, -ellenberg_name_raw,
+                                                    -ellenberg_name_clean)
+```
+
+# Create occurrence matrix
+
+Occurrence matrices are created using the package rgbif. 
+
+## Get countries form RL
+
+Get vector of ISO3 codes for European countries.
+
+```{r eval=FALSE, include=FALSE}
+redlist_europe <- redlist %>%
+  mutate(
+    continent = countrycode(
+      ISO3_Code,
+      origin = "iso3c",
+      destination = "continent",
+      custom_match = c("KOS" = "Europe")
+    )
+  ) %>%
+  filter(continent == "Europe")
+
+ISO3_Codes <- redlist_europe %>%
+  distinct(ISO3_Code) %>%
+  pull(ISO3_Code)
+```
+
+## Build occurrence matrix
+
+Build the species × country occurrence matrix with rgbif.
+
+Settings:
+
+```{r eval=FALSE, include=FALSE}
+options(timeout = 180)                      # allow slower responses
+options(future.rng.onMisuse = "ignore")     # silence RNG warning when seed is set
+
+workers <- 4
+future::plan(multisession, workers = workers)
+```
+
+Helper functions:
+
+```{r eval=FALSE, include=FALSE}
+`%||%` <- function(a, b) if (!is.null(a)) a else b
+
+retry <- function(expr_fun, tries = 3L, base_wait = 0.7) {
+
+  for (i in seq_len(tries)) {
+
+    out <- try(expr_fun(), silent = TRUE)
+
+    if (!inherits(out, "try-error")) {
+      return(out)
+    }
+
+    Sys.sleep(base_wait * (2^(i - 1)))
+  }
+
+  out
+}
+```
+
+Query GBIF once per species:
+
+```{r eval=FALSE, include=FALSE}
+get_species_country_counts <- function(sp) {
+
+  require(rgbif)
+  require(dplyr)
+  require(tibble)
+
+  res <- retry(
+    function() {
+
+      rgbif::occ_search(
+        scientificName = sp,
+        limit = 0,
+        facet = "country",
+        facetLimit = 300
+      )
+
+    }
+  )
+
+  if (inherits(res, "try-error") ||
+      is.null(res$facets) ||
+      length(res$facets) == 0) {
+
+    return(
+      tibble(
+        species = sp,
+        iso2 = character(),
+        count = integer(),
+        status = character()
+      )
+    )
+  }
+
+  country_tbl <- res$facets$country
+
+  if (is.null(country_tbl) || nrow(country_tbl) == 0) {
+
+    return(
+      tibble(
+        species = sp,
+        iso2 = character(),
+        count = integer(),
+        status = character()
+      )
+    )
+  }
+
+  tibble(
+    species = sp,
+    iso2 = country_tbl$name,
+    count = country_tbl$count,
+    status = "ok"
+  )
+}
+```
+
+Parallel querying:
+
+```{r eval=FALSE, include=FALSE}
+# Get species vector
+sp_vec <- unique(slopes_all_species_resolved$name_res)
+
+pb <- progress_bar$new(
+  format = "GBIF species [:bar] :current/:total (:percent)",
+  total = length(sp_vec),
+  clear = FALSE
+)
+
+results_list <- future_map(
+  sp_vec,
+  function(sp) {
+
+    out <- get_species_country_counts(sp)
+
+    pb$tick()
+
+    out
+
+  },
+  .options = furrr_options(seed = TRUE)
+)
+
+results <- bind_rows(results_list)
+```
+
+Convert ISO2 to ISO3. GBIF returns country codes as ISO2.Keep Kosovo, discard unknown countries. Keep only countries in Europe.
+
+```{r eval=FALSE, include=FALSE}
+results <- results %>%
+  mutate(
+    iso3 = countrycode(
+      iso2,
+      origin = "iso2c",
+      destination = "iso3c",
+      custom_match = c(
+        XK = "XKX",  # Kosovo
+        ZZ = NA      # Unknown country
+      )
+    ),
+    continent = countrycode(
+      iso3,
+      origin = "iso3c",
+      destination = "continent",
+      custom_match = c(
+        XKX = "Europe",
+        # Problematic countries not in Europe
+        ATF = NA,
+        HMD = NA,
+        IOT = NA,
+        SGS = NA,
+        UMI = NA
+      )
+    )
+  ) %>%
+  filter(continent == "Europe")
+```
+
+```{r eval=FALSE, include=FALSE}
+results <- results %>%
+  mutate(
+    iso3 = countrycode(
+      iso2,
+      origin = "iso2c",
+      destination = "iso3c",
+      custom_match = c(
+        XK = "XKX",  # Kosovo
+        ZZ = NA      # Unknown country
+      )
+    )
+  )
+```
+
+Build complete species × country matrix:
+
+```{r eval=FALSE, include=FALSE}
+occurrence_matrix <- results %>%
+  dplyr::select(species, iso3, count) %>%
+  group_by(species, iso3) %>%
+  summarise(count = sum(count), .groups = "drop") %>%
+  complete(
+    species = sp_vec,
+    iso3 = ISO3_Codes,
+    fill = list(count = 0)
+  ) %>%
+  pivot_wider(
+    names_from = iso3,
+    values_from = count,
+    values_fill = 0
+  )
+```
+
+Presence/Absence matrix:
+
+```{r eval=FALSE, include=FALSE}
+occ_matrix_pa <- results %>%
+  mutate(presence = 1L) %>%
+  dplyr::select(species, iso3, presence) %>%
+  distinct() %>%
+  complete(
+    species = sp_vec,
+    iso3 = ISO3_Codes,
+    fill = list(presence = 0L)
+  ) %>%
+  pivot_wider(
+    names_from = iso3,
+    values_from = presence,
+    values_fill = 0L
+  ) %>%
+  # Keep only countries from Red list in occurrence matrix
+  dplyr::select(species, any_of(redlist_europe$ISO3_Code))
+```
+
+# Matching Phenobs - Red List data
+
+Use the RL from all available countries!
+
+Try to match the full PhenObs spp list with the RL to see how many species are there in each category for each country.
+
+## Join RL and spp list in sensitivity data from PhenObs
+
+```{r eval=FALSE, include=FALSE}
+# Change iso3 code for Kosovo
+redlist_resolved <- redlist_resolved %>%
+  mutate(ISO3_Code = ifelse(ISO3_Code == "KOS", "XKX", ISO3_Code))
+
+redlist_phenobs <- tibble(slopes_all_species_resolved %>% 
+                            dplyr::select(name_res)) %>%
+  left_join(redlist_resolved) %>%
+  # Keep columns that I think I will use
+  dplyr::select(name_res, Redlist_cat, status, Country, Publ_year, ISO3_Code) %>%
+  # Remove those with status == NA (not present in any red list)
+  filter(!is.na(status))
+redlist_phenobs
+```
+
+## Data prep RL
+
+```{r eval=FALSE, include=FALSE}
+# Order from most severe -> least severe
+severity_order <- c(
+  "EX", "EW", "REW", "RE",
+  "PEX", "PE",
+  "CR", "EN", "VU", "R", "threatened",
+  "NT", "LC",
+  "DD", "NE", "WL"
+)
+
+# # Remove info from Russia!
+# redlist_phenobs <- redlist_phenobs %>%
+#   filter(ISO3_Code != "RUS")
+
+redlist_phenobs_final <- redlist_phenobs %>%
+  
+  group_by(name_res, ISO3_Code) %>%
+  
+  slice({
+
+    # Case 1: all publication years are NA (e.g. Russia)
+    if (all(is.na(Publ_year))) {
+
+      # Majority status
+      threat_counts <- table(status)
+      max_count <- max(threat_counts)
+
+      winning_threats <- names(threat_counts)[
+        threat_counts == max_count
+      ]
+
+      # No tie -> keep the most severe RL category
+      # within the winning Threat
+      if (length(winning_threats) == 1) {
+
+        candidate_rows <- which(
+          status == winning_threats
+        )
+
+      } else {
+
+        # Tie -> consider all tied Threat groups
+        candidate_rows <- which(
+          status %in% winning_threats
+        )
+      }
+
+      candidate_rows[
+        which.min(
+          match(
+            Redlist_cat[candidate_rows],
+            severity_order
+          )
+        )
+      ]
+
+    } else {
+
+      # Case 2: publication years available
+
+      latest_year <- max(Publ_year, na.rm = TRUE)
+
+      latest_rows <- which(
+        Publ_year == latest_year
+      )
+
+      # ALWAYS choose the most severe RL category
+      # among records from the latest year
+
+      latest_rows[
+        which.min(
+          match(
+            Redlist_cat[latest_rows],
+            severity_order
+          )
+        )
+      ]
+    }
+
+  }) %>%
+  ungroup()
+```
+
+Verify that there is only one record per species and country:
+
+```{r eval=FALSE, include=FALSE}
+redlist_phenobs_final %>% group_by(name_res, ISO3_Code) %>% filter(n() > 1)
+```
+
+Set those where status is not_evaluated_dd as not_threatened:
+
+```{r eval=FALSE, include=FALSE}
+redlist_phenobs_final <- redlist_phenobs_final %>%
+   mutate(status = case_when(status == "not_evaluated_dd" ~ "not_threatened",
+                             TRUE ~ status))
+```
+
+# Join occurrence data and Red List data 
+
+```{r eval=FALSE, include=FALSE}
+redlist_phenobs_final_occ <- 
+  # Here, all 187 species are included
+  occ_matrix_pa %>% 
+  pivot_longer(cols = c(2:42), names_to = "iso3", values_to = "occurrence") %>%
+  # Here, only the species included in red lists in ANY country (i.e. 145 spp)
+  # are included
+  left_join(redlist_phenobs_final, by = c("species" = "name_res",
+                                        "iso3" = "ISO3_Code")) %>%
+  # Remove unneded columns
+  dplyr::select(-Country, -Publ_year) %>%
+  # Rename
+  rename(country = iso3, threat = status) %>%
+  # Order columns
+  dplyr::select(species, country, occurrence, Redlist_cat, threat) %>%
+  # Set those where threat is NA as not_threatened
+  mutate(threat = case_when(
+    is.na(threat) ~ "not_threatened",
+    TRUE ~ threat
+  ))
+```
+
+Change occurrence from 1 to 0 when threat == "extinct" (so we believe that RL data is correct, although checking in GBIF, records of these spp in these countries are found recently in some cases).
+
+```{r eval=FALSE, include=FALSE}
+redlist_phenobs_final_occ <- redlist_phenobs_final_occ %>%
+  mutate(
+    occurrence = case_when(
+      threat == "extinct" ~ 0L,
+      TRUE ~ occurrence
+    )
+  )
+```
+
+# Calculate measures of endangerment
+
+Proportion of countries where the species is endangered, and proportion of range where species is endangered.
+Also, country_threat_index and range_threat_index (include severity of threat).
+
+Add info on country areas:
+
+```{r eval=FALSE, include=FALSE}
+world <- ne_countries(
+  scale = "medium",
+  returnclass = "sf"
+)
+
+countries_area <- world %>%
+  st_as_sf() %>%
+  st_transform(8857) %>%
+  mutate(area_km2 = as.numeric(st_area(.))/1e6) %>%
+  st_drop_geometry() %>%
+  dplyr::select(
+    country = iso_a3,
+    area_km2
+  )
+
+extra_codes <- tibble::tribble(
+  ~country, ~country_ref,
+  "FRA", "France",
+  "NOR", "Norway",
+  "GLP", "Guadeloupe",
+  "MTQ", "Martinique",
+  "MYT", "Mayotte",
+  "REU", "Reunion",
+  "GUF", "French Guiana",
+  "GIB", "Gibraltar",
+  "SJM", "Svalbard and Jan Mayen",
+  "TKL", "Tokelau",
+  "UMI", "United States Minor Outlying Islands"
+)
+
+extra_area <- extra_codes %>%
+  left_join(
+    world %>%
+      dplyr::select(admin, geometry),
+    by = c("country_ref" = "admin")
+  ) %>%
+  st_as_sf() %>%
+  st_transform(8857) %>%
+  mutate(area_km2 = as.numeric(st_area(.))/1e6) %>%
+  st_drop_geometry() %>%
+  dplyr::select(country, area_km2)
+
+countries_area <- bind_rows(countries_area, extra_area)
+
+countries_area <- countries_area %>%
+  bind_rows(
+    tibble(
+      country = c("KOS", "XKX"),
+      area_km2 = 10887
+    )
+  )
+
+redlist_phenobs_final_occ <- redlist_phenobs_final_occ %>%
+  left_join(countries_area) %>%
+  filter(country != "NA")
+```
+
+Define threat scores:
+
+```{r eval=FALSE, include=FALSE}
+perc_endangerment <- redlist_phenobs_final_occ %>%
+  mutate(
+    threat_score = case_when(
+      Redlist_cat == "VU" ~ 2,
+      Redlist_cat == "EN" ~ 3,
+      Redlist_cat == "CR" ~ 4,
+      Redlist_cat %in% c("EX", "EW", "PEX", "RE", "REW") ~ 4,
+      Redlist_cat == "threatened" ~ 3, # Assign midpoint to those without info on RL category
+      TRUE ~ 0
+    )
+  ) %>%
+  filter(occurrence > 0) %>%
+  group_by(species) %>%
+  summarise(
+    total_countries = n_distinct(country),
+
+    threatened_countries =
+      sum(threat == "threatened"),
+
+    perc_endangerment =
+      100 * threatened_countries / total_countries,
+
+    total_area = sum(area_km2),
+
+    threatened_area =
+      sum(area_km2[threat == "threatened"]),
+
+    perc_endangered_range =
+      100 * threatened_area / total_area,
+
+    country_threat_index =
+      sum(threat_score, na.rm = TRUE) /
+      (4 * total_countries),
+
+    range_threat_index =
+      sum(area_km2 * threat_score, na.rm = TRUE) /
+      (4 * total_area),
+
+    .groups = "drop"
+  ) %>%
+  mutate(
+    prop_endangerment = perc_endangerment / 100,
+    prop_endangered_range = perc_endangered_range / 100
+  ) %>%
+  arrange(species)
+```
+
+```{r eval=FALSE, include=FALSE}
+hist(perc_endangerment$prop_endangerment)
+hist(perc_endangerment$prop_endangered_range)
+hist(perc_endangerment$country_threat_index)
+hist(perc_endangerment$range_threat_index)
+```
+
+# Data prep sensitivity data
+
+```{r eval=FALSE, include=FALSE}
+slopes_all_resolved <- slopes_all_resolved %>%
+  # Remove unneeded cols
+  dplyr::select(-Species, -n_gardens, -temp_min, -temp_max, -temp_mean, -n_data) %>%
+  # Add variable for "sens" vs "not-sens"
+  mutate(sens_01 = factor(ifelse(ci_lower > 0 | ci_upper < 0, 1, 0))) %>%
+  pivot_wider(
+    names_from = stage,
+    values_from = c(mean_slope, ci_lower, ci_upper, slope_var, sens_01),
+    names_glue = "{.value}_{stage}"
+    )
+head(slopes_all_resolved)
+```
+
+# Prepare datasets for models
+
+## Sensitivity + % endangerment
+
+```{r eval=FALSE, include=FALSE}
+sens_per_endanger <- perc_endangerment %>% 
+  left_join(
+    slopes_all_resolved %>% 
+      dplyr::select(name_res, starts_with("mean_"), starts_with("slope_var"),
+             starts_with("sens_01_")),
+    by = c("species" = "name_res"),
+    )
+sens_per_endanger %>% filter(is.na(perc_endangerment)) %>% nrow()
+sens_per_endanger %>% filter(is.na(mean_slope_FlOn)) %>% nrow() # 16 spp
+sens_per_endanger %>% filter(is.na(mean_slope_GSL)) %>% nrow() # 33 spp
+```
+
+## Sensitivity + % endangerment + stress
+
+```{r eval=FALSE, include=FALSE}
+sens_per_endanger_stress <- sens_per_endanger %>%
+  left_join(stress_resolved, by = c("species" = "name_res")) %>%
+  dplyr::select(-Species)
+```
+
+## Sensitivity + % endangerment + Ellenberg tendency of change
+
+Deal with non-numeric values in indicator values
+
+Columns OEK_L - OEK_S and HAEUF_AE_change
+
+```{r}
+ellenberg <- ellenberg %>%
+  mutate(across(OEK_L:OEK_S, ~ parse_number(.)))
+```
+
+Join with sens_per_endanger:
+
+```{r eval=FALSE, include=FALSE}
+sens_per_endanger_stress_ell <- sens_per_endanger_stress %>%
+  left_join(ellenberg_resolved %>%
+              dplyr::select(name_res, HAEUF_AE_change) %>%
+              rename(change = HAEUF_AE_change) %>%
+              group_by(name_res) %>%
+              # For duplicates, get the mean
+              summarise(change = as.integer(mean(change, na.rm = TRUE)),
+                        .groups = "drop"), 
+            by = c("species" = "name_res"))
+```
+
+# Save datasets for later use
+
+```{r eval=FALSE, include=FALSE}
+save(sens_per_endanger, 
+     file = here("objects", "sens_per_endanger_RL_Staude_Europe.Rdata"))
+save(sens_per_endanger_stress, 
+     file = here("objects", "sens_per_endanger_stress_RL_Staude_Europe.Rdata"))
+save(sens_per_endanger_stress_ell, 
+     file = here("objects", "sens_per_endanger_stress_ell_RL_Staude_Europe.Rdata"))
+```
+
+# Reshape data
+
+```{r}
+sens_endanger <- sens_per_endanger %>% 
+  pivot_longer(cols = matches("^(mean_slope|slope_var|sens_01|sens_sign)_"),
+               names_to = c(".value", "stage"),
+               names_pattern = "(mean_slope|slope_var|sens_01|sens_sign)_(.*)")
+sens_endanger
+```
+
+```{r}
+sens_endanger_stress <- sens_per_endanger_stress %>% 
+  pivot_longer(cols = matches("^(mean_slope|slope_var|sens_01|sens_sign)_"),
+               names_to = c(".value", "stage"),
+               names_pattern = "(mean_slope|slope_var|sens_01|sens_sign)_(.*)")
+sens_endanger_stress
+```
+
+```{r}
+sens_endanger_stress_ell <- sens_per_endanger_stress_ell %>% 
+  pivot_longer(cols = matches("^(mean_slope|slope_var|sens_01|sens_sign)_"),
+               names_to = c(".value", "stage"),
+               names_pattern = "(mean_slope|slope_var|sens_01|sens_sign)_(.*)")
+sens_endanger_stress_ell
+```
+
+# Distributions
+
+```{r}
+ggplot(sens_endanger, aes(x = prop_endangerment)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Prop. endangerment", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = prop_endangered_range)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Prop. range endangered", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = country_threat_index)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Country threat index", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = range_threat_index)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Range threat index", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = factor(sens_01))) +
+  geom_bar() +
+  facet_wrap(~ stage) +
+  labs(x = "Sensitive (0 = No, 1 = Yes)", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = mean_slope)) +
+  geom_histogram(color = "black", fill = "grey") +
+  facet_wrap(~ stage, scales = "free") +
+  labs(x = "Sensitivity (mean slope)", y = "Number of species") +
+  theme_bw()
+```
+
+# Models endangerment ~ sensitivity 
+
+Filtering slope_var < 50 - clearer patterns.
+
+Added prediction plots only for models with any significant effects.
+
+## Define sensitivity sign
+
+```{r}
+sens_endanger <- sens_endanger %>%
+  mutate(sens_sign = case_when(
+    mean_slope < 0 ~ "negative",
+    mean_slope > 0 ~ "positive",
+    is.na(mean_slope) ~ NA_character_,
+    TRUE ~ "zero"
+  ))
+```
+
+## Rename GSL to GSDur
+
+```{r}
+sens_endanger <- sens_endanger %>%
+  mutate(stage = ifelse(stage == "GSL", "GSDur", stage))
+```
+
+## Fit models
+
+```{r}
+mod_prop_threat_countries <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_nest(stage, sens_sign) %>%
+  mutate(
+    model_name = paste(stage, sens_sign, sep = "_"),
+    model = map(
+      data,
+      ~ glmmTMB(
+        cbind(
+          threatened_countries,
+          total_countries - threatened_countries
+        ) ~ mean_slope,
+        data = .x,
+        family = betabinomial()
+      )
+    )
+  )
+
+mod_country_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_nest(stage, sens_sign) %>%
+  mutate(
+    model_name = paste(stage, sens_sign, sep = "_"),
+    model = map(
+      data,
+      ~ glmmTMB(
+        country_threat_index ~ mean_slope,
+        data = .x,
+        family = beta_family(),
+        ziformula = ~ .
+      )
+    )
+  )
+
+mod_prop_threat_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_nest(stage, sens_sign) %>%
+  mutate(
+    model_name = paste(stage, sens_sign, sep = "_"),
+    model = map(
+      data,
+      ~ glmmTMB(
+        prop_endangered_range ~ mean_slope,
+        data = .x,
+        family = beta_family(),
+        ziformula = ~ .
+      )
+    )
+  )
+
+mod_range_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_nest(stage, sens_sign) %>%
+  mutate(
+    model_name = paste(stage, sens_sign, sep = "_"),
+    model = map(
+      data,
+      ~ glmmTMB(
+        range_threat_index ~ mean_slope,
+        data = .x,
+        family = beta_family(),
+        ziformula = ~ .
+      )
+    )
+  )
+
+mod_prop_threat_countries %>% 
+  transmute(stage, sens_sign, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.05)
+mod_country_threat_ix %>% 
+  transmute(stage, sens_sign, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.05)
+mod_prop_threat_range %>% 
+  transmute(stage, sens_sign, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.05)
+mod_range_threat_ix %>% 
+  transmute(stage, sens_sign, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.05)
+```
+
+## Model tables
+
+```{r}
+tab1 <- mod_prop_threat_countries %>%
+  mutate(results = map(model, broom.mixed::tidy)) %>%
+  unnest(results) %>%
+  filter(term == "mean_slope") %>%
+  transmute(Sensitivity = stage,
+            Sign = ifelse(sens_sign == "negative", "-", "+"),
+            `Estimate` = round(estimate, 3),
+            SE = round(std.error, 3),
+            `p-value` = round(p.value, 3)) %>%
+  arrange(factor(
+    Sensitivity,
+    levels = c("LeafUnf", "FlOn", "FlPeak", "FrOn", "SensOn", "FlDur", 
+               "GSDur")),
+    factor(Sign, levels = c("-", "+"))
+    ) %>%
+  flextable() %>%
+  merge_v(j = "Sensitivity") %>%
+  valign(j = "Sensitivity", valign = "center") %>%
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  autofit()
+```
+
+```{r}
+tab2 <- mod_country_threat_ix %>%
+  mutate(results = map(model, broom.mixed::tidy)) %>%
+  unnest(results) %>%
+  filter(term == "mean_slope") %>%
+  mutate(Component = recode(component, cond = "Conditional", 
+                            conditional = "Conditional", zi = "Zero-inflated",
+                            zero_inflated = "Zero-inflated"),
+         Sign = ifelse(sens_sign == "negative", "-", "+")) %>%
+  transmute( Sensitivity = stage, Sign, Component, 
+             Estimate = round(estimate, 3), SE = round(std.error, 3),
+             `p-value` = round(p.value, 3)) %>%
+  pivot_wider(names_from = Component, 
+              values_from = c(Estimate, SE, `p-value`)) %>%
+  select(Sensitivity, Sign, Estimate_Zero.inflated = `Estimate_Zero-inflated`,
+         SE_Zero.inflated = `SE_Zero-inflated`, 
+         p_Zero.inflated = `p-value_Zero-inflated`, Estimate_Conditional,
+         SE_Conditional, p_Conditional = `p-value_Conditional`) %>%
+  arrange(factor(Sensitivity,
+                 levels = c("LeafUnf", "FlOn", "FlPeak", "FrOn", "SensOn",
+                            "FlDur", "GSDur")),
+          factor(Sign, levels = c("-", "+"))) %>%
+  flextable() %>%
+  merge_v(j = "Sensitivity") %>%
+  valign(j = "Sensitivity", valign = "center") %>%
+  add_header_row(values = c("", "", "Zero-inflated", "Conditional"),
+                 colwidths = c(1, 1, 3, 3)) %>%
+  align(i = 1, part = "header", align = "center") %>%
+  set_header_labels(Sensitivity = "Sensitivity", Sign = "Sign",
+                    Estimate_Zero.inflated = "Est.", SE_Zero.inflated = "SE",
+                    p_Zero.inflated = "p-value", Estimate_Conditional = "Est.",
+                    SE_Conditional = "SE", p_Conditional = "p-value") %>%
+  bold(j = "p_Zero.inflated", i = ~ p_Zero.inflated < 0.05, bold = TRUE) %>%
+  bold(j = "p_Conditional", i = ~ p_Conditional < 0.05, bold = TRUE) %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  autofit()
+```
+
+```{r}
+tab3 <- mod_prop_threat_range %>%
+  mutate(results = map(model, broom.mixed::tidy)) %>%
+  unnest(results) %>%
+  filter(term == "mean_slope") %>%
+  mutate(Component = recode(component, cond = "Conditional", 
+                            conditional = "Conditional", zi = "Zero-inflated",
+                            zero_inflated = "Zero-inflated"),
+         Sign = ifelse(sens_sign == "negative", "-", "+")) %>%
+  transmute( Sensitivity = stage, Sign, Component, 
+             Estimate = round(estimate, 3), SE = round(std.error, 3),
+             `p-value` = round(p.value, 3)) %>%
+  pivot_wider(names_from = Component, 
+              values_from = c(Estimate, SE, `p-value`)) %>%
+  select(Sensitivity, Sign, Estimate_Zero.inflated = `Estimate_Zero-inflated`,
+         SE_Zero.inflated = `SE_Zero-inflated`, 
+         p_Zero.inflated = `p-value_Zero-inflated`, Estimate_Conditional,
+         SE_Conditional, p_Conditional = `p-value_Conditional`) %>%
+  arrange(factor(Sensitivity,
+                 levels = c("LeafUnf", "FlOn", "FlPeak", "FrOn", "SensOn",
+                            "FlDur", "GSDur")),
+          factor(Sign, levels = c("-", "+"))) %>%
+  flextable() %>%
+  merge_v(j = "Sensitivity") %>%
+  valign(j = "Sensitivity", valign = "center") %>%
+  add_header_row(values = c("", "", "Zero-inflated", "Conditional"),
+                 colwidths = c(1, 1, 3, 3)) %>%
+  align(i = 1, part = "header", align = "center") %>%
+  set_header_labels(Sensitivity = "Sensitivity", Sign = "Sign",
+                    Estimate_Zero.inflated = "Est.", SE_Zero.inflated = "SE",
+                    p_Zero.inflated = "p-value", Estimate_Conditional = "Est.",
+                    SE_Conditional = "SE", p_Conditional = "p-value") %>%
+  bold(j = "p_Zero.inflated", i = ~ p_Zero.inflated < 0.05, bold = TRUE) %>%
+  bold(j = "p_Conditional", i = ~ p_Conditional < 0.05, bold = TRUE) %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  autofit()
+```
+
+```{r}
+tab4 <- mod_range_threat_ix %>%
+  mutate(results = map(model, broom.mixed::tidy)) %>%
+  unnest(results) %>%
+  filter(term == "mean_slope") %>%
+  mutate(Component = recode(component, cond = "Conditional", 
+                            conditional = "Conditional", zi = "Zero-inflated",
+                            zero_inflated = "Zero-inflated"),
+         Sign = ifelse(sens_sign == "negative", "-", "+")) %>%
+  transmute( Sensitivity = stage, Sign, Component, 
+             Estimate = round(estimate, 3), SE = round(std.error, 3),
+             `p-value` = round(p.value, 3)) %>%
+  pivot_wider(names_from = Component, 
+              values_from = c(Estimate, SE, `p-value`)) %>%
+  select(Sensitivity, Sign, Estimate_Zero.inflated = `Estimate_Zero-inflated`,
+         SE_Zero.inflated = `SE_Zero-inflated`, 
+         p_Zero.inflated = `p-value_Zero-inflated`, Estimate_Conditional,
+         SE_Conditional, p_Conditional = `p-value_Conditional`) %>%
+  arrange(factor(Sensitivity,
+                 levels = c("LeafUnf", "FlOn", "FlPeak", "FrOn", "SensOn",
+                            "FlDur", "GSDur")),
+          factor(Sign, levels = c("-", "+"))) %>%
+  flextable() %>%
+  merge_v(j = "Sensitivity") %>%
+  valign(j = "Sensitivity", valign = "center") %>%
+  add_header_row(values = c("", "", "Zero-inflated", "Conditional"),
+                 colwidths = c(1, 1, 3, 3)) %>%
+  align(i = 1, part = "header", align = "center") %>%
+  set_header_labels(Sensitivity = "Sensitivity", Sign = "Sign",
+                    Estimate_Zero.inflated = "Est.", SE_Zero.inflated = "SE",
+                    p_Zero.inflated = "p-value", Estimate_Conditional = "Est.",
+                    SE_Conditional = "SE", p_Conditional = "p-value") %>%
+  bold(j = "p_Zero.inflated", i = ~ p_Zero.inflated < 0.05, bold = TRUE) %>%
+  bold(j = "p_Conditional", i = ~ p_Conditional < 0.05, bold = TRUE) %>%
+  font(fontname = "Times New Roman", part = "all") %>%
+  autofit()
+```
+
+## Figures
+
+### Fig. 1: Proportion of threatened countries
+
+```{r}
+fig1 <- ggplot() +
+    geom_ribbon(data = data.frame(
+      mod_prop_threat_countries %>%
+        filter(stage == "FlOn" & sens_sign == "negative") %>% 
+        pull(model) %>% .[[1]] %>%
+        ggpredict(terms = "mean_slope [all]")),
+      aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+      alpha = 0.25, fill = "#0072B2") +
+    geom_line(data = data.frame(
+      mod_prop_threat_countries %>% 
+        filter(stage == "FlOn" & sens_sign == "negative") %>% 
+        pull(model) %>% .[[1]] %>%
+        ggpredict(terms = "mean_slope [all]")
+      ),
+      aes(x = x, y = predicted), color = "#0072B2", linewidth = 0.75) +
+  geom_point(data = 
+               sens_endanger %>% 
+               filter(slope_var < 50 & stage == "FlOn"),
+             aes(x = mean_slope, y = prop_endangerment, color = sens_sign), 
+             size = 1, alpha = 0.5) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FlOn") +
+  ylab("Proportion of threatened countries")
+fig1
+```
+
+### Fig. 2: Probability of species endangerment
+
+```{r}
+fig2 <- ggplot() +
+  # Negative
+  geom_ribbon( data = data.frame(
+    mod_country_threat_ix  %>% 
+      filter(stage == "FlPeak" & sens_sign == "negative") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = 1 - predicted, ymin = 1 - conf.low, ymax = 1 - conf.high), 
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line( data = data.frame(
+    mod_country_threat_ix  %>%
+      filter(stage == "FlPeak" & sens_sign == "negative") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = 1 - predicted), color = "#0072B2", linewidth = 0.75) +
+  # Positive
+  geom_ribbon(data = data.frame(
+    mod_country_threat_ix %>% 
+      filter(stage == "FlPeak" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted, ymin = 1-conf.low, ymax = 1-conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_country_threat_ix %>% 
+      filter(stage == "FlPeak" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted), color = "#D55E00", linewidth = 0.75) +
+  # Points
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak") %>%
+               mutate(y_01 = ifelse(country_threat_index == 0, 0, 1)),
+             aes(x = mean_slope, y = y_01, color = sens_sign), 
+             alpha = 0.5, size = 1, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FlPeak") +
+  ylab("Prob. of a species being threatened anywhere")
+fig2
+```
+
+### Fig. 3: Country threat index
+
+```{r}
+fig3a <- ggplot() +
+  # Negative
+  geom_ribbon( data = data.frame(
+    mod_country_threat_ix  %>% 
+      filter(stage == "FlOn" & sens_sign == "negative") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")
+    ),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line( data = data.frame(
+    mod_country_threat_ix  %>% 
+      filter(stage == "FlOn" & sens_sign == "negative") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")
+    ),
+    aes(x = x, y = predicted), color = "#0072B2", linewidth = 0.75) +
+  # Positive
+  geom_ribbon(data = data.frame(
+    mod_country_threat_ix %>% 
+      filter(stage == "FlOn" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_country_threat_ix %>%
+      filter(stage == "FlOn" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 0.75) +
+  geom_point(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlOn"),
+             aes(x = mean_slope, y = country_threat_index, color = sens_sign), 
+             alpha = 0.5, size = 1) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FlOn") +
+  ylab("Country threat index")
+
+fig3b <- ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_country_threat_ix %>%
+      filter(stage == "FlPeak" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_country_threat_ix %>%
+      filter(stage == "FlPeak" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 0.75) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak"),
+             aes(x = mean_slope, y = country_threat_index, color = sens_sign), 
+             alpha = 0.5, size = 1, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FlPeak") +
+  ylab("Country threat index")
+
+fig3c <- ggplot() +
+  geom_ribbon( data = data.frame(
+    mod_country_threat_ix  %>% 
+      filter(stage == "GSDur" & sens_sign == "negative") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")
+    ),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line( data = data.frame(
+    mod_country_threat_ix  %>% 
+      filter(stage == "GSDur" & sens_sign == "negative") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")
+    ),
+    aes(x = x, y = predicted), color = "#0072B2", linewidth = 0.75) +
+  geom_point(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "GSDur"),
+             aes(x = mean_slope, y = country_threat_index, color = sens_sign),
+             alpha = 0.5, size = 1) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of GSDur") +
+  ylab("Country threat index")
+
+fig3 <- fig3a + fig3b + fig3c +
+  plot_annotation(tag_levels = list(c("A)", "B)", "C)", "D)"))) +
+  plot_layout(axis_titles = "collect")
+fig3
+```
+
+### Fig. 4: Proportion of threatened range
+
+```{r}
+fig4 <-ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_prop_threat_range %>% 
+      filter(stage == "FrOn" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_prop_threat_range %>% 
+      filter(stage == "FrOn" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 0.75) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FrOn"),
+             aes(x = mean_slope, y = prop_endangered_range, color = sens_sign), 
+             alpha = 0.5, size = 1, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FrOn") +
+  ylab("Proportion of threatened range")
+fig4
+```
+
+### Fig. 5: Range threat index
+
+```{r}
+fig5a <- ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_range_threat_ix %>% 
+      filter(stage == "FrOn" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_range_threat_ix %>% 
+      filter(stage == "FrOn" & sens_sign == "positive") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 0.75) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FrOn"),
+             aes(x = mean_slope, y = range_threat_index, color = sens_sign), 
+             size = 1, alpha = 0.5, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FrOn") +
+  ylab("Range threat index")
+fig5b <- ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_range_threat_ix %>% 
+      filter(stage == "FlDur" & sens_sign == "negative") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line(data = data.frame(
+    mod_range_threat_ix %>% 
+      filter(stage == "FlDur" & sens_sign == "negative") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#0072B2", linewidth = 0.75) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlDur"),
+             aes(x = mean_slope, y = range_threat_index, color = sens_sign), 
+             size = 1, alpha = 0.5, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(negative = "#0072B2", positive = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of FlDur") +
+  ylab("Range threat index")
+fig5 <- fig5a + fig5b +
+  plot_annotation(tag_levels = list(c("A)", "B)"))) +
+  plot_layout(axis_titles = "collect")
+fig5
+```
+
+## Prepare figures for kintted doc
+
+```{r}
+fig1 <- bundle_ggplot(fig1, width = 8, height = 8, units = "cm", scaling = "fixed")
+fig2 <- bundle_ggplot(fig2, width = 8, height = 8, units = "cm", scaling = "fixed")
+fig3 <- bundle_ggplot(fig3, width = 24, height = 8, units = "cm", scaling = "autoheight")
+fig4 <- bundle_ggplot(fig4, width = 8, height = 8, units = "cm", scaling = "fixed")
+fig5 <- bundle_ggplot(fig5, width = 16, height = 8, units = "cm", scaling = "autoheight")
+```
+
+# OLD:  Models endangerment ~ sensitivity 
+
+Filtering slope_var < 50 - clearer patterns.
+
+Added prediction plots only for models with any significant effects.
+
+## Mean slopes
+
+### LeafUnf, FLOn, FlPeak, FrOn, SensOn
+
+#### Negative slopes only
+
+```{r}
+mod_sens_neg <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(cbind(threatened_countries,
+                                       total_countries - threatened_countries) ~
+                                   mean_slope,
+                                 data = .x, family = betabinomial())))
+mod_sens_neg_range <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(prop_endangered_range ~ mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_neg_country_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(country_threat_index ~ mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_neg_range_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(range_threat_index ~ mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+
+mod_sens_neg %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_neg_range %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_neg_country_threat_ix %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_neg_range_threat_ix %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+```
+
+```{r}
+mod_sens_neg %>% filter(stage == "FlOn") %>% pull(model) %>% .[[1]] %>%
+  ggpredict(terms = "mean_slope [all]") %>% plot() # p = 0.027
+mod_sens_neg_range %>% filter(stage == "FlPeak") %>% pull(model) %>% 
+  .[[1]] %>%
+  ggpredict(terms = "mean_slope [all]", type = "zi_prob") %>% plot() # p = 0.044
+mod_sens_neg_country_threat_ix  %>% filter(stage == "FlOn") %>% pull(model) %>% 
+  .[[1]] %>%
+  ggpredict(terms = "mean_slope [all]", type = "fixed") %>% plot() # p < 0.001
+mod_sens_neg_country_threat_ix  %>% filter(stage == "FlPeak") %>% 
+  pull(model) %>% .[[1]] %>%
+  ggpredict(terms = "mean_slope [all]", type = "zi_prob") %>% plot() # p = 0.044
+mod_sens_neg_range_threat_ix  %>% filter(stage == "FlPeak") %>% pull(model) %>% 
+  .[[1]] %>%
+  ggpredict(terms = "mean_slope [all]", type = "zi_prob") %>% plot() # p = 0.044 # zi part equal to previous one!
+```
+
+##### Model tables
+
+```{r}
+desired_order <- c("LeafUnf", "FlOn", "FlPeak", "FrOn", "SensOn")
+
+mods1 <- mod_sens_neg$model[
+  match(desired_order, mod_sens_neg$stage)
+]
+mods2 <- mod_sens_neg_range$model[
+  match(desired_order, mod_sens_neg_range$stage)
+]
+mods3 <- mod_sens_neg_country_threat_ix$model[
+  match(desired_order, mod_sens_neg_country_threat_ix$stage)
+]
+mods4 <- mod_sens_neg_range_threat_ix$model[
+  match(desired_order, mod_sens_neg_range_threat_ix$stage)
+]
+
+names(mods1) <- desired_order
+names(mods2) <- desired_order
+names(mods3) <- desired_order
+names(mods4) <- desired_order
+
+tab1 <- modelsummary(mods1, shape = model ~ term + statistic, output = "flextable", 
+                     coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     statistic = c("SE" = "{std.error}", "p-value" = "{p.value}"),
+                     coef_rename = c(mean_slope = ""))
+tab1 <- hline_top(tab1, border = fp_border(color = "white", width = 0),
+                  part = "header") |> 
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  font(fontname = "Times New Roman", part = "all")
+
+
+tab2 <- modelsummary(mods2, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab2 <- tab2$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab3 <- modelsummary(mods3, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab3 <- tab3$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab4 <- modelsummary(mods4, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab4 <- tab4$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+```
+
+#### Positive slopes only
+
+```{r}
+mod_sens_pos <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope > 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(cbind(threatened_countries,
+                                       total_countries - threatened_countries) ~
+                                   mean_slope,
+                                 data = .x, family = betabinomial())))
+mod_sens_pos_range <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope > 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(prop_endangered_range ~ mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_pos_country_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope > 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(country_threat_index ~ mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_pos_range_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope > 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(range_threat_index ~ mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+
+mod_sens_pos %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_pos_range %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_pos_country_threat_ix %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_pos_range_threat_ix %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+```
+
+##### Model tables
+
+```{r}
+mods5 <- mod_sens_pos$model[
+  match(desired_order, mod_sens_pos$stage)
+]
+mods6 <- mod_sens_pos_range$model[
+  match(desired_order, mod_sens_pos_range$stage)
+]
+mods7 <- mod_sens_pos_country_threat_ix$model[
+  match(desired_order, mod_sens_pos_country_threat_ix$stage)
+]
+mods8 <- mod_sens_pos_range_threat_ix$model[
+  match(desired_order, mod_sens_pos_range_threat_ix$stage)
+]
+
+names(mods5) <- desired_order
+names(mods6) <- desired_order
+names(mods7) <- desired_order
+names(mods8) <- desired_order
+
+tab5 <- modelsummary(mods5, shape = model ~ term + statistic, output = "flextable", 
+                     coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     statistic = c("SE" = "{std.error}", "p-value" = "{p.value}"),
+                     coef_rename = c(mean_slope = ""))
+tab5 <- hline_top(tab5, border = fp_border(color = "white", width = 0),
+                  part = "header") |> 
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  font(fontname = "Times New Roman", part = "all")
+
+
+tab6 <- modelsummary(mods6, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab6 <- tab6$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab7 <- modelsummary(mods7, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab7 <- tab7$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab8 <- modelsummary(mods8, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab8 <- tab8$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+```
+
+#### Figures
+
+##### Proportion of countries where the species is endangered
+
+```{r}
+fig1 <- ggplot() +
+    geom_ribbon(data = data.frame(
+      mod_sens_neg %>% filter(stage == "FlOn") %>% 
+        pull(model) %>% .[[1]] %>%
+        ggpredict(terms = "mean_slope [all]")),
+      aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+      alpha = 0.25, fill = "#0072B2") +
+    geom_line(data = data.frame(
+      mod_sens_neg %>% filter(stage == "FlOn") %>% pull(model) %>% .[[1]] %>%
+        ggpredict(terms = "mean_slope [all]")
+      ),
+      aes(x = x, y = predicted), color = "#0072B2", linewidth = 1) +
+  geom_point(data = 
+               sens_endanger %>% 
+               filter(slope_var < 50 & stage == "FlOn") %>%
+               mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))),
+             aes(x = mean_slope, y = prop_endangerment, color = neg_pos), alpha = 0.6) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering onset") +
+  ylab("Prop. countries where the species is endangered")
+fig1
+```
+
+##### Proportion of range endangered
+
+```{r}
+fig2a <- ggplot() +
+  # Negative
+  geom_ribbon(data = data.frame(
+    mod_sens_neg_range %>% filter(stage == "FlPeak") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = 1-predicted, ymin = 1-conf.low, ymax = 1-conf.high),
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line(data = data.frame(
+    mod_sens_neg_range %>% filter(stage == "FlPeak") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = 1-predicted), color = "#0072B2", linewidth = 1) +
+  # Positive
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_range %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted, ymin = 1-conf.low, ymax = 1-conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_range %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted), color = "#D55E00", linewidth = 1) +
+  # Points
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))) %>%
+                mutate(y_01 = ifelse(prop_endangered_range == 0, 0, 1)),
+             aes(x = mean_slope, y = y_01, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering peak") +
+  ylab("Proportion of range endangered")
+
+fig2b <- ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_range %>% filter(stage == "FrOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_range %>% filter(stage == "FrOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 1) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FrOn") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))),
+             aes(x = mean_slope, y = prop_endangered_range, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of fruiting onset") +
+  ylab("Proportion of range endangered")
+
+fig2 <- fig2a + fig2b +
+  plot_annotation(tag_levels = list(c("A)", "B)")))
+fig2
+```
+
+##### Country threat index
+
+```{r}
+fig3a <- ggplot() +
+  # Negative
+  geom_ribbon( data = data.frame(
+    mod_sens_neg_country_threat_ix  %>% filter(stage == "FlOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")
+    ),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line( data = data.frame(
+    mod_sens_neg_country_threat_ix  %>% filter(stage == "FlOn") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")
+    ),
+    aes(x = x, y = predicted), color = "#0072B2", linewidth = 1) +
+  # Positive
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_country_threat_ix %>% filter(stage == "FlOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_country_threat_ix %>% filter(stage == "FlOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 1) +
+  geom_point(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlOn") %>%
+               mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))),
+             aes(x = mean_slope, y = country_threat_index, color = neg_pos), alpha = 0.6) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering onset") +
+  ylab("Country threat index")
+
+fig3b <- ggplot() +
+  # Negative
+  geom_ribbon( data = data.frame(
+    mod_sens_neg_country_threat_ix  %>% filter(stage == "FlPeak") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = 1 - predicted, ymin = 1 - conf.low, ymax = 1 - conf.high), 
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line( data = data.frame(
+    mod_sens_neg_country_threat_ix  %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = 1 - predicted), color = "#0072B2", linewidth = 1) +
+  # Positive
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_country_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted, ymin = 1-conf.low, ymax = 1-conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_country_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted), color = "#D55E00", linewidth = 1) +
+  # Points
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))) %>%
+               mutate(y_01 = ifelse(country_threat_index == 0, 0, 1)),
+             aes(x = mean_slope, y = y_01, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering peak") +
+  ylab("Country threat index")
+
+fig3c <- ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_country_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_country_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 1) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))),
+             aes(x = mean_slope, y = country_threat_index, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering peak") +
+  ylab("Country threat index")
+
+fig3 <- fig3a + fig3b + fig3c +
+  plot_annotation(tag_levels = list(c("A)", "B)", "C)")))
+fig3
+```
+
+##### Range threat index
+
+```{r}
+fig4a <- ggplot() +
+  geom_ribbon( data = data.frame(
+    mod_sens_neg_range_threat_ix  %>% filter(stage == "FlPeak") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line( data = data.frame(
+    mod_sens_neg_range_threat_ix  %>% filter(stage == "FlPeak") %>% 
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")
+    ),
+    aes(x = x, y = predicted), color = "#0072B2", linewidth = 1) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))) %>%
+               mutate(y_01 = ifelse(range_threat_index == 0, 0, 1)),
+             aes(x = mean_slope, y = y_01, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering peak") +
+  ylab("Range threat index")
+fig4b <- ggplot() +
+  # Positive
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_range_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted, ymin = 1-conf.low, ymax = 1-conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_range_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted), color = "#D55E00", linewidth = 1) +
+  # Negative
+  geom_ribbon(data = data.frame(
+    mod_sens_neg_range_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted, ymin = 1-conf.low, ymax = 1-conf.high),
+    alpha = 0.25, fill = "#0072B2") +
+  geom_line(data = data.frame(
+    mod_sens_neg_range_threat_ix %>% filter(stage == "FlPeak") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "zi_prob")),
+    aes(x = x, y = 1 - predicted), color = "#0072B2", linewidth = 1) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FlPeak") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))) %>%
+                mutate(y_01 = ifelse(range_threat_index == 0, 0, 1)),
+             aes(x = mean_slope, y = y_01, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of flowering peak") +
+  ylab("Range threat index")
+fig4c <- ggplot() +
+  geom_ribbon(data = data.frame(
+    mod_sens_pos_range_threat_ix %>% filter(stage == "FrOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high),
+    alpha = 0.25, fill = "#D55E00") +
+  geom_line(data = data.frame(
+    mod_sens_pos_range_threat_ix %>% filter(stage == "FrOn") %>%
+      pull(model) %>% .[[1]] %>%
+      ggpredict(terms = "mean_slope [all]", type = "fixed")),
+    aes(x = x, y = predicted), color = "#D55E00", linewidth = 1) +
+  geom_jitter(data = sens_endanger %>%
+               filter(slope_var < 50 & stage == "FrOn") %>%
+                mutate(neg_pos = factor(ifelse(mean_slope< 0, "neg", "pos"))),
+             aes(x = mean_slope, y = range_threat_index, color = neg_pos), 
+             alpha = 0.6, width = 0.02, height = 0.02) +
+  scale_color_manual(values = c(neg = "#0072B2", pos = "#D55E00")) +
+  theme(legend.position = "none") +
+  xlab("Sensitivity of fruting onset") +
+  ylab("Range threat index")
+fig4 <- fig4a + fig4b + fig4c +
+  plot_annotation(tag_levels = list(c("A)", "B)", "C)")))
+fig4
+```
+
+##### Prepare for kintted doc
+
+```{r}
+fig1 <- bundle_ggplot(fig1, width = 6, height = 6, units = "cm", scaling = "fixed")
+fig2 <- bundle_ggplot(fig2, width = 12, height = 6, units = "cm", scaling = "fixed")
+fig3 <- bundle_ggplot(fig3, width = 18, height = 6, units = "cm", scaling = "autoheight")
+fig4 <- bundle_ggplot(fig4, width = 18, height = 6, units = "cm", scaling = "autoheight")
+```
+
+### FlDur and GSL: all values
+
+```{r}
+# Models with quadratic term of slope
+mod_sens_all_quad <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(cbind(threatened_countries,
+                                       total_countries - threatened_countries) ~
+                                   mean_slope + I(mean_slope^2),
+                                 data = .x, family = betabinomial())))
+mod_sens_all_range_quad <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(prop_endangered_range ~
+                                   mean_slope + I(mean_slope^2),
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_all_country_threat_ix_quad <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(country_threat_index ~
+                                   mean_slope + I(mean_slope^2),
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_all_range_threat_ix_quad <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(range_threat_index ~
+                                   mean_slope + I(mean_slope^2),
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+
+# Models without quadratic term of slope
+mod_sens_all <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(cbind(threatened_countries,
+                                       total_countries - threatened_countries) ~
+                                   mean_slope,
+                                 data = .x, family = betabinomial())))
+mod_sens_all_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(prop_endangered_range ~
+                                   mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_all_country_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(country_threat_index ~
+                                   mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+mod_sens_all_range_threat_ix <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_nest(stage) %>%
+  mutate(
+    model = purrr::map(data, 
+                       ~ glmmTMB(range_threat_index ~
+                                   mean_slope,
+                                 data = .x, family = beta_family(), 
+                                 ziformula=~.)))
+
+mod_sens_all_quad %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_all_range_quad %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_all_country_threat_ix_quad %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_all_range_threat_ix_quad %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+
+mod_sens_all %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_all_range %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_all_country_threat_ix %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+mod_sens_all_range_threat_ix %>% transmute(stage, results = map(model, tidy)) %>%
+  unnest(results) %>% filter(term != "(Intercept)", p.value < 0.1)
+```
+
+#### Model tables
+
+##### With quadratic term
+
+```{r}
+desired_order_2 <- c("FlDur", "GSL")
+
+mods9<- mod_sens_all_quad$model[
+  match(desired_order_2, mod_sens_all_quad$stage)
+]
+mods10 <- mod_sens_all_range_quad$model[
+  match(desired_order_2, mod_sens_all_range_quad$stage)
+]
+mods11 <- mod_sens_all_country_threat_ix_quad$model[
+  match(desired_order_2, mod_sens_all_country_threat_ix_quad$stage)
+]
+mods12 <- mod_sens_all_range_threat_ix_quad$model[
+  match(desired_order_2, mod_sens_all_range_threat_ix_quad$stage)
+]
+
+names(mods9) <- desired_order_2
+names(mods10) <- desired_order_2
+names(mods11) <- desired_order_2
+names(mods12) <- desired_order_2
+
+tab9 <- modelsummary(mods9, shape = model ~ term + statistic, output = "flextable", 
+                     coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     statistic = c("SE" = "{std.error}", "p-value" = "{p.value}"),
+                     coef_rename = c(mean_slope = "Linear", "I(mean_slope^2)" = "Quadratic"))
+tab9 <- hline_top(tab9, border = fp_border(color = "white", width = 0),
+                  part = "header") |> 
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  font(fontname = "Times New Roman", part = "all")
+
+
+tab10 <- modelsummary(mods10, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = "Linear", "I(mean_slope^2)" = "Quadratic"))
+tab10 <- tab10$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab11 <- modelsummary(mods11, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = "Linear", "I(mean_slope^2)" = "Quadratic"))
+tab11 <- tab11$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab12 <- modelsummary(mods12, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = "Linear", "I(mean_slope^2)" = "Quadratic"))
+tab12 <- tab12$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+```
+
+##### Without quadratic term
+
+```{r}
+mods13<- mod_sens_all$model[
+  match(desired_order_2, mod_sens_all$stage)
+]
+mods14 <- mod_sens_all_range$model[
+  match(desired_order_2, mod_sens_all_range$stage)
+]
+mods15 <- mod_sens_all_country_threat_ix$model[
+  match(desired_order_2, mod_sens_all_country_threat_ix$stage)
+]
+mods16 <- mod_sens_all_range_threat_ix$model[
+  match(desired_order_2, mod_sens_all_range_threat_ix$stage)
+]
+
+names(mods13) <- desired_order_2
+names(mods14) <- desired_order_2
+names(mods15) <- desired_order_2
+names(mods16) <- desired_order_2
+
+tab13 <- modelsummary(mods13, shape = model ~ term + statistic, output = "flextable", 
+                     coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     statistic = c("SE" = "{std.error}", "p-value" = "{p.value}"),
+                     coef_rename = c(mean_slope = ""))
+tab13 <- hline_top(tab13, border = fp_border(color = "white", width = 0),
+                  part = "header") |> 
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  font(fontname = "Times New Roman", part = "all")
+
+
+tab14 <- modelsummary(mods14, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab14 <- tab14$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab15 <- modelsummary(mods15, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab15 <- tab15$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+
+tab16 <- modelsummary(mods16, shape = model + component ~ term + statistic,
+                     output = "flextable",  coef_omit = "Intercept", fmt = 3,
+                     estimate = c("Estimate" = "{estimate}"),
+                     statistic = c("SE" = "{std.error}", 
+                                   "p-value" = "{p.value}"),
+                     gof_omit = "AIC|BIC|RMSE|R2|Log.Lik|ICC|Num.Obs",
+                     coef_rename = c(mean_slope = ""))
+tab16 <- tab16$body$dataset |>
+  mutate(component = recode(component, conditional = "Conditional",
+                            zero_inflated = "Zero inflated")) |>
+  flextable() |> set_header_labels(component = "Component") |>
+  width(j = "component", width = 1.2) |>
+  # Bold significant p-values
+  bold(j = "p-value", i = ~ `p-value` < 0.05, bold = TRUE) |>
+  hline_top(border = fp_border(color = "white", width = 0), part = "header") |>
+  font(fontname = "Times New Roman", part = "all")
+```
+
+# PCA
+
+```{r}
+pca_phen <- prcomp(sens_per_endanger %>% 
+                     dplyr::select(starts_with("mean_slope_")) %>%
+                     drop_na(), 
+                   center = TRUE, scale. = TRUE)
+```
+
+```{r}
+scores <- as.data.frame(pca_phen$x) %>%
+  mutate(species = (sens_per_endanger %>%
+                      dplyr::select(species, starts_with("mean_slope_")) %>%
+                      drop_na())$species) %>%
+  mutate(label = ifelse(abs(PC1) > quantile(abs(PC1), 0.95) |
+                          abs(PC2) > quantile(abs(PC2), 0.95),
+                        species, ""))
+```
+
+```{r}
+# Variable loadings for arrows
+loadings <- as.data.frame(pca_phen$rotation) %>%
+  mutate(variable = rownames(.)) %>%
+  # Remove mean_slope from variable names
+  mutate(variable = gsub("mean_slope_", "", variable))
+
+ggplot(scores %>%
+         left_join(
+           sens_per_endanger %>% 
+             dplyr::select(species, prop_endangerment)
+           ), 
+       aes(x = PC1, y = PC2)) +
+  geom_point(alpha = 0.8, color = "steelblue"
+             ) +
+  geom_text_repel(aes(label = label), size = 3, max.overlaps = 15) +
+  geom_segment(data = loadings,
+               aes(x = 0, y = 0, xend = PC1*3, yend = PC2*3),
+               arrow = arrow(length = unit(0.2, "cm")),
+               color = "darkred") +
+  geom_text_repel(data = loadings,
+                  aes(x = PC1*3, y = PC2*3, label = variable),
+                  color = "red3", size = 4) +
+  theme_minimal() +
+  labs(x = "PC1", y = "PC2")
+```
+
+```{r}
+plot(pca_phen)
+```
+
+## Clustering
+
+```{r}
+dist_pcs <- dist(scores %>%
+                   dplyr::select(PC1, PC2, PC3, PC4), 
+                 method = "euclidean")
+hc <- hclust(dist_pcs, method = "ward.D2")
+plot(hc)
+scores$cluster <- factor(cutree(hc, k = 3))
+ggplot(scores, aes(PC1, PC2, color = cluster)) +
+  geom_point(size = 2, alpha = 0.8) +
+  stat_ellipse(type = "norm", level = 0.68) +
+  theme_minimal()
+```
+
+### Plot with clusters
+
+```{r}
+ggplot(
+  scores %>%
+    left_join(
+      sens_per_endanger %>% 
+        dplyr::select(species, prop_endangerment),
+      by = "species"
+    ),
+  aes(x = PC1, y = PC2, color = cluster)
+) +
+  geom_point(alpha = 0.5, size = 2) +
+  #geom_text_repel(aes(label = label), size = 3, max.overlaps = 15) +
+  geom_segment(
+    data = loadings,
+    aes(x = 0, y = 0, xend = PC1 * 3, yend = PC2 * 3),
+    arrow = arrow(length = unit(0.2, "cm")),
+    color = "black",
+    inherit.aes = FALSE
+  ) +
+  geom_text_repel(
+    data = loadings,
+    aes(x = PC1 * 4, y = PC2 * 4, label = variable),
+    color = "black",
+    size = 4,
+    inherit.aes = FALSE,
+    nudge_x = 0.1* sign(loadings$PC1),
+    nudge_y = 0.1 * sign(loadings$PC2),
+    box.padding = 0.2,      # distance around text box
+    point.padding = 0.2,    # distance from arrows/points
+    max.overlaps = Inf
+    ) +
+  theme_minimal() +
+  labs(
+    x = "PC1",
+    y = "PC2",
+    color = "Cluster"
+  ) +
+  #stat_ellipse(type = "norm", level = 0.68) +
+  theme(legend.position = c(0.9, 0.8))
+```
+
+# RDA effect of endangerment
+
+## Endangered or not
+
+```{r}
+rda_trait_endanger <- rda(
+  sens_per_endanger %>% dplyr::select(starts_with("mean_slope_")) %>% drop_na() ~ 
+    (sens_per_endanger %>%
+       mutate(endangerment = factor(
+         ifelse(prop_endangerment == 0, 0, 1)))%>% drop_na())$endangerment,
+  data = sens_per_endanger
+  )
+anova(rda_trait_endanger, permutations = 999)
+anova(rda_trait_endanger, by = "axis", permutations = 999)
+RsquareAdj(rda_trait_endanger)
+```
+
+## Proportion of endangerment
+
+```{r}
+rda_trait_endanger_prop <- rda(
+  sens_per_endanger %>% dplyr::select(starts_with("mean_slope_")) %>% drop_na() ~ 
+    (sens_per_endanger%>% drop_na())$prop_endangerment,
+  data = sens_per_endanger
+  )
+anova(rda_trait_endanger_prop, permutations = 999)
+anova(rda_trait_endanger_prop, by = "axis", permutations = 999)
+RsquareAdj(rda_trait_endanger_prop)
+```
+
+# Knit document
+
+```{r}
+knit_docx(
+  template_docx_file = here("docs", "PhenObs_cluster1_draft.docx"),
+  knitted_docx_file = here("docs", "PhenObs_cluster1_draft_knitted.docx")
+)
+
+doc <- read_docx(
+  here("docs", "PhenObs_cluster1_draft_knitted.docx")
+)
+
+tables <- list(
+  TABLE_1_HERE = tab1,
+  TABLE_2_HERE = tab2,
+  TABLE_3_HERE = tab3,
+  TABLE_4_HERE = tab4
+)
+
+for (ph in names(tables)) {
+
+  doc <- cursor_begin(doc)
+  doc <- cursor_reach(doc, ph)
+
+  doc <- body_add_flextable(
+    doc,
+    value = tables[[ph]],
+    pos = "on"
+  )
+
+}
+
+print(
+  doc,
+  target = here("docs", "PhenObs_cluster1_draft_knitted_final.docx")
+)
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+

@@ -1,0 +1,568 @@
+---
+title: "PhenObs Cluster 1 analyses"
+author: "Alicia Valdés"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+    df_print: paged
+  word_document:
+    toc: yes
+    toc_depth: '4'
+editor_options:
+  chunk_output_type: inline
+---
+
+# Load libraries needed
+
+```{r}
+library(readr)
+library(here)
+library(tidyverse)
+library(purrr)
+library(sf)
+library(glmmTMB)
+library(ggeffects)
+library(taxize)
+library(rgbif)
+library(readxl)
+library(gridExtra)
+library(furrr)
+library(countrycode)
+library(progress)
+library(ggrepel)
+library(corrplot)
+library(vegan)
+library(broom)
+library(broom.mixed)
+library(data.table)
+```
+
+# Read data on sensitivity
+
+Read sensitivity data (slopes from Robert).
+
+```{r}
+slopes_FlOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlOn.csv")) %>%
+  select(-...1) %>% mutate(stage = "FlOn")
+slopes_SensOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_SenOn.csv")) %>%
+  select(-...1) %>% mutate(stage = "SensOn")
+slopes_LeafUnf <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_LeafUnf.csv")) %>%
+  select(-...1) %>% mutate(stage = "LeafUnf")
+slopes_GSL <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_GSL.csv")) %>%
+  select(-...1) %>% mutate(stage = "GSL")
+slopes_FrOn <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FrOn.csv")) %>%
+  select(-...1) %>% mutate(stage = "FrOn")
+slopes_FlDur <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlDur.csv")) %>%
+  select(-...1) %>% mutate(stage = "FlDur")
+slopes_FlPeak <- read_csv(here("data", "raw", "slopes_20260302", "Overview_Slopes_all_New_FlPeak.csv")) %>%
+  select(-...1) %>% mutate(stage = "FlPeak")
+```
+
+```{r}
+slopes_FlOn
+slopes_SensOn
+slopes_LeafUnf
+slopes_GSL
+slopes_FrOn
+slopes_FlDur
+slopes_FlPeak
+```
+
+## Join and get unique species
+
+```{r}
+slopes_all <- bind_rows(slopes_FlOn, slopes_SensOn, slopes_LeafUnf, slopes_GSL,
+                        slopes_FrOn, slopes_FlDur, slopes_FlPeak)
+```
+
+```{r}
+slopes_all_species <- slopes_all %>% distinct(Species)
+```
+
+```{r}
+nrow(slopes_all_species)
+```
+
+## Resolve species names
+
+Resolve species to GBIF accepted names using the package taxize:
+
+```{r}
+length(slopes_all_species$Species) # 187
+# Due to gna_verifier only being able to handle 50 names at once subsetting
+spp1 <- slopes_all_species$Species[1:50]
+spp2 <- slopes_all_species$Species[51:100]
+spp3 <- slopes_all_species$Species[101:150]
+spp4 <- slopes_all_species$Species[151:187]
+
+# Getting current canonical names
+resolved_1 <- gna_verifier(spp1, data_sources = 11) # 11 = GBIF Backbone Taxonomy
+resolved_2 <- gna_verifier(spp2, data_sources = 11)
+resolved_3 <- gna_verifier(spp3, data_sources = 11)
+resolved_4 <- gna_verifier(spp4, data_sources = 11)
+
+# Combining all of the names
+all_resolved <- rbind(resolved_1, resolved_2, resolved_3, resolved_4)
+
+# Add to sp_list
+slopes_all_species_resolved <- slopes_all_species %>%
+  cbind(., all_resolved$currentCanonicalFull) %>%
+  rename(name_res = `all_resolved$currentCanonicalFull`)
+slopes_all_resolved <- slopes_all %>%
+  left_join(slopes_all_species_resolved)
+```
+
+## Remove one subspecies
+
+```{r}
+slopes_all_resolved <- slopes_all_resolved %>%
+  mutate(name_res = ifelse(name_res == "Primula vulgaris subsp. vulgaris",
+                           "Primula vulgaris", name_res))
+```
+
+# Read data on RL spp distribution
+
+Read data on Red List species distribution from Holz et al. 2022.
+
+```{r}
+RL <- read_csv(here("data", "raw", "Holz_et_al_2022", "rlspecies_distribution.csv")) 
+```
+
+# How many PhenObs species in and not in RL?
+
+```{r}
+slopes_all_resolved %>% 
+  filter(name_res %in% RL$species) %>% 
+  distinct(name_res) %>% 
+  nrow()
+```
+
+```{r}
+slopes_all_resolved %>% 
+  filter(!name_res %in% RL$species) %>% 
+  distinct(name_res) %>% 
+  nrow()
+```
+
+# Calculate measures of endangerment
+
+Select only spp present in PhenObs data:
+
+```{r}
+RL_PhenObs <- RL %>% filter(species %in% slopes_all_resolved$name_res)
+nrow(RL_PhenObs %>% distinct(species))
+```
+
+How many of these spp are endemic to Europe?
+
+```{r}
+RL_PhenObs %>% filter(europe_endemic == 1) %>% distinct(species) %>% nrow()
+```
+
+Holz et al. (2022) restricted their analyses to spp endemic to Europe, but we have only one. We can still calculate measures of endangerment, but being aware that these represent only Europe. 
+
+## POWO data for spp in PhenObs not in RL
+
+```{r}
+# DOWNLOAD KEW DATA -------------------------------------------------------
+download.file(url='https://storage.googleapis.com/kew-dev-backup/world_checklist_names_and_distribution_feb_21.zip',
+              destfile='data/raw/KEW.zip')
+
+# unpack
+zipF<- "data/raw/KEW.zip"
+outDir<-"data/raw"
+unzip(zipF,exdir=outDir)
+```
+
+```{r}
+# read species list
+kew_sp <- fread("data/raw/checklist_names.txt")
+```
+
+```{r}
+PhenObs_not_in_RL <- slopes_all_resolved %>%
+  filter(!name_res %in% RL_PhenObs$species) %>% 
+  distinct(name_res)
+```
+
+```{r}
+# join with kew to find accepted plant name id, which is needed to find the species distribution
+PhenObs_not_in_RL_kew <- left_join(PhenObs_not_in_RL, 
+                                   kew_sp %>% 
+                                     select(taxon_name, accepted_plant_name_id,
+                                            taxon_rank, taxon_status), 
+                                   by = c("name_res"="taxon_name")) 
+```
+
+```{r}
+update_row <- kew_sp %>%
+  filter(taxon_name == "Atropa bella-donna") %>%
+  transmute(
+    name_res = "Atropa belladonna",
+    accepted_plant_name_id,
+    taxon_rank,
+    taxon_status
+  )
+
+PhenObs_not_in_RL_kew <- PhenObs_not_in_RL_kew %>%
+  rows_update(update_row, by = "name_res")
+```
+
+```{r}
+PhenObs_not_in_RL_kew_unique <- PhenObs_not_in_RL_kew %>%
+  mutate(
+    status_order = case_when(
+      taxon_status == "Accepted" ~ 1,
+      taxon_status == "Synonym" ~ 2,
+      taxon_status == "Illegitimate" ~ 3,
+      taxon_status == "Invalid" ~ 4,
+      taxon_status == "Misapplied" ~ 5,
+      TRUE ~ 99
+    )
+  ) %>%
+  arrange(name_res, status_order) %>%
+  distinct(name_res, .keep_all = TRUE) %>%
+  select(-status_order)
+```
+
+```{r}
+# read distribution data
+kew_dis <- fread("data/raw/checklist_distribution.txt")
+```
+
+```{r}
+# botanical countries e.g. Canary islands / Sicilly / Corse are actually included in the national RL of Spain / Italy / France
+kew_dis <- kew_dis %>% 
+mutate(botanical_countries_l3 = as.character(area)) %>% 
+
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Corse", "France")) %>% 
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Kriti", "Greece")) %>% 
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Krym", "Ukraine")) %>% 
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="East Aegean Is.", "Greece")) %>% 
+  
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Canary Is.", "Spain")) %>% 
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Baleares", "Spain")) %>%
+  
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Sicilia", "Italy")) %>% 
+  mutate(botanical_countries_l3=replace(botanical_countries_l3, botanical_countries_l3=="Sardegna", "Italy"))
+```
+
+```{r}
+# subset kew dis
+noRL_PhenObs <- PhenObs_not_in_RL_kew_unique %>% 
+  select(name_res, accepted_plant_name_id) %>% 
+  rename(plant_name_id = accepted_plant_name_id) %>% 
+  left_join(kew_dis) %>%
+  select(name_res, plant_name_id, botanical_countries_l3) %>%
+  rename(species = name_res) %>%
+  mutate(Threatened = 0)
+```
+
+## Merge RL and no RL
+
+```{r}
+PhenObs_all <- bind_rows(RL_PhenObs %>% select(-europe_endemic), noRL_PhenObs)
+```
+
+## Add data on botanical country area
+
+### Download the WGSRPD Level-3 shapefile from GitHub
+
+```{r}
+# Create temporary directory
+td <- tempdir()
+
+# Download ZIP of the repository
+zipfile <- file.path(td, "wgsrpd.zip")
+
+download.file(
+  "https://github.com/tdwg/wgsrpd/archive/refs/heads/master.zip",
+  zipfile,
+  mode = "wb"
+)
+
+# Unzip
+unzip(zipfile, exdir = td)
+
+# Locate Level-3 shapefile
+shp <- file.path(
+  td,
+  "wgsrpd-master",
+  "level3",
+  "level3.shp"
+)
+
+# Read polygons
+wgsrpd <- st_read(shp, quiet = TRUE)
+
+# Check attribute names
+names(wgsrpd)
+```
+
+### Calculate areas
+
+```{r}
+# Equal-area projection
+wgsrpd_ea <- st_transform(wgsrpd, 6933)
+
+# Area in km²
+wgsrpd$area_km2 <- as.numeric(st_area(wgsrpd_ea)) / 1e6
+```
+
+### Add to PhenObs_all data
+
+```{r}
+PhenObs_all_props <- PhenObs_all %>%
+  left_join(
+    wgsrpd %>%
+      st_drop_geometry() %>%
+      select(LEVEL3_NAM, area_km2),
+    by = join_by(botanical_countries_l3 == LEVEL3_NAM)
+  ) %>%
+  group_by(species) %>%
+  summarise(
+    n_countries = n_distinct(botanical_countries_l3),
+    n_countries_threatened = sum(Threatened, na.rm = TRUE),
+    total_range_area = sum(area_km2, na.rm = TRUE),
+    threatened_range_area = sum(area_km2[Threatened == 1], na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    prop_countries_threatened = n_countries_threatened / n_countries,
+    prop_range_threatened = threatened_range_area / total_range_area
+  )
+```
+
+# Merge data on sensitivity and endangerment
+
+```{r}
+sens <- slopes_all_resolved %>% 
+  # Remove old species names
+  select(-Species) %>%
+  # Use resolved species as species names
+  rename(species = name_res) %>%
+  # Add variable for "sens" vs "not-sens"
+  mutate(sens_01 = factor(ifelse(ci_lower > 0 | ci_upper < 0, 1, 0))) %>%
+  # Remove unneeded cols
+  select(-ci_lower, -ci_upper, -n_gardens, -temp_min, -temp_max, -temp_mean,
+         -n_data) %>%
+  # Reorder
+  select(species, stage, sens_01, mean_slope, slope_var)
+```
+
+```{r}
+sens_endanger <- left_join(sens, PhenObs_all_props)
+```
+
+# Correlations
+
+```{r}
+sens_endanger %>%
+  select(species, stage, mean_slope) %>%
+  pivot_wider(names_from = stage, values_from = mean_slope) %>%
+  select(-species) %>% 
+  cor(use = "pairwise.complete.obs") %>%
+  corrplot(method = "color", type = "upper", tl.col = "black", tl.srt = 45,
+           addCoef.col = "black")   # optional: show correlation values
+sens_endanger %>%
+  select(prop_countries_threatened, prop_range_threatened) %>% 
+  cor(use = "pairwise.complete.obs")
+```
+
+# Distributions
+
+```{r}
+ggplot(sens_endanger, aes(x = prop_countries_threatened)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Prop. of countries threatened", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = prop_range_threatened)) +
+  geom_histogram(color = "black", fill = "grey") +
+  labs(x = "Prop. of range threatened", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = factor(sens_01))) +
+  geom_bar() +
+  facet_wrap(~ stage) +
+  labs(x = "Sensitive (0 = No, 1 = Yes)", y = "Number of species") +
+  theme_bw()
+ggplot(sens_endanger, aes(x = mean_slope)) +
+  geom_histogram(color = "black", fill = "grey") +
+  facet_wrap(~ stage, scales = "free") +
+  labs(x = "Sensitivity (mean slope)", y = "Number of species") +
+  theme_bw()
+```
+
+# Models endangerment ~ sensitivity 
+
+## Sensitive or not
+
+```{r}
+stage_names <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  distinct(stage) %>%
+  pull(stage)
+
+mod_sens_01_countries <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glm(cbind(n_countries_threatened,
+                         n_countries - n_countries_threatened) ~ sens_01, 
+                   data = .x, family = binomial())) %>%
+  setNames(stage_names)
+
+mod_sens_01_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_range_threatened ~ sens_01, data = .x, 
+                      family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names)
+
+map_df(mod_sens_01_countries, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_01_range, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_01_countries$FlDur))
+plot(ggpredict(mod_sens_01_range$LeafUnf, type = "zi_prob"))
+```
+
+## Sensitivity sign
+
+```{r}
+sens_endanger <- sens_endanger %>%
+  mutate(sens_sign = factor(case_when(
+    mean_slope > 0 ~ "positive",
+    mean_slope < 0 ~ "negative",
+    TRUE ~ NA_character_
+  )))
+```
+
+```{r}
+mod_sens_sign_countries <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(cbind(n_countries_threatened,
+                         n_countries - n_countries_threatened) ~ sens_sign, 
+                      data = .x, family = binomial())) %>%
+  setNames(stage_names)
+
+mod_sens_sign_range <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_range_threatened ~ sens_sign, data = .x, 
+                      family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names)
+
+map_df(mod_sens_sign_countries, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_sign_range, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_sign_countries$FlOn))
+plot(ggpredict(mod_sens_sign_countries$SensOn))
+plot(ggpredict(mod_sens_sign_countries$LeafUnf))
+plot(ggpredict(mod_sens_sign_countries$FrOn))
+plot(ggpredict(mod_sens_sign_countries$FlDur))
+plot(ggpredict(mod_sens_sign_range$FlOn, type = "zi_prob"))
+```
+
+## Mean slopes
+
+### FlDur and GSL: all values
+
+```{r}
+stage_names_FlDur_GSL <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  distinct(stage) %>%
+  pull(stage)
+
+mod_sens_countries_all <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glm(cbind(n_countries_threatened,
+                         n_countries - n_countries_threatened) ~ mean_slope, 
+                  data = .x, family = binomial())) %>%
+  setNames(stage_names_FlDur_GSL)
+mod_sens_range_all <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_range_threatened ~ mean_slope, data = .x, 
+                      family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names_FlDur_GSL)
+map_df(mod_sens_countries_all, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_range_all, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_countries_all$GSL, terms="mean_slope [all]"))
+plot(ggpredict(mod_sens_countries_all$FlDur, terms="mean_slope [all]"))
+```
+
+### Other stages
+
+#### Negative slopes only
+
+```{r}
+stage_names_not_FlDur_GSL <- sens_endanger %>%
+  filter(slope_var < 50) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  distinct(stage) %>%
+  pull(stage)
+
+mod_sens_countries_neg <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glm(cbind(n_countries_threatened,
+                         n_countries - n_countries_threatened) ~ mean_slope, 
+                  data = .x, family = binomial())) %>%
+  setNames(stage_names_not_FlDur_GSL)
+mod_sens_range_neg <- sens_endanger %>%
+  filter(slope_var < 50 & mean_slope < 0) %>%
+  filter(!stage %in% c("FlDur", "GSL")) %>%
+  group_by(stage) %>%
+  group_map(~ glmmTMB(prop_range_threatened ~ mean_slope, data = .x, 
+                      family = beta_family(), ziformula=~.)) %>%
+  setNames(stage_names_not_FlDur_GSL)
+map_df(mod_sens_countries_neg, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+map_df(mod_sens_range_neg, tidy, .id = "stage") %>%
+  mutate(sig = ifelse(p.value < 0.05, "*", "")) %>% print(n = 50)
+```
+
+```{r}
+plot(ggpredict(mod_sens_countries_neg$SensOn, terms="mean_slope [all]"))
+plot(ggpredict(mod_sens_range_neg$SensOn, type = "zi_prob", terms="mean_slope [all]"))
+plot(ggpredict(mod_sens_range_neg$SensOn, type = "fixed", terms="mean_slope [all]"))
+```
+
+HERE: Seems contrary to what found before!!
+
+#### Positive slopes only
+
+
+
+
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
+
